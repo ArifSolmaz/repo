@@ -53,24 +53,14 @@
     
     header .wrap {
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-end;
       align-items: baseline;
     }
     
-    .logo {
-      font-family: 'Newsreader', Georgia, serif;
-      font-size: 1.35rem;
-      font-weight: 500;
-      text-decoration: none;
-      color: var(--ink);
-      letter-spacing: -0.03em;
-    }
-    
     nav a {
-      margin-left: 1.5rem;
       text-decoration: none;
       color: var(--ink-faint);
-      font-size: 0.9rem;
+      font-size: 0.85rem;
     }
     
     nav a:hover { color: var(--pop); }
@@ -87,9 +77,7 @@
 <body>
   <header>
     <div class="wrap">
-      <a href="{{ '/' | relative_url }}" class="logo">keşif</a>
       <nav>
-        <a href="{{ '/' | relative_url }}">arşiv</a>
         <a href="{{ '/feed.xml' | relative_url }}">rss</a>
       </nav>
     </div>
