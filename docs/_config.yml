@@ -2,8 +2,8 @@
 # GitHub Pages site for archiving discovered repositories
 
 title: "Turkish Repo Showcase"
-description: "Türkçe açıklamalı, keşfedilmeye değer GitHub projeleri"
-url: "" # Will be set by GitHub Pages
+description: "Yapay zeka ile keşfedilen, Türkçe açıklamalı GitHub projeleri"
+url: "https://arifsolmaz.github.io"
 baseurl: "/turkish-repo-showcase"
 
 # Build settings
