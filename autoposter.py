@@ -57,15 +57,24 @@ IMAGES_DIR.mkdir(parents=True, exist_ok=True)
 POSTS_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def send_telegram_notification(repo_name: str, summary: str, repo_url: str, tweet_url: str = None, bluesky_url: str = None):
+def send_telegram_notification(repo_name: str, summary: str, repo_url: str, tweet_url: str = None, bluesky_url: str = None, category: str = "general"):
     """Send a Telegram notification when a new repo is posted."""
     if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
         logger.warning("⚠️  Telegram credentials not set, skipping notification")
         return False
     
+    # Category emoji
+    if category == "astronomy":
+        cat_emoji = "🔭"
+        cat_label = "Astronomi"
+    else:
+        cat_emoji = "💻"
+        cat_label = "Genel"
+    
     # Build message
     message = f"""🚀 *Yeni Repo Paylaşıldı!*
 
+{cat_emoji} *Kategori:* {cat_label}
 📦 *{repo_name}*
 
 📝 {summary}
@@ -296,9 +305,27 @@ class AutoPoster:
         """
         Generate Turkish content using Claude AI.
         Returns dict with summary, hashtags, and body.
+        Uses category-specific prompts and hashtags.
         """
         # Truncate README for context
         readme_preview = repo_data["readme_content"][:3000] if repo_data["readme_content"] else "README not available"
+        
+        category = repo_data.get("category", "general")
+        
+        # Category-specific prompt instructions
+        if category == "astronomy":
+            hashtag_instruction = '2. "hashtags": Exactly 3 relevant astronomy hashtags (without # symbol), e.g. ["Exoplanet", "Astronomi", "Astrofizik", "TESS", "Kepler", "JWST", "Yıldız", "Gezegen"]'
+            audience_instruction = "astronomlar ve astrofizikçiler"
+            extra_instruction = """
+IMPORTANT FOR ASTRONOMY CONTENT:
+- Use proper Turkish astronomical terminology
+- Be accurate about scientific concepts
+- Target audience is astronomers and astrophysicists
+- Hashtags should be astronomy-specific"""
+        else:
+            hashtag_instruction = '2. "hashtags": Exactly 3 relevant hashtags (without # symbol), e.g. ["Python", "Geliştirici", "Araçlar"]'
+            audience_instruction = "geliştiriciler"
+            extra_instruction = ""
         
         prompt = f"""Analyze this GitHub repository and generate Turkish content for a Twitter post and blog article.
 
@@ -307,20 +334,22 @@ Description: {repo_data['description']}
 Language: {repo_data['language']}
 Stars: {repo_data['stars']}⭐
 Topics: {', '.join(repo_data['topics']) if repo_data['topics'] else 'None'}
+Category: {category}
 
 README Preview:
 {readme_preview}
 
 Generate a JSON response with EXACTLY these fields:
 1. "summary": A single, powerful Turkish sentence (max 180 characters) explaining exactly what this tool does. Be specific and impactful. No fluff, no generic descriptions.
-2. "hashtags": Exactly 3 relevant hashtags (without # symbol), e.g. ["Python", "Geliştirici", "Araçlar"]
-3. "body": A 2-paragraph Turkish blog post explanation. First paragraph: What problem does it solve? Second paragraph: Key features and why developers should care.
+{hashtag_instruction}
+3. "body": A 2-paragraph Turkish blog post explanation for {audience_instruction}. First paragraph: What problem does it solve? Second paragraph: Key features and why they should care.
 
 IMPORTANT:
 - Write in natural, professional Turkish
 - Be specific about what the tool does
-- Avoid generic phrases like "Bu araç geliştiriciler için..."
+- Avoid generic phrases
 - The summary must be punchy and Twitter-friendly
+{extra_instruction}
 
 Respond with ONLY valid JSON, no markdown code blocks."""
 
@@ -346,16 +375,25 @@ Respond with ONLY valid JSON, no markdown code blocks."""
                 if field not in content:
                     raise ValueError(f"Missing required field: {field}")
             
-            logger.info(f"✅ Generated Turkish content successfully")
+            # Add category to content
+            content["category"] = category
+            
+            logger.info(f"✅ Generated Turkish content successfully (category: {category})")
             return content
             
         except json.JSONDecodeError as e:
             logger.error(f"❌ Failed to parse Claude response as JSON: {e}")
-            # Fallback content
+            # Fallback content based on category
+            if category == "astronomy":
+                hashtags = ["Astronomi", "Astrofizik", "OpenSource"]
+            else:
+                hashtags = ["OpenSource", "GitHub", "Geliştirici"]
+            
             return {
                 "summary": f"{repo_data['full_name']} - {repo_data['description'][:100]}",
-                "hashtags": ["OpenSource", "GitHub", "Geliştirici"],
-                "body": f"{repo_data['description']}\n\n{repo_data['language']} ile geliştirilmiş bu proje, geliştiricilere faydalı araçlar sunuyor."
+                "hashtags": hashtags,
+                "body": f"{repo_data['description']}\n\n{repo_data['language']} ile geliştirilmiş bu proje.",
+                "category": category
             }
         except Exception as e:
             logger.error(f"❌ Content generation failed: {e}")
@@ -546,14 +584,21 @@ date: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} +0300
             logger.info("📭 Queue is empty. Nothing to process.")
             return False
         
-        # Get first URL
-        repo_url = queue[0]
-        logger.info(f"🎯 Processing: {repo_url}")
+        # Get first entry and parse URL|category format
+        queue_entry = queue[0]
+        if "|" in queue_entry:
+            repo_url, category = queue_entry.split("|", 1)
+        else:
+            repo_url = queue_entry
+            category = "general"
+        
+        logger.info(f"🎯 Processing: {repo_url} (category: {category})")
         
         try:
             # Fetch repository data
             logger.info("📡 Fetching repository data...")
             repo_data = self.fetch_repo_data(repo_url)
+            repo_data["category"] = category
             
             # Extract hero image
             logger.info("🖼️  Extracting hero image...")
@@ -594,7 +639,8 @@ date: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} +0300
                 summary=content['summary'],
                 repo_url=repo_url,
                 tweet_url=tweet_url,
-                bluesky_url=bluesky_url
+                bluesky_url=bluesky_url,
+                category=category
             )
             
             return True
