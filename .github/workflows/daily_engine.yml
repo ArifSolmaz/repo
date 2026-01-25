@@ -84,6 +84,8 @@ jobs:
           TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          BLUESKY_HANDLE: ${{ secrets.BLUESKY_HANDLE }}
+          BLUESKY_APP_PASSWORD: ${{ secrets.BLUESKY_APP_PASSWORD }}
         run: |
           PROCESS_COUNT=${{ github.event.inputs.process_count || '1' }}
           echo "📤 Processing $PROCESS_COUNT item(s) from queue..."
