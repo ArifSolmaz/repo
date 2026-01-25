@@ -35,19 +35,6 @@ title: Home
     background: var(--paper-dark);
   }
   
-  .post-image-placeholder {
-    width: 100%;
-    aspect-ratio: 16/9;
-    background: var(--paper-dark);
-    border-radius: 6px;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--ink-faint);
-    font-size: 2rem;
-  }
-  
   .post-date {
     font-size: 0.8rem;
     color: var(--ink-faint);
@@ -121,8 +108,6 @@ title: Home
       <a href="{{ post.url | relative_url }}">
         <img src="{{ post.image | relative_url }}" alt="{{ post.title }}" class="post-image" loading="lazy">
       </a>
-      {% else %}
-      <div class="post-image-placeholder">◇</div>
       {% endif %}
       
       <div class="post-date">{{ post.date | date: "%d %b %Y" }}</div>
