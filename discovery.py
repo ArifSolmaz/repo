@@ -282,7 +282,7 @@ Answer with ONLY "YES" or "NO" - nothing else."""
                 logger.info(f"  ✨ Added to queue: {repo['name']}")
             
             # Limit queue additions per run
-            if len(new_repos) >= 5:
+            if len(new_repos) >= 1:
                 logger.info("📦 Queue limit reached for this run")
                 break
         
