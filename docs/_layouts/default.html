@@ -1,85 +1,297 @@
----
-layout: default
-title: Home
----
-
-<div class="hero">
-  <div class="hero-content">
-    <h1>🚀 Turkish Repo Showcase</h1>
-    <p>Yapay zeka ile keşfedilen, Türkçe açıklamalı GitHub projeleri</p>
-    <div class="hero-stats">
-      <div class="stat">
-        <span class="stat-number">{{ site.posts.size }}</span>
-        <span class="stat-label">Proje</span>
-      </div>
-      <div class="stat">
-        <span class="stat-number">🤖</span>
-        <span class="stat-label">AI Destekli</span>
-      </div>
-      <div class="stat">
-        <span class="stat-number">🇹🇷</span>
-        <span class="stat-label">Türkçe</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="posts-container">
-  <h2 class="section-title">✨ Son Keşifler</h2>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% if page.title and page.title != "Home" %}{{ page.title }} | {% endif %}{{ site.title }}</title>
+  <meta name="description" content="{{ page.description | default: site.description }}">
   
-  <div class="posts-grid">
-    {% for post in site.posts %}
-    <article class="post-card">
-      {% if post.image %}
-      <div class="post-image">
-        <a href="{{ post.url | relative_url }}">
-          <img src="{{ post.image | relative_url }}" alt="{{ post.title }}" loading="lazy">
-        </a>
-      </div>
-      {% else %}
-      <div class="post-image post-image-placeholder">
-        <a href="{{ post.url | relative_url }}">
-          <div class="placeholder-icon">📦</div>
-        </a>
-      </div>
-      {% endif %}
-      
-      <div class="post-content">
-        <div class="post-meta">
-          <time datetime="{{ post.date | date_to_xmlschema }}">
-            {{ post.date | date: "%d %b %Y" }}
-          </time>
-        </div>
-        
-        <h3><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3>
-        
-        {% if post.tags.size > 0 %}
-        <div class="post-tags">
-          {% for tag in post.tags limit:3 %}
-          <span class="tag">#{{ tag }}</span>
-          {% endfor %}
-        </div>
-        {% endif %}
-        
-        <div class="post-actions">
-          {% if post.repo_url %}
-          <a href="{{ post.repo_url }}" class="btn btn-primary" target="_blank" rel="noopener">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-            GitHub
-          </a>
-          {% endif %}
-          <a href="{{ post.url | relative_url }}" class="btn btn-secondary">Detaylar →</a>
-        </div>
-      </div>
-    </article>
-    {% endfor %}
-  </div>
-</div>
-
-{% if site.posts.size == 0 %}
-<div class="empty-state">
-  <div class="empty-icon">🔍</div>
-  <h3>Henüz keşif yok</h3>
-  <p>İlk projeler yakında burada olacak!</p>
-</div>
-{% endif %}
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+  
+  <meta property="og:title" content="{{ page.title | default: site.title }}">
+  <meta property="og:description" content="{{ page.description | default: site.description }}">
+  {% if page.image %}<meta property="og:image" content="{{ page.image | absolute_url }}">{% endif %}
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      line-height: 1.6;
+      color: #1e293b;
+      background: #f1f5f9;
+      min-height: 100vh;
+    }
+    
+    /* Header */
+    .header {
+      background: #ffffff;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 1rem 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #1e293b;
+      text-decoration: none;
+    }
+    
+    .logo:hover { color: #6366f1; }
+    
+    .nav a {
+      color: #64748b;
+      text-decoration: none;
+      margin-left: 1.5rem;
+      font-weight: 500;
+    }
+    
+    .nav a:hover { color: #6366f1; }
+    
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 3.5rem 1.5rem;
+      text-align: center;
+      color: white;
+    }
+    
+    .hero h1 {
+      font-size: 2.25rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+    
+    .hero p {
+      font-size: 1.05rem;
+      opacity: 0.95;
+      margin-bottom: 1.5rem;
+    }
+    
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 2.5rem;
+    }
+    
+    .stat { text-align: center; }
+    
+    .stat-num {
+      display: block;
+      font-size: 1.75rem;
+      font-weight: 700;
+    }
+    
+    .stat-label {
+      font-size: 0.8rem;
+      opacity: 0.9;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    /* Main */
+    .main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+    
+    .section-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+    }
+    
+    /* Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    /* Card */
+    .card {
+      background: #ffffff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: 1px solid #e2e8f0;
+    }
+    
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px -8px rgba(0,0,0,0.15);
+    }
+    
+    .card-img {
+      height: 160px;
+      background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    
+    .card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .card-img-placeholder {
+      font-size: 3rem;
+      opacity: 0.4;
+    }
+    
+    .card-body {
+      padding: 1.25rem;
+    }
+    
+    .card-date {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.5rem;
+    }
+    
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      line-height: 1.4;
+      margin-bottom: 0.75rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .card-title a {
+      color: #1e293b;
+      text-decoration: none;
+    }
+    
+    .card-title a:hover { color: #6366f1; }
+    
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+    
+    .tag {
+      background: #f1f5f9;
+      color: #6366f1;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 500;
+    }
+    
+    .card-actions {
+      display: flex;
+      gap: 0.6rem;
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    
+    .btn-dark {
+      background: #1e293b;
+      color: #fff;
+    }
+    
+    .btn-dark:hover {
+      background: #6366f1;
+    }
+    
+    .btn-light {
+      background: #f1f5f9;
+      color: #64748b;
+    }
+    
+    .btn-light:hover {
+      background: #6366f1;
+      color: #fff;
+    }
+    
+    /* Empty */
+    .empty {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: #fff;
+      border-radius: 16px;
+      border: 2px dashed #e2e8f0;
+    }
+    
+    .empty-icon { font-size: 3.5rem; margin-bottom: 1rem; }
+    .empty h3 { color: #1e293b; margin-bottom: 0.5rem; }
+    .empty p { color: #64748b; }
+    
+    /* Footer */
+    .footer {
+      background: #fff;
+      border-top: 1px solid #e2e8f0;
+      padding: 1.5rem;
+      text-align: center;
+      margin-top: 2rem;
+      color: #64748b;
+      font-size: 0.85rem;
+    }
+    
+    .footer a { color: #6366f1; text-decoration: none; }
+    
+    /* Responsive */
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 1.6rem; }
+      .stats { gap: 1.5rem; }
+      .stat-num { font-size: 1.3rem; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-inner">
+      <a href="{{ '/' | relative_url }}" class="logo">🚀 {{ site.title }}</a>
+      <nav class="nav">
+        <a href="{{ '/' | relative_url }}">Ana Sayfa</a>
+        <a href="{{ '/feed.xml' | relative_url }}">RSS</a>
+      </nav>
+    </div>
+  </header>
+  
+  {{ content }}
+  
+  <footer class="footer">
+    <p>{{ site.title }} © {{ 'now' | date: '%Y' }} · Powered by <a href="https://anthropic.com">Claude AI</a></p>
+  </footer>
+</body>
+</html>
