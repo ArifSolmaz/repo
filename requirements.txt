@@ -1,5 +1,5 @@
 # Turkish Repo Showcase - Dependencies
-# Headless Content Machine for GitHub → Twitter → Jekyll Pipeline
+# Headless Content Machine for GitHub → Twitter → Bluesky → Jekyll Pipeline
 
 # HTTP requests and web scraping
 requests>=2.31.0
@@ -11,6 +11,9 @@ anthropic>=0.39.0
 
 # Twitter/X API
 tweepy>=4.14.0
+
+# Bluesky API
+atproto>=0.0.55
 
 # GitHub API
 PyGithub>=2.1.0
