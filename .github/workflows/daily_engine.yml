@@ -1,7 +1,7 @@
 name: 🤖 Daily Content Engine
 
 on:
-  # Run every 15 minutes
+  # Run every 30 minutes (48 times/day)
   schedule:
     - cron: '*/30 * * * *'
   
@@ -29,10 +29,13 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+      # ============================================
+      # SETUP
+      # ============================================
       - name: 📥 Checkout Repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # Full history for proper git operations
           token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: 🐍 Set up Python
@@ -53,6 +56,9 @@ jobs:
           touch queue.txt
           touch history.txt
       
+      # ============================================
+      # DISCOVERY PHASE
+      # ============================================
       - name: 🔍 Run Discovery
         if: ${{ github.event.inputs.skip_discovery != 'true' }}
         env:
@@ -65,6 +71,9 @@ jobs:
           echo "📋 Current queue:"
           cat queue.txt || echo "(empty)"
       
+      # ============================================
+      # POSTING PHASE
+      # ============================================
       - name: 📤 Run AutoPoster
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -87,6 +96,9 @@ jobs:
           echo "📋 Remaining queue:"
           cat queue.txt || echo "(empty)"
       
+      # ============================================
+      # GIT COMMIT & PUSH
+      # ============================================
       - name: 🔧 Configure Git
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
@@ -108,7 +120,10 @@ jobs:
       - name: 💾 Commit and Push
         if: steps.changes.outputs.has_changes == 'true'
         run: |
+          # Generate commit message with timestamp
           TIMESTAMP=$(TZ='Europe/Istanbul' date '+%Y-%m-%d %H:%M')
+          
+          # Count new posts
           NEW_POSTS=$(git diff --staged --name-only | grep '_posts/' | wc -l || echo "0")
           NEW_IMAGES=$(git diff --staged --name-only | grep 'assets/images/' | wc -l || echo "0")
           
@@ -124,7 +139,11 @@ jobs:
           git push
           
           echo "✅ Changes pushed to repository"
+          echo "🌐 GitHub Pages will rebuild automatically"
       
+      # ============================================
+      # SUMMARY
+      # ============================================
       - name: 📈 Pipeline Summary
         run: |
           echo "============================================"
@@ -138,5 +157,8 @@ jobs:
           echo "📚 History:"
           HISTORY_COUNT=$(wc -l < history.txt 2>/dev/null | tr -d ' ' || echo "0")
           echo "   Total processed: $HISTORY_COUNT"
+          echo ""
+          echo "📝 Recent posts:"
+          ls -la docs/_posts/ 2>/dev/null | tail -5 || echo "   No posts yet"
           echo ""
           echo "✅ Pipeline complete!"
