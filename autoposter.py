@@ -6,8 +6,9 @@ Processes repositories from the queue:
 1. Extracts hero image from README
 2. Generates Turkish content using Claude AI
 3. Posts to Twitter/X with image
-4. Archives to Jekyll site
-5. Sends Telegram notification
+4. Posts to Bluesky with image
+5. Archives to Jekyll site
+6. Sends Telegram notification
 """
 
 import os
@@ -23,6 +24,7 @@ import requests
 from bs4 import BeautifulSoup
 from anthropic import Anthropic
 import tweepy
+from atproto import Client as BlueskyClient
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -46,12 +48,16 @@ POSTS_DIR = DOCS_DIR / "_posts"
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
+# Bluesky settings
+BLUESKY_HANDLE = os.getenv("BLUESKY_HANDLE")
+BLUESKY_APP_PASSWORD = os.getenv("BLUESKY_APP_PASSWORD")
+
 # Ensure directories exist
 IMAGES_DIR.mkdir(parents=True, exist_ok=True)
 POSTS_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def send_telegram_notification(repo_name: str, summary: str, repo_url: str, tweet_url: str = None):
+def send_telegram_notification(repo_name: str, summary: str, repo_url: str, tweet_url: str = None, bluesky_url: str = None):
     """Send a Telegram notification when a new repo is posted."""
     if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
         logger.warning("⚠️  Telegram credentials not set, skipping notification")
@@ -68,6 +74,9 @@ def send_telegram_notification(repo_name: str, summary: str, repo_url: str, twee
     
     if tweet_url:
         message += f"\n🐦 [Tweet'i Gör]({tweet_url})"
+    
+    if bluesky_url:
+        message += f"\n🦋 [Bluesky'da Gör]({bluesky_url})"
     
     try:
         url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
@@ -401,6 +410,75 @@ Respond with ONLY valid JSON, no markdown code blocks."""
             # Continue with Jekyll archiving even if Twitter fails
             return None
     
+    def post_to_bluesky(self, content: dict, repo_url: str, image_path: str | None) -> str | None:
+        """
+        Post to Bluesky with image.
+        Returns post URL or None.
+        """
+        if not BLUESKY_HANDLE or not BLUESKY_APP_PASSWORD:
+            logger.warning("⚠️  Bluesky credentials not set, skipping")
+            return None
+        
+        # Format post text (Bluesky has 300 char limit)
+        hashtags_str = ' '.join(f"#{tag}" for tag in content['hashtags'])
+        post_text = f"{content['summary']}\n\n🔗 {repo_url}\n\n{hashtags_str}"
+        
+        # Truncate if too long
+        if len(post_text) > 300:
+            available = 300 - len(f"\n\n🔗 {repo_url}\n\n{hashtags_str}") - 3
+            shortened_summary = content['summary'][:available] + "..."
+            post_text = f"{shortened_summary}\n\n🔗 {repo_url}\n\n{hashtags_str}"
+        
+        try:
+            # Login to Bluesky
+            client = BlueskyClient()
+            client.login(BLUESKY_HANDLE, BLUESKY_APP_PASSWORD)
+            logger.info("✅ Logged into Bluesky")
+            
+            # Upload image if available
+            embed = None
+            if image_path and Path(image_path).exists():
+                logger.info("📤 Uploading image to Bluesky...")
+                with open(image_path, 'rb') as f:
+                    image_data = f.read()
+                
+                # Upload blob
+                upload = client.upload_blob(image_data)
+                
+                # Create embed with image
+                embed = {
+                    "$type": "app.bsky.embed.images",
+                    "images": [
+                        {
+                            "alt": content['summary'][:100],
+                            "image": upload.blob
+                        }
+                    ]
+                }
+                logger.info("✅ Image uploaded to Bluesky")
+            
+            # Create post
+            logger.info("🦋 Posting to Bluesky...")
+            if embed:
+                response = client.send_post(text=post_text, embed=embed)
+            else:
+                response = client.send_post(text=post_text)
+            
+            # Construct post URL
+            post_uri = response.uri
+            # URI format: at://did:plc:xxx/app.bsky.feed.post/xxx
+            # Convert to web URL
+            parts = post_uri.split('/')
+            post_id = parts[-1]
+            bluesky_url = f"https://bsky.app/profile/{BLUESKY_HANDLE}/post/{post_id}"
+            
+            logger.info(f"✅ Bluesky post created: {bluesky_url}")
+            return bluesky_url
+            
+        except Exception as e:
+            logger.error(f"❌ Bluesky posting failed: {e}")
+            return None
+    
     def create_jekyll_post(self, repo_data: dict, content: dict, image_path: str | None) -> str:
         """
         Create a Jekyll markdown post for the repository.
@@ -489,6 +567,10 @@ date: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} +0300
             logger.info("🐦 Posting to Twitter...")
             tweet_url = self.post_to_twitter(content, repo_url, image_path)
             
+            # Post to Bluesky
+            logger.info("🦋 Posting to Bluesky...")
+            bluesky_url = self.post_to_bluesky(content, repo_url, image_path)
+            
             # Create Jekyll post
             logger.info("📝 Creating Jekyll post...")
             post_path = self.create_jekyll_post(repo_data, content, image_path)
@@ -501,6 +583,8 @@ date: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} +0300
             logger.info(f"✅ Successfully processed: {repo_data['full_name']}")
             if tweet_url:
                 logger.info(f"   🐦 Tweet: {tweet_url}")
+            if bluesky_url:
+                logger.info(f"   🦋 Bluesky: {bluesky_url}")
             logger.info(f"   📝 Post: {post_path}")
             
             # Send Telegram notification
@@ -509,7 +593,8 @@ date: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} +0300
                 repo_name=repo_data['full_name'],
                 summary=content['summary'],
                 repo_url=repo_url,
-                tweet_url=tweet_url
+                tweet_url=tweet_url,
+                bluesky_url=bluesky_url
             )
             
             return True
