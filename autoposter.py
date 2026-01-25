@@ -528,15 +528,13 @@ Respond with ONLY valid JSON, no markdown code blocks."""
         filename = f"{today}-{slug}.md"
         filepath = POSTS_DIR / filename
         
-        # Prepare image reference
-        image_ref = ""
+        # Prepare image reference for frontmatter
         image_frontmatter = ""
         if image_path:
             # Convert to Jekyll-friendly path
             image_filename = Path(image_path).name
             jekyll_image_path = f"/assets/images/{image_filename}"
             image_frontmatter = f'image: "{jekyll_image_path}"'
-            image_ref = f"![{repo_data['repo']} Hero Image]({jekyll_image_path})"
         
         # Prepare tags
         tags = content['hashtags'] + [repo_data['language']] if repo_data['language'] != 'Unknown' else content['hashtags']
@@ -545,7 +543,7 @@ Respond with ONLY valid JSON, no markdown code blocks."""
         # Escape quotes in summary for YAML
         escaped_summary = content['summary'].replace('"', '\\"')
         
-        # Build markdown content
+        # Build markdown content (image shown via template, not in body)
         post_content = f"""---
 layout: post
 title: "{escaped_summary}"
@@ -554,8 +552,6 @@ repo_url: "{repo_data['url']}"
 tags: [{tags_str}]
 date: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} +0300
 ---
-
-{image_ref}
 
 {content['body']}
 
