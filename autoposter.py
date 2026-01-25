@@ -7,6 +7,7 @@ Processes repositories from the queue:
 2. Generates Turkish content using Claude AI
 3. Posts to Twitter/X with image
 4. Archives to Jekyll site
+5. Sends Telegram notification
 """
 
 import os
@@ -41,9 +42,51 @@ DOCS_DIR = Path("docs")
 IMAGES_DIR = DOCS_DIR / "assets" / "images"
 POSTS_DIR = DOCS_DIR / "_posts"
 
+# Telegram settings
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+
 # Ensure directories exist
 IMAGES_DIR.mkdir(parents=True, exist_ok=True)
 POSTS_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def send_telegram_notification(repo_name: str, summary: str, repo_url: str, tweet_url: str = None):
+    """Send a Telegram notification when a new repo is posted."""
+    if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
+        logger.warning("⚠️  Telegram credentials not set, skipping notification")
+        return False
+    
+    # Build message
+    message = f"""🚀 *Yeni Repo Paylaşıldı!*
+
+📦 *{repo_name}*
+
+📝 {summary}
+
+🔗 [GitHub'da Gör]({repo_url})"""
+    
+    if tweet_url:
+        message += f"\n🐦 [Tweet'i Gör]({tweet_url})"
+    
+    try:
+        url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+        payload = {
+            "chat_id": TELEGRAM_CHAT_ID,
+            "text": message,
+            "parse_mode": "Markdown",
+            "disable_web_page_preview": False
+        }
+        
+        response = requests.post(url, json=payload, timeout=10)
+        response.raise_for_status()
+        
+        logger.info("✅ Telegram notification sent!")
+        return True
+        
+    except Exception as e:
+        logger.error(f"❌ Telegram notification failed: {e}")
+        return False
 
 
 class AutoPoster:
@@ -459,6 +502,15 @@ date: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} +0300
             if tweet_url:
                 logger.info(f"   🐦 Tweet: {tweet_url}")
             logger.info(f"   📝 Post: {post_path}")
+            
+            # Send Telegram notification
+            logger.info("📱 Sending Telegram notification...")
+            send_telegram_notification(
+                repo_name=repo_data['full_name'],
+                summary=content['summary'],
+                repo_url=repo_url,
+                tweet_url=tweet_url
+            )
             
             return True
             
