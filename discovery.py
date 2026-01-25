@@ -5,8 +5,9 @@ discovery.py - The Finder
 Discovers high-quality GitHub repositories from:
 1. GitHub Trending (high-star repos created in last 7 days)
 2. Hacker News (top stories with GitHub links)
+3. Astronomy/Astrophysics repositories
 
-Filters them using Claude AI to ensure "greater good" tools only.
+Filters them using Claude AI to ensure quality.
 """
 
 import os
@@ -35,8 +36,24 @@ GITHUB_API_BASE = "https://api.github.com"
 HN_API_BASE = "https://hacker-news.firebaseio.com/v0"
 QUEUE_FILE = Path("queue.txt")
 HISTORY_FILE = Path("history.txt")
-MIN_STARS = 50  # Minimum stars for consideration
-MAX_CANDIDATES = 20  # Max repos to evaluate per run
+MIN_STARS = 50  # Minimum stars for general repos
+MIN_STARS_ASTRO = 5  # Lower threshold for astronomy repos (niche field)
+MAX_CANDIDATES = 3  # Candidates to evaluate per run
+
+# Astronomy search keywords
+ASTRO_KEYWORDS = [
+    # Core topics
+    "exoplanet", "astronomy", "astrophysics",
+    # Missions & Telescopes
+    "TESS", "JWST", "Kepler", "CHEOPS", "Gaia", "PLATO", "Hubble",
+    # Methods
+    "radial velocity", "light curve", "spectroscopy", "photometry", "transit photometry",
+    # Python packages
+    "astropy", "lightkurve", "batman-package", "juliet", "emcee", "exoplanet",
+    # Concepts
+    "habitable zone", "TTV", "transit timing", "limb darkening", "starspot", 
+    "eclipsing binary", "stellar activity", "planetary transit"
+]
 
 
 class RepoDiscovery:
@@ -237,6 +254,110 @@ Answer with ONLY "YES" or "NO" - nothing else."""
             logger.error(f"❌ Claude API error for {repo['name']}: {e}")
             return False
     
+    def is_astronomy_repo(self, repo: dict) -> bool:
+        """
+        STRICT verification that a repository is genuinely about astronomy/astrophysics.
+        This prevents false positives like 'transit' (deployment) or 'stellar' (performance).
+        """
+        prompt = f"""You are an expert astronomer. Analyze this GitHub repository and determine if it is GENUINELY related to astronomy, astrophysics, or space science.
+
+Repository: {repo['name']}
+Description: {repo['description']}
+Language: {repo['language']}
+Stars: {repo['stars']}
+Topics: {', '.join(repo['topics']) if repo['topics'] else 'None'}
+
+STRICT Criteria for YES (must be genuinely astronomical):
+- Software for analyzing astronomical data (TESS, Kepler, JWST, etc.)
+- Exoplanet detection/analysis tools
+- Stellar physics or stellar activity analysis
+- Light curve analysis for astronomical purposes
+- Spectroscopy tools for astronomical observations
+- Orbital mechanics for celestial bodies
+- Telescope control or astronomical instrumentation
+- Astronomical catalogs or databases
+- Educational resources specifically about astronomy/astrophysics
+
+STRICT Criteria for NO:
+- "Transit" referring to software deployment or transportation
+- "Stellar" meaning excellent/outstanding performance
+- "Light" referring to lightweight software
+- "Orbit" referring to software architecture patterns
+- General physics that's not specifically astronomical
+- Space-themed games or entertainment
+- Any project that uses astronomical terms metaphorically
+
+Be VERY strict. When in doubt, answer NO.
+
+Answer with ONLY "YES" or "NO" - nothing else."""
+
+        try:
+            response = self.anthropic_client.messages.create(
+                model="claude-sonnet-4-20250514",
+                max_tokens=10,
+                messages=[{"role": "user", "content": prompt}]
+            )
+            
+            answer = response.content[0].text.strip().upper()
+            is_astro = answer == "YES"
+            
+            logger.info(f"  🔭 {'✅' if is_astro else '❌'} Astronomy check for {repo['name']}: {answer}")
+            return is_astro
+            
+        except Exception as e:
+            logger.error(f"❌ Claude API error for astronomy check {repo['name']}: {e}")
+            return False
+    
+    def discover_astronomy_repos(self) -> list:
+        """
+        Search GitHub for astronomy and astrophysics repositories.
+        Uses multiple keyword searches to find relevant projects.
+        """
+        logger.info("🔭 Searching for astronomy/astrophysics repositories...")
+        
+        repos = []
+        seen_urls = set()
+        
+        # Search with each keyword
+        for keyword in ASTRO_KEYWORDS[:10]:  # Limit to avoid rate limits
+            search_url = f"{GITHUB_API_BASE}/search/repositories"
+            params = {
+                "q": f"{keyword} in:name,description,readme stars:>={MIN_STARS_ASTRO}",
+                "sort": "updated",
+                "order": "desc",
+                "per_page": 5
+            }
+            
+            try:
+                response = requests.get(search_url, headers=self.headers, params=params, timeout=30)
+                
+                if response.status_code != 200:
+                    continue
+                    
+                data = response.json()
+                
+                for item in data.get("items", []):
+                    url = item["html_url"]
+                    if url in seen_urls:
+                        continue
+                    seen_urls.add(url)
+                    
+                    repos.append({
+                        "url": url,
+                        "name": item["full_name"],
+                        "description": item.get("description") or "No description provided",
+                        "stars": item["stargazers_count"],
+                        "language": item.get("language") or "Unknown",
+                        "topics": item.get("topics", []),
+                        "category": "astronomy"  # Tag as astronomy
+                    })
+                    
+            except requests.RequestException:
+                continue
+        
+        logger.info(f"✅ Found {len(repos)} potential astronomy repositories")
+        return repos
+    
     def run(self) -> int:
         """
         Main discovery pipeline.
@@ -247,13 +368,21 @@ Answer with ONLY "YES" or "NO" - nothing else."""
         # Collect candidates from all sources
         candidates = []
         
-        # GitHub Trending
+        # GitHub Trending (general)
         github_repos = self.discover_github_trending()
+        for repo in github_repos:
+            repo["category"] = "general"
         candidates.extend(github_repos)
         
-        # Hacker News
+        # Hacker News (general)
         hn_repos = self.discover_hackernews()
+        for repo in hn_repos:
+            repo["category"] = "general"
         candidates.extend(hn_repos)
+        
+        # Astronomy repositories
+        astro_repos = self.discover_astronomy_repos()
+        candidates.extend(astro_repos)
         
         # Deduplicate by URL
         seen_urls = set()
@@ -275,13 +404,24 @@ Answer with ONLY "YES" or "NO" - nothing else."""
                 logger.info(f"  ⏭️  Skipping (already processed): {repo['name']}")
                 continue
             
-            # AI Filter
-            logger.info(f"🤖 Evaluating: {repo['name']} ({repo['stars']}⭐)")
-            if self.is_greater_good(repo):
-                new_repos.append(repo["url"])
-                logger.info(f"  ✨ Added to queue: {repo['name']}")
+            category = repo.get("category", "general")
             
-            # Limit queue additions per run
+            # Apply appropriate filter based on category
+            if category == "astronomy":
+                # STRICT astronomy verification
+                logger.info(f"🔭 Evaluating astronomy repo: {repo['name']} ({repo['stars']}⭐)")
+                if self.is_astronomy_repo(repo):
+                    # Save with category marker
+                    new_repos.append(f"{repo['url']}|astronomy")
+                    logger.info(f"  ✨ Added astronomy repo to queue: {repo['name']}")
+            else:
+                # General "greater good" filter
+                logger.info(f"🤖 Evaluating: {repo['name']} ({repo['stars']}⭐)")
+                if self.is_greater_good(repo):
+                    new_repos.append(f"{repo['url']}|general")
+                    logger.info(f"  ✨ Added to queue: {repo['name']}")
+            
+            # Limit queue additions per run (1 per run = 48/day)
             if len(new_repos) >= 1:
                 logger.info("📦 Queue limit reached for this run")
                 break
