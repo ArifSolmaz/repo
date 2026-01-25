@@ -4,7 +4,7 @@
 title: "Turkish Repo Showcase"
 description: "Türkçe açıklamalı, keşfedilmeye değer GitHub projeleri"
 url: "" # Will be set by GitHub Pages
-baseurl: "" # Root of repo
+baseurl: "/turkish-repo-showcase"
 
 # Build settings
 markdown: kramdown
