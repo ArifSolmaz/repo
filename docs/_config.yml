@@ -1,24 +1,20 @@
-# Turkish Repo Showcase - Jekyll Configuration
-title: "Turkish Repo Showcase"
-description: "Yapay zeka ile keşfedilen, Türkçe açıklamalı GitHub projeleri"
+# Site Configuration
+title: "keşif"
+description: "Türkçe açıklamalı açık kaynak projeler"
 url: "https://arifsolmaz.github.io"
 baseurl: "/turkish-repo-showcase"
 
-# Build settings
 markdown: kramdown
 
-# Plugins
 plugins:
   - jekyll-seo-tag
   - jekyll-feed
 
-# Collections
 collections:
   posts:
     output: true
-    permalink: /posts/:year/:month/:day/:title/
+    permalink: /:year/:month/:day/:title/
 
-# Defaults
 defaults:
   - scope:
       path: ""
@@ -26,7 +22,6 @@ defaults:
     values:
       layout: "post"
 
-# Exclude from build
 exclude:
   - README.md
   - requirements.txt
