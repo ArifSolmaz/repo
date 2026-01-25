@@ -1,0 +1,25 @@
+# Turkish Repo Showcase - Dependencies
+# Headless Content Machine for GitHub → Twitter → Jekyll Pipeline
+
+# HTTP requests and web scraping
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+lxml>=5.0.0
+
+# AI Content Generation
+anthropic>=0.39.0
+
+# Twitter/X API
+tweepy>=4.14.0
+
+# GitHub API
+PyGithub>=2.1.0
+
+# Environment management
+python-dotenv>=1.0.0
+
+# Image handling
+Pillow>=10.0.0
+
+# Date/time utilities
+python-dateutil>=2.8.0

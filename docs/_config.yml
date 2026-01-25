@@ -1,0 +1,52 @@
+# Turkish Repo Showcase - Jekyll Configuration
+# GitHub Pages site for archiving discovered repositories
+
+title: "Turkish Repo Showcase"
+description: "Türkçe açıklamalı, keşfedilmeye değer GitHub projeleri"
+url: "" # Will be set by GitHub Pages
+baseurl: "" # Root of repo
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+
+# Theme (can be customized)
+remote_theme: pages-themes/minimal@v0.2.0
+plugins:
+  - jekyll-remote-theme
+  - jekyll-seo-tag
+  - jekyll-feed
+
+# Collections
+collections:
+  posts:
+    output: true
+    permalink: /posts/:year/:month/:day/:title/
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+
+# Feed settings
+feed:
+  path: feed.xml
+
+# SEO
+author: "Turkish Repo Showcase Bot"
+twitter:
+  card: summary_large_image
+
+# Exclude from build
+exclude:
+  - README.md
+  - requirements.txt
+  - discovery.py
+  - autoposter.py
+  - queue.txt
+  - history.txt
+  - "*.py"
+  - .github/
