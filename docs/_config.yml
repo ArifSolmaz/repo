@@ -1,6 +1,4 @@
 # Turkish Repo Showcase - Jekyll Configuration
-# GitHub Pages site for archiving discovered repositories
-
 title: "Turkish Repo Showcase"
 description: "Yapay zeka ile keşfedilen, Türkçe açıklamalı GitHub projeleri"
 url: "https://arifsolmaz.github.io"
@@ -8,12 +6,9 @@ baseurl: "/turkish-repo-showcase"
 
 # Build settings
 markdown: kramdown
-highlighter: rouge
 
-# Theme (can be customized)
-remote_theme: pages-themes/minimal@v0.2.0
+# Plugins
 plugins:
-  - jekyll-remote-theme
   - jekyll-seo-tag
   - jekyll-feed
 
@@ -31,22 +26,10 @@ defaults:
     values:
       layout: "post"
 
-# Feed settings
-feed:
-  path: feed.xml
-
-# SEO
-author: "Turkish Repo Showcase Bot"
-twitter:
-  card: summary_large_image
-
 # Exclude from build
 exclude:
   - README.md
   - requirements.txt
-  - discovery.py
-  - autoposter.py
+  - "*.py"
   - queue.txt
   - history.txt
-  - "*.py"
-  - .github/
