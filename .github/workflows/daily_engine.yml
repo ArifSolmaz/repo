@@ -1,0 +1,142 @@
+name: 🤖 Daily Content Engine
+
+on:
+  # Run every 15 minutes
+  schedule:
+    - cron: '*/15 * * * *'
+  
+  # Allow manual trigger
+  workflow_dispatch:
+    inputs:
+      skip_discovery:
+        description: 'Skip discovery phase (use existing queue)'
+        required: false
+        default: 'false'
+        type: boolean
+      process_count:
+        description: 'Number of repos to process from queue'
+        required: false
+        default: '1'
+        type: string
+
+# Permissions needed for pushing to repo
+permissions:
+  contents: write
+
+jobs:
+  content-engine:
+    name: 🚀 Run Content Pipeline
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: 📦 Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: 📁 Ensure Directory Structure
+        run: |
+          mkdir -p docs/assets/images
+          mkdir -p docs/_posts
+          touch queue.txt
+          touch history.txt
+      
+      - name: 🔍 Run Discovery
+        if: ${{ github.event.inputs.skip_discovery != 'true' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          echo "🔍 Starting repository discovery..."
+          python discovery.py
+          echo ""
+          echo "📋 Current queue:"
+          cat queue.txt || echo "(empty)"
+      
+      - name: 📤 Run AutoPoster
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }}
+          TWITTER_API_SECRET: ${{ secrets.TWITTER_API_SECRET }}
+          TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
+          TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
+        run: |
+          PROCESS_COUNT=${{ github.event.inputs.process_count || '1' }}
+          echo "📤 Processing $PROCESS_COUNT item(s) from queue..."
+          
+          for i in $(seq 1 $PROCESS_COUNT); do
+            echo ""
+            echo "=== Processing item $i of $PROCESS_COUNT ==="
+            python autoposter.py || echo "⚠️  Item $i failed or queue empty"
+          done
+          
+          echo ""
+          echo "📋 Remaining queue:"
+          cat queue.txt || echo "(empty)"
+      
+      - name: 🔧 Configure Git
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "Turkish Repo Showcase Bot"
+      
+      - name: 📊 Check for Changes
+        id: changes
+        run: |
+          git add -A
+          if git diff --staged --quiet; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "ℹ️  No changes to commit"
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "✅ Changes detected"
+            git status --short
+          fi
+      
+      - name: 💾 Commit and Push
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          TIMESTAMP=$(TZ='Europe/Istanbul' date '+%Y-%m-%d %H:%M')
+          NEW_POSTS=$(git diff --staged --name-only | grep '_posts/' | wc -l || echo "0")
+          NEW_IMAGES=$(git diff --staged --name-only | grep 'assets/images/' | wc -l || echo "0")
+          
+          COMMIT_MSG="🤖 Auto-update: ${TIMESTAMP} Istanbul time"
+          if [ "$NEW_POSTS" -gt 0 ]; then
+            COMMIT_MSG="$COMMIT_MSG | +${NEW_POSTS} post(s)"
+          fi
+          if [ "$NEW_IMAGES" -gt 0 ]; then
+            COMMIT_MSG="$COMMIT_MSG | +${NEW_IMAGES} image(s)"
+          fi
+          
+          git commit -m "$COMMIT_MSG"
+          git push
+          
+          echo "✅ Changes pushed to repository"
+      
+      - name: 📈 Pipeline Summary
+        run: |
+          echo "============================================"
+          echo "🏁 PIPELINE SUMMARY"
+          echo "============================================"
+          echo ""
+          echo "📋 Queue status:"
+          QUEUE_COUNT=$(wc -l < queue.txt 2>/dev/null | tr -d ' ' || echo "0")
+          echo "   Items remaining: $QUEUE_COUNT"
+          echo ""
+          echo "📚 History:"
+          HISTORY_COUNT=$(wc -l < history.txt 2>/dev/null | tr -d ' ' || echo "0")
+          echo "   Total processed: $HISTORY_COUNT"
+          echo ""
+          echo "✅ Pipeline complete!"
