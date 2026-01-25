@@ -17,6 +17,12 @@ layout: default
   
   .back:hover { color: var(--pop); }
   
+  .article-image {
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+  }
+  
   .article-header {
     margin-bottom: 2rem;
     padding-bottom: 1.5rem;
@@ -33,7 +39,7 @@ layout: default
   
   .article-title {
     font-family: 'Newsreader', Georgia, serif;
-    font-size: 1.6rem;
+    font-size: 1.5rem;
     font-weight: 500;
     line-height: 1.35;
     margin-bottom: 1rem;
@@ -68,9 +74,7 @@ layout: default
     transition: background 0.2s;
   }
   
-  .repo-link:hover {
-    background: var(--pop);
-  }
+  .repo-link:hover { background: var(--pop); }
   
   .repo-link svg {
     width: 16px;
@@ -83,9 +87,7 @@ layout: default
     color: var(--ink-light);
   }
   
-  .article-body p {
-    margin-bottom: 1.25rem;
-  }
+  .article-body p { margin-bottom: 1.25rem; }
   
   .article-body img {
     max-width: 100%;
@@ -104,9 +106,7 @@ layout: default
     text-decoration: none;
   }
   
-  .article-body a:hover {
-    text-decoration: underline;
-  }
+  .article-body a:hover { text-decoration: underline; }
   
   .article-body strong {
     color: var(--ink);
@@ -117,6 +117,10 @@ layout: default
 <div class="wrap">
   <article class="article">
     <a href="{{ '/' | relative_url }}" class="back">← tüm projeler</a>
+    
+    {% if page.image %}
+    <img src="{{ page.image | relative_url }}" alt="{{ page.title }}" class="article-image">
+    {% endif %}
     
     <header class="article-header">
       <div class="article-date">{{ page.date | date: "%d %B %Y" }}</div>
