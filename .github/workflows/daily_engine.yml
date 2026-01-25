@@ -1,11 +1,15 @@
 name: 🤖 Daily Content Engine
 
 on:
-  # Run every 30 minutes (48 times/day)
+  # Schedule (GitHub'ın kendi scheduler'ı - güvenilmez)
   schedule:
-    - cron: '*/30 * * * *'
+    - cron: '5,35 * * * *'
   
-  # Allow manual trigger
+  # Harici servisler için (cron-job.org vb.)
+  repository_dispatch:
+    types: [trigger-content-engine]
+  
+  # Manuel tetikleme
   workflow_dispatch:
     inputs:
       skip_discovery:
@@ -35,7 +39,7 @@ jobs:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Full history for proper git operations
+          fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: 🐍 Set up Python
@@ -124,10 +128,8 @@ jobs:
       - name: 💾 Commit and Push
         if: steps.changes.outputs.has_changes == 'true'
         run: |
-          # Generate commit message with timestamp
           TIMESTAMP=$(TZ='Europe/Istanbul' date '+%Y-%m-%d %H:%M')
           
-          # Count new posts
           NEW_POSTS=$(git diff --staged --name-only | grep '_posts/' | wc -l || echo "0")
           NEW_IMAGES=$(git diff --staged --name-only | grep 'assets/images/' | wc -l || echo "0")
           
@@ -143,7 +145,6 @@ jobs:
           git push
           
           echo "✅ Changes pushed to repository"
-          echo "🌐 GitHub Pages will rebuild automatically"
       
       # ============================================
       # SUMMARY
