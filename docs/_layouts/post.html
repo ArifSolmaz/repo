@@ -2,129 +2,144 @@
 layout: default
 ---
 
-<main class="main">
-  <article class="post-article">
-    <a href="{{ '/' | relative_url }}" class="back-link">← Tüm Projelere Dön</a>
+<style>
+  .article {
+    padding: 1rem 0 3rem;
+  }
+  
+  .back {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--ink-faint);
+    text-decoration: none;
+    margin-bottom: 2rem;
+  }
+  
+  .back:hover { color: var(--pop); }
+  
+  .article-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--line);
+  }
+  
+  .article-date {
+    font-size: 0.8rem;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.75rem;
+  }
+  
+  .article-title {
+    font-family: 'Newsreader', Georgia, serif;
+    font-size: 1.6rem;
+    font-weight: 500;
+    line-height: 1.35;
+    margin-bottom: 1rem;
+    color: var(--ink);
+  }
+  
+  .article-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+  }
+  
+  .article-tags .tag {
+    font-size: 0.75rem;
+    color: var(--ink-faint);
+    background: var(--paper-dark);
+    padding: 0.25rem 0.6rem;
+    border-radius: 3px;
+  }
+  
+  .repo-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+    color: var(--paper);
+    background: var(--ink);
+    padding: 0.6rem 1.1rem;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  
+  .repo-link:hover {
+    background: var(--pop);
+  }
+  
+  .repo-link svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .article-body {
+    font-size: 1rem;
+    line-height: 1.75;
+    color: var(--ink-light);
+  }
+  
+  .article-body p {
+    margin-bottom: 1.25rem;
+  }
+  
+  .article-body img {
+    max-width: 100%;
+    border-radius: 6px;
+    margin: 1.5rem 0;
+  }
+  
+  .article-body hr {
+    border: none;
+    border-top: 1px solid var(--line);
+    margin: 2rem 0;
+  }
+  
+  .article-body a {
+    color: var(--pop);
+    text-decoration: none;
+  }
+  
+  .article-body a:hover {
+    text-decoration: underline;
+  }
+  
+  .article-body strong {
+    color: var(--ink);
+    font-weight: 500;
+  }
+</style>
+
+<div class="wrap">
+  <article class="article">
+    <a href="{{ '/' | relative_url }}" class="back">← tüm projeler</a>
     
-    <h1 class="post-title">{{ page.title }}</h1>
-    
-    <div class="post-meta">
-      <span>📅 {{ page.date | date: "%d %B %Y" }}</span>
+    <header class="article-header">
+      <div class="article-date">{{ page.date | date: "%d %B %Y" }}</div>
+      <h1 class="article-title">{{ page.title }}</h1>
+      
       {% if page.tags.size > 0 %}
-      <div class="post-tags">
+      <div class="article-tags">
         {% for tag in page.tags %}
-        <span class="tag">#{{ tag }}</span>
+        <span class="tag">{{ tag }}</span>
         {% endfor %}
       </div>
       {% endif %}
-    </div>
+      
+      {% if page.repo_url %}
+      <a href="{{ page.repo_url }}" class="repo-link" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        kaynak kodu
+      </a>
+      {% endif %}
+    </header>
     
-    {% if page.repo_url %}
-    <a href="{{ page.repo_url }}" class="github-btn" target="_blank" rel="noopener">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-      GitHub'da Görüntüle
-    </a>
-    {% endif %}
-    
-    <div class="post-content">
+    <div class="article-body">
       {{ content }}
     </div>
   </article>
-</main>
-
-<style>
-  .post-article {
-    max-width: 720px;
-    margin: 0 auto;
-    background: #fff;
-    border-radius: 16px;
-    padding: 2rem;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-    border: 1px solid #e2e8f0;
-  }
-  
-  .back-link {
-    display: inline-block;
-    color: #64748b;
-    text-decoration: none;
-    font-size: 0.9rem;
-    margin-bottom: 1.5rem;
-  }
-  
-  .back-link:hover { color: #6366f1; }
-  
-  .post-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    line-height: 1.3;
-    margin-bottom: 1rem;
-    color: #1e293b;
-  }
-  
-  .post-meta {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-    font-size: 0.9rem;
-    color: #64748b;
-  }
-  
-  .post-tags {
-    display: flex;
-    gap: 0.5rem;
-  }
-  
-  .github-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.25rem;
-    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-    color: #fff !important;
-    border-radius: 10px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.9rem;
-    margin-bottom: 1.5rem;
-    transition: all 0.2s;
-  }
-  
-  .github-btn:hover {
-    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-    transform: translateY(-2px);
-  }
-  
-  .post-content {
-    font-size: 1rem;
-    line-height: 1.75;
-    color: #334155;
-  }
-  
-  .post-content p { margin-bottom: 1.25rem; }
-  
-  .post-content img {
-    max-width: 100%;
-    border-radius: 12px;
-    margin: 1.5rem 0;
-  }
-  
-  .post-content hr {
-    border: none;
-    border-top: 1px solid #e2e8f0;
-    margin: 1.5rem 0;
-  }
-  
-  .post-content a {
-    color: #6366f1;
-    text-decoration: none;
-  }
-  
-  .post-content a:hover { text-decoration: underline; }
-  
-  @media (max-width: 640px) {
-    .post-article { padding: 1.5rem; }
-    .post-title { font-size: 1.25rem; }
-  }
-</style>
+</div>
