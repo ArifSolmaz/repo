@@ -3,295 +3,106 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% if page.title and page.title != "Home" %}{{ page.title }} | {% endif %}{{ site.title }}</title>
-  <meta name="description" content="{{ page.description | default: site.description }}">
+  <title>{% if page.title and page.title != "Home" %}{{ page.title }} | {% endif %}keşif</title>
+  <meta name="description" content="Türkçe açıklamalı açık kaynak projeler">
   
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◈</text></svg>">
   
-  <meta property="og:title" content="{{ page.title | default: site.title }}">
-  <meta property="og:description" content="{{ page.description | default: site.description }}">
+  <meta property="og:title" content="{{ page.title | default: 'keşif' }}">
+  <meta property="og:description" content="Türkçe açıklamalı açık kaynak projeler">
   {% if page.image %}<meta property="og:image" content="{{ page.image | absolute_url }}">{% endif %}
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
   
   <style>
+    :root {
+      --ink: #1a1a1a;
+      --ink-light: #555;
+      --ink-faint: #888;
+      --paper: #fcfcfb;
+      --paper-dark: #f5f5f3;
+      --line: #e8e8e6;
+      --pop: #c4410a;
+    }
+    
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      line-height: 1.6;
-      color: #1e293b;
-      background: #f1f5f9;
-      min-height: 100vh;
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.65;
+      font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    a { color: inherit; }
+    
+    .wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
     }
     
     /* Header */
-    .header {
-      background: #ffffff;
-      border-bottom: 1px solid #e2e8f0;
-      padding: 1rem 0;
-      position: sticky;
-      top: 0;
-      z-index: 100;
+    header {
+      padding: 2rem 0;
     }
     
-    .header-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 1.5rem;
+    header .wrap {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: baseline;
     }
     
     .logo {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: #1e293b;
+      font-family: 'Newsreader', Georgia, serif;
+      font-size: 1.35rem;
+      font-weight: 500;
       text-decoration: none;
+      color: var(--ink);
+      letter-spacing: -0.03em;
     }
     
-    .logo:hover { color: #6366f1; }
-    
-    .nav a {
-      color: #64748b;
-      text-decoration: none;
+    nav a {
       margin-left: 1.5rem;
-      font-weight: 500;
-    }
-    
-    .nav a:hover { color: #6366f1; }
-    
-    /* Hero */
-    .hero {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 3.5rem 1.5rem;
-      text-align: center;
-      color: white;
-    }
-    
-    .hero h1 {
-      font-size: 2.25rem;
-      font-weight: 800;
-      margin-bottom: 0.5rem;
-    }
-    
-    .hero p {
-      font-size: 1.05rem;
-      opacity: 0.95;
-      margin-bottom: 1.5rem;
-    }
-    
-    .stats {
-      display: flex;
-      justify-content: center;
-      gap: 2.5rem;
-    }
-    
-    .stat { text-align: center; }
-    
-    .stat-num {
-      display: block;
-      font-size: 1.75rem;
-      font-weight: 700;
-    }
-    
-    .stat-label {
-      font-size: 0.8rem;
-      opacity: 0.9;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    
-    /* Main */
-    .main {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 2rem 1.5rem;
-    }
-    
-    .section-title {
-      font-size: 1.4rem;
-      font-weight: 700;
-      margin-bottom: 1.5rem;
-    }
-    
-    /* Grid */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 1.5rem;
-    }
-    
-    /* Card */
-    .card {
-      background: #ffffff;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-      transition: transform 0.2s, box-shadow 0.2s;
-      border: 1px solid #e2e8f0;
-    }
-    
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 24px -8px rgba(0,0,0,0.15);
-    }
-    
-    .card-img {
-      height: 160px;
-      background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-    
-    .card-img img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    
-    .card-img-placeholder {
-      font-size: 3rem;
-      opacity: 0.4;
-    }
-    
-    .card-body {
-      padding: 1.25rem;
-    }
-    
-    .card-date {
-      font-size: 0.75rem;
-      color: #94a3b8;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 0.5rem;
-    }
-    
-    .card-title {
-      font-size: 0.95rem;
-      font-weight: 600;
-      line-height: 1.4;
-      margin-bottom: 0.75rem;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-    
-    .card-title a {
-      color: #1e293b;
       text-decoration: none;
+      color: var(--ink-faint);
+      font-size: 0.9rem;
     }
     
-    .card-title a:hover { color: #6366f1; }
-    
-    .tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-      margin-bottom: 1rem;
-    }
-    
-    .tag {
-      background: #f1f5f9;
-      color: #6366f1;
-      padding: 0.2rem 0.6rem;
-      border-radius: 6px;
-      font-size: 0.7rem;
-      font-weight: 500;
-    }
-    
-    .card-actions {
-      display: flex;
-      gap: 0.6rem;
-    }
-    
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      padding: 0.5rem 0.9rem;
-      border-radius: 8px;
-      font-size: 0.8rem;
-      font-weight: 500;
-      text-decoration: none;
-      transition: all 0.2s;
-    }
-    
-    .btn-dark {
-      background: #1e293b;
-      color: #fff;
-    }
-    
-    .btn-dark:hover {
-      background: #6366f1;
-    }
-    
-    .btn-light {
-      background: #f1f5f9;
-      color: #64748b;
-    }
-    
-    .btn-light:hover {
-      background: #6366f1;
-      color: #fff;
-    }
-    
-    /* Empty */
-    .empty {
-      text-align: center;
-      padding: 4rem 2rem;
-      background: #fff;
-      border-radius: 16px;
-      border: 2px dashed #e2e8f0;
-    }
-    
-    .empty-icon { font-size: 3.5rem; margin-bottom: 1rem; }
-    .empty h3 { color: #1e293b; margin-bottom: 0.5rem; }
-    .empty p { color: #64748b; }
+    nav a:hover { color: var(--pop); }
     
     /* Footer */
-    .footer {
-      background: #fff;
-      border-top: 1px solid #e2e8f0;
-      padding: 1.5rem;
+    footer {
+      padding: 3rem 0;
       text-align: center;
-      margin-top: 2rem;
-      color: #64748b;
-      font-size: 0.85rem;
-    }
-    
-    .footer a { color: #6366f1; text-decoration: none; }
-    
-    /* Responsive */
-    @media (max-width: 640px) {
-      .hero h1 { font-size: 1.6rem; }
-      .stats { gap: 1.5rem; }
-      .stat-num { font-size: 1.3rem; }
-      .grid { grid-template-columns: 1fr; }
+      font-size: 0.8rem;
+      color: var(--ink-faint);
     }
   </style>
 </head>
 <body>
-  <header class="header">
-    <div class="header-inner">
-      <a href="{{ '/' | relative_url }}" class="logo">🚀 {{ site.title }}</a>
-      <nav class="nav">
-        <a href="{{ '/' | relative_url }}">Ana Sayfa</a>
-        <a href="{{ '/feed.xml' | relative_url }}">RSS</a>
+  <header>
+    <div class="wrap">
+      <a href="{{ '/' | relative_url }}" class="logo">keşif</a>
+      <nav>
+        <a href="{{ '/' | relative_url }}">arşiv</a>
+        <a href="{{ '/feed.xml' | relative_url }}">rss</a>
       </nav>
     </div>
   </header>
   
-  {{ content }}
+  <main>
+    {{ content }}
+  </main>
   
-  <footer class="footer">
-    <p>{{ site.title }} © {{ 'now' | date: '%Y' }} · Powered by <a href="https://anthropic.com">Claude AI</a></p>
+  <footer>
+    <div class="wrap">
+      türkçe · açık kaynak · her gün yeni
+    </div>
   </footer>
 </body>
 </html>
