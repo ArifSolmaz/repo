@@ -383,10 +383,13 @@ Respond with ONLY valid JSON, no markdown code blocks."""
         tags = content['hashtags'] + [repo_data['language']] if repo_data['language'] != 'Unknown' else content['hashtags']
         tags_str = ', '.join(f'"{tag}"' for tag in tags)
         
+        # Escape quotes in summary for YAML
+        escaped_summary = content['summary'].replace('"', '\\"')
+        
         # Build markdown content
         post_content = f"""---
 layout: post
-title: "{content['summary'].replace('"', '\\"')}"
+title: "{escaped_summary}"
 {image_frontmatter}
 repo_url: "{repo_data['url']}"
 tags: [{tags_str}]
