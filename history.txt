@@ -1,3 +1,4 @@
 https://github.com/xai-org/x-algorithm
 https://github.com/QwenLM/Qwen3-TTS
 https://github.com/anthropics/original_performance_takehome
+https://github.com/op7418/Humanizer-zh
