@@ -257,8 +257,22 @@ class AutoPoster:
                 response.raise_for_status()
                 
                 # Check content type
-                content_type = response.headers.get('content-type', '')
+                content_type = response.headers.get('content-type', '').split(';')[0].strip()
+                
+                # Skip SVG files (don't render well on social media)
+                if 'svg' in content_type.lower() or img_url.lower().endswith('.svg'):
+                    logger.info(f"  ⏭️  Skipping SVG image")
+                    continue
+                
                 if not content_type.startswith('image/'):
+                    continue
+                
+                # Read first bytes to detect actual content
+                content = response.content
+                
+                # Check if content is actually SVG (sometimes mislabeled)
+                if content[:100].strip().startswith(b'<svg') or b'<svg' in content[:500]:
+                    logger.info(f"  ⏭️  Skipping SVG image (detected from content)")
                     continue
                 
                 # Generate filename
@@ -268,8 +282,7 @@ class AutoPoster:
                 
                 # Save image
                 with open(local_path, 'wb') as f:
-                    for chunk in response.iter_content(chunk_size=8192):
-                        f.write(chunk)
+                    f.write(content)
                 
                 logger.info(f"✅ Hero image saved: {local_path}")
                 return str(local_path)
