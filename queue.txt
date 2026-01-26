@@ -19,3 +19,6 @@ https://github.com/supabase/supabase-swift|general
 https://github.com/RikkaApps/Shizuku|general
 https://github.com/google-ai-edge/gallery|general
 https://github.com/k4yt3x/video2x|general
+https://github.com/recloudstream/cloudstream|general
+https://github.com/apple/container|general
+https://github.com/open-ani/animeko|general
