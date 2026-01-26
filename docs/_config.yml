@@ -2,7 +2,7 @@
 title: "keşif"
 description: "Türkçe açıklamalı açık kaynak projeler"
 url: "https://arifsolmaz.github.io"
-baseurl: "/turkish-repo-showcase"
+baseurl: "/depo"
 
 markdown: kramdown
 
