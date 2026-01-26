@@ -93,9 +93,7 @@ class RepoDiscovery:
     def _is_already_processed(self, url: str) -> bool:
         """Check if repo URL is in history or queue."""
         current_queue = self._load_queue()
-        # FIX: Extract just URLs from queue entries (format: url|category)
-        queue_urls = [entry.split('|')[0] for entry in current_queue]
-        return url in self.history or url in queue_urls
+        return url in self.history or url in current_queue
     
     def discover_github_trending(self) -> list:
         """
@@ -142,6 +140,7 @@ class RepoDiscovery:
     def discover_hackernews(self) -> list:
         """
         Scrape Hacker News top stories for GitHub repository links.
+        Now includes MIN_STARS filter to avoid low-quality repos.
         """
         logger.info("🔍 Scanning Hacker News for GitHub projects...")
         
@@ -174,12 +173,17 @@ class RepoDiscovery:
                         # Fetch repo details from GitHub API
                         repo_info = self._fetch_repo_info(repo_path)
                         if repo_info:
-                            repos.append(repo_info)
+                            # FIX: Apply MIN_STARS filter to HN repos too!
+                            if repo_info["stars"] >= MIN_STARS:
+                                repos.append(repo_info)
+                                logger.info(f"  ✅ HN repo accepted: {repo_info['name']} ({repo_info['stars']}⭐)")
+                            else:
+                                logger.info(f"  ⏭️  HN repo skipped (low stars): {repo_info['name']} ({repo_info['stars']}⭐ < {MIN_STARS})")
                             
                 except (requests.RequestException, json.JSONDecodeError):
                     continue
             
-            logger.info(f"✅ Found {len(repos)} GitHub projects from Hacker News")
+            logger.info(f"✅ Found {len(repos)} GitHub projects from Hacker News (filtered by MIN_STARS={MIN_STARS})")
             return repos
             
         except requests.RequestException as e:

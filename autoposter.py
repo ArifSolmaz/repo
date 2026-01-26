@@ -5,8 +5,8 @@ autoposter.py - The Creator
 Processes repositories from the queue:
 1. Extracts hero image from README
 2. Generates Turkish content using Claude AI
-3. Posts to Twitter/X with image
-4. Posts to Bluesky with image
+3. Posts to Twitter/X with image (links to Jekyll site)
+4. Posts to Bluesky with image (links to Jekyll site)
 5. Archives to Jekyll site
 6. Sends Telegram notification
 """
@@ -47,6 +47,9 @@ POSTS_DIR = DOCS_DIR / "_posts"
 # Istanbul timezone (+03:00)
 ISTANBUL_TZ = timezone(timedelta(hours=3))
 
+# Site URL for Jekyll
+SITE_BASE_URL = "https://arifsolmaz.github.io/turkish-repo-showcase"
+
 # Telegram settings
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
@@ -60,7 +63,7 @@ IMAGES_DIR.mkdir(parents=True, exist_ok=True)
 POSTS_DIR.mkdir(parents=True, exist_ok=True)
 
 
-def send_telegram_notification(repo_name: str, summary: str, repo_url: str, tweet_url: str = None, bluesky_url: str = None, category: str = "general"):
+def send_telegram_notification(repo_name: str, summary: str, repo_url: str, tweet_url: str = None, bluesky_url: str = None, category: str = "general", jekyll_url: str = None):
     """Send a Telegram notification when a new repo is posted."""
     if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
         logger.warning("⚠️  Telegram credentials not set, skipping notification")
@@ -83,6 +86,9 @@ def send_telegram_notification(repo_name: str, summary: str, repo_url: str, twee
 📝 {summary}
 
 🔗 [GitHub'da Gör]({repo_url})"""
+    
+    if jekyll_url:
+        message += f"\n📄 [Detaylı İnceleme]({jekyll_url})"
     
     if tweet_url:
         message += f"\n🐦 [Tweet'i Gör]({tweet_url})"
@@ -320,7 +326,7 @@ class AutoPoster:
     def generate_content(self, repo_data: dict) -> dict:
         """
         Generate Turkish content using Claude AI.
-        Returns dict with summary, hashtags, and body.
+        Returns dict with summary, hashtags, body, and first_paragraph.
         Uses category-specific prompts and hashtags.
         """
         # Truncate README for context
@@ -394,6 +400,10 @@ Respond with ONLY valid JSON, no markdown code blocks."""
             # Add category to content
             content["category"] = category
             
+            # Extract first paragraph for extended social posts
+            paragraphs = [p.strip() for p in content['body'].split('\n\n') if p.strip()]
+            content["first_paragraph"] = paragraphs[0] if paragraphs else ""
+            
             logger.info(f"✅ Generated Turkish content successfully (category: {category})")
             return content
             
@@ -405,32 +415,42 @@ Respond with ONLY valid JSON, no markdown code blocks."""
             else:
                 hashtags = ["OpenSource", "GitHub", "Geliştirici"]
             
+            fallback_body = f"{repo_data['description']}\n\n{repo_data['language']} ile geliştirilmiş bu proje."
             return {
                 "summary": f"{repo_data['full_name']} - {repo_data['description'][:100]}",
                 "hashtags": hashtags,
-                "body": f"{repo_data['description']}\n\n{repo_data['language']} ile geliştirilmiş bu proje.",
+                "body": fallback_body,
+                "first_paragraph": repo_data['description'],
                 "category": category
             }
         except Exception as e:
             logger.error(f"❌ Content generation failed: {e}")
             raise
     
-    def post_to_twitter(self, content: dict, repo_url: str, image_path: str | None) -> str | None:
+    def post_to_twitter(self, content: dict, repo_url: str, image_path: str | None, jekyll_url: str) -> str | None:
         """
         Post to Twitter/X with image.
         Uses hybrid approach: v1.1 for media upload, v2 for tweet.
+        Now includes first paragraph and links to Jekyll site.
         Returns tweet URL or None.
         """
-        # Format tweet text
+        # Format tweet text - EXTENDED FORMAT with first paragraph
         hashtags_str = ' '.join(f"#{tag}" for tag in content['hashtags'])
-        tweet_text = f"{content['summary']}\n\n🔗 {repo_url}\n\n{hashtags_str}"
+        first_para = content.get('first_paragraph', '')
         
-        # Truncate if too long (280 char limit)
-        if len(tweet_text) > 280:
-            # Shorten summary to fit
-            available = 280 - len(f"\n\n🔗 {repo_url}\n\n{hashtags_str}") - 3
-            shortened_summary = content['summary'][:available] + "..."
-            tweet_text = f"{shortened_summary}\n\n🔗 {repo_url}\n\n{hashtags_str}"
+        # Build tweet: summary + first paragraph + jekyll link + hashtags
+        tweet_text = f"{content['summary']}\n\n{first_para}\n\n🔗 {jekyll_url}\n\n{hashtags_str}"
+        
+        # Twitter Blue has extended limit (~4000 chars), but we'll be safe
+        max_length = 4000
+        if len(tweet_text) > max_length:
+            # Truncate first paragraph to fit
+            available = max_length - len(f"{content['summary']}\n\n...\n\n🔗 {jekyll_url}\n\n{hashtags_str}") - 10
+            if available > 100:
+                shortened_para = first_para[:available] + "..."
+                tweet_text = f"{content['summary']}\n\n{shortened_para}\n\n🔗 {jekyll_url}\n\n{hashtags_str}"
+            else:
+                tweet_text = f"{content['summary']}\n\n🔗 {jekyll_url}\n\n{hashtags_str}"
         
         try:
             media_id = None
@@ -479,24 +499,32 @@ Respond with ONLY valid JSON, no markdown code blocks."""
             logger.error(f"❌ Twitter posting failed: {type(e).__name__}: {e}")
             return None
     
-    def post_to_bluesky(self, content: dict, repo_url: str, image_path: str | None) -> str | None:
+    def post_to_bluesky(self, content: dict, repo_url: str, image_path: str | None, jekyll_url: str) -> str | None:
         """
         Post to Bluesky with image.
+        Now includes first paragraph and links to Jekyll site (same format as Twitter).
         Returns post URL or None.
         """
         if not BLUESKY_HANDLE or not BLUESKY_APP_PASSWORD:
             logger.warning("⚠️  Bluesky credentials not set, skipping")
             return None
         
-        # Format post text (Bluesky has 300 char limit)
+        # Format post text - SAME FORMAT AS TWITTER
         hashtags_str = ' '.join(f"#{tag}" for tag in content['hashtags'])
-        post_text = f"{content['summary']}\n\n🔗 {repo_url}\n\n{hashtags_str}"
+        first_para = content.get('first_paragraph', '')
         
-        # Truncate if too long
-        if len(post_text) > 300:
-            available = 300 - len(f"\n\n🔗 {repo_url}\n\n{hashtags_str}") - 3
-            shortened_summary = content['summary'][:available] + "..."
-            post_text = f"{shortened_summary}\n\n🔗 {repo_url}\n\n{hashtags_str}"
+        # Build post: summary + first paragraph + jekyll link + hashtags
+        post_text = f"{content['summary']}\n\n{first_para}\n\n🔗 {jekyll_url}\n\n{hashtags_str}"
+        
+        # Bluesky grapheme limit is ~3000 for long posts
+        max_length = 3000
+        if len(post_text) > max_length:
+            available = max_length - len(f"{content['summary']}\n\n...\n\n🔗 {jekyll_url}\n\n{hashtags_str}") - 10
+            if available > 100:
+                shortened_para = first_para[:available] + "..."
+                post_text = f"{content['summary']}\n\n{shortened_para}\n\n🔗 {jekyll_url}\n\n{hashtags_str}"
+            else:
+                post_text = f"{content['summary']}\n\n🔗 {jekyll_url}\n\n{hashtags_str}"
         
         try:
             # Login to Bluesky
@@ -548,10 +576,10 @@ Respond with ONLY valid JSON, no markdown code blocks."""
             logger.error(f"❌ Bluesky posting failed: {e}")
             return None
     
-    def create_jekyll_post(self, repo_data: dict, content: dict, image_path: str | None) -> str:
+    def create_jekyll_post(self, repo_data: dict, content: dict, image_path: str | None) -> tuple[str, str]:
         """
         Create a Jekyll markdown post for the repository.
-        Returns the path to the created file.
+        Returns tuple of (filepath, jekyll_url).
         """
         # Use Istanbul timezone for consistent date handling
         now_istanbul = datetime.now(ISTANBUL_TZ)
@@ -559,6 +587,9 @@ Respond with ONLY valid JSON, no markdown code blocks."""
         slug = re.sub(r'[^a-z0-9]+', '-', repo_data['repo'].lower()).strip('-')
         filename = f"{today}-{slug}.md"
         filepath = POSTS_DIR / filename
+        
+        # Generate Jekyll URL
+        jekyll_url = f"{SITE_BASE_URL}/{now_istanbul.strftime('%Y/%m/%d')}/{slug}/"
         
         # Prepare image reference for frontmatter
         image_frontmatter = ""
@@ -598,7 +629,7 @@ date: {now_istanbul.strftime("%Y-%m-%d %H:%M:%S")} +0300
         filepath.write_text(post_content, encoding='utf-8')
         logger.info(f"✅ Jekyll post created: {filepath}")
         
-        return str(filepath)
+        return str(filepath), jekyll_url
     
     def process_one(self) -> bool:
         """
@@ -636,17 +667,17 @@ date: {now_istanbul.strftime("%Y-%m-%d %H:%M:%S")} +0300
             logger.info("🤖 Generating Turkish content...")
             content = self.generate_content(repo_data)
             
-            # Post to Twitter
-            logger.info("🐦 Posting to Twitter...")
-            tweet_url = self.post_to_twitter(content, repo_url, image_path)
-            
-            # Post to Bluesky
-            logger.info("🦋 Posting to Bluesky...")
-            bluesky_url = self.post_to_bluesky(content, repo_url, image_path)
-            
-            # Create Jekyll post
+            # Create Jekyll post FIRST (so we have the URL)
             logger.info("📝 Creating Jekyll post...")
-            post_path = self.create_jekyll_post(repo_data, content, image_path)
+            post_path, jekyll_url = self.create_jekyll_post(repo_data, content, image_path)
+            
+            # Post to Twitter (now with Jekyll URL)
+            logger.info("🐦 Posting to Twitter...")
+            tweet_url = self.post_to_twitter(content, repo_url, image_path, jekyll_url)
+            
+            # Post to Bluesky (now with Jekyll URL)
+            logger.info("🦋 Posting to Bluesky...")
+            bluesky_url = self.post_to_bluesky(content, repo_url, image_path, jekyll_url)
             
             # Cleanup: Remove from queue, add to history
             queue.pop(0)
@@ -659,8 +690,9 @@ date: {now_istanbul.strftime("%Y-%m-%d %H:%M:%S")} +0300
             if bluesky_url:
                 logger.info(f"   🦋 Bluesky: {bluesky_url}")
             logger.info(f"   📝 Post: {post_path}")
+            logger.info(f"   🔗 Jekyll URL: {jekyll_url}")
             
-            # Send Telegram notification
+            # Send Telegram notification (now with Jekyll URL)
             logger.info("📱 Sending Telegram notification...")
             send_telegram_notification(
                 repo_name=repo_data['full_name'],
@@ -668,7 +700,8 @@ date: {now_istanbul.strftime("%Y-%m-%d %H:%M:%S")} +0300
                 repo_url=repo_url,
                 tweet_url=tweet_url,
                 bluesky_url=bluesky_url,
-                category=category
+                category=category,
+                jekyll_url=jekyll_url
             )
             
             return True
