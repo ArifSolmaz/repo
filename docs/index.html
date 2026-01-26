@@ -17,71 +17,135 @@ title: Home
     color: var(--ink-light);
   }
   
-  .posts { list-style: none; }
-  
-  .post-item {
-    padding: 1.5rem 0;
+  /* Featured Post (First) */
+  .featured {
+    margin-bottom: 2.5rem;
+    padding-bottom: 2.5rem;
     border-bottom: 1px solid var(--line);
   }
   
-  .post-item:last-child { border-bottom: none; }
-  
-  .post-image {
+  .featured-image {
     width: 100%;
     aspect-ratio: 16/9;
     object-fit: cover;
-    border-radius: 6px;
-    margin-bottom: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.25rem;
     background: var(--paper-dark);
   }
   
-  .post-date {
-    font-size: 0.8rem;
+  .featured-date {
+    font-size: 0.75rem;
     color: var(--ink-faint);
-    margin-bottom: 0.4rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-  }
-  
-  .post-title {
-    font-family: 'Newsreader', Georgia, serif;
-    font-size: 1.15rem;
-    font-weight: 500;
-    line-height: 1.4;
     margin-bottom: 0.5rem;
   }
   
-  .post-title a {
+  .featured-title {
+    font-family: 'Newsreader', Georgia, serif;
+    font-size: 1.6rem;
+    font-weight: 500;
+    line-height: 1.35;
+    margin-bottom: 0.75rem;
+  }
+  
+  .featured-title a {
     text-decoration: none;
     color: var(--ink);
   }
   
-  .post-title a:hover { color: var(--pop); }
+  .featured-title a:hover { color: var(--pop); }
   
-  .post-meta {
+  .featured-meta {
     display: flex;
     align-items: center;
     gap: 1rem;
     flex-wrap: wrap;
   }
   
+  /* Grid for remaining posts */
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+  
+  .post-card {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.2s;
+    background: var(--paper);
+  }
+  
+  .post-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+  }
+  
+  .post-card-image {
+    width: 100%;
+    aspect-ratio: 16/10;
+    object-fit: cover;
+    background: var(--paper-dark);
+    display: block;
+  }
+  
+  .post-card-body {
+    padding: 1rem;
+  }
+  
+  .post-card-date {
+    font-size: 0.7rem;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.4rem;
+  }
+  
+  .post-card-title {
+    font-family: 'Newsreader', Georgia, serif;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.4;
+    margin-bottom: 0.6rem;
+  }
+  
+  .post-card-title a {
+    text-decoration: none;
+    color: var(--ink);
+  }
+  
+  .post-card-title a:hover { color: var(--pop); }
+  
+  .post-card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  
+  /* Shared styles */
   .post-tags {
     display: flex;
     gap: 0.4rem;
+    flex-wrap: wrap;
   }
   
   .tag {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     color: var(--ink-faint);
     background: var(--paper-dark);
-    padding: 0.15rem 0.5rem;
+    padding: 0.15rem 0.45rem;
     border-radius: 3px;
   }
   
   .post-link {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     text-decoration: none;
     color: var(--pop);
+    padding: 0.25rem 0;
   }
   
   .post-link:hover { text-decoration: underline; }
@@ -93,6 +157,193 @@ title: Home
     font-family: 'Newsreader', Georgia, serif;
     font-style: italic;
   }
+
+  /* No image placeholder */
+  .no-image {
+    width: 100%;
+    aspect-ratio: 16/10;
+    background: linear-gradient(135deg, var(--paper-dark) 0%, #e8e8e6 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-faint);
+    font-size: 2rem;
+  }
+
+  /* ======================= */
+  /* TABLET (max-width: 768px) */
+  /* ======================= */
+  @media (max-width: 768px) {
+    .intro {
+      padding: 1.5rem 0 2rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .intro p {
+      font-size: 1.15rem;
+    }
+    
+    .featured {
+      margin-bottom: 2rem;
+      padding-bottom: 2rem;
+    }
+    
+    .featured-title {
+      font-size: 1.4rem;
+    }
+    
+    .posts-grid {
+      gap: 1rem;
+    }
+    
+    .post-card-body {
+      padding: 0.85rem;
+    }
+    
+    .post-card-title {
+      font-size: 0.95rem;
+    }
+  }
+
+  /* ======================= */
+  /* MOBILE (max-width: 600px) */
+  /* ======================= */
+  @media (max-width: 600px) {
+    .intro {
+      padding: 1.25rem 0 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+    
+    .intro p {
+      font-size: 1.05rem;
+    }
+    
+    /* Featured post adjustments */
+    .featured {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+    }
+    
+    .featured-image {
+      border-radius: 6px;
+      margin-bottom: 1rem;
+    }
+    
+    .featured-date {
+      font-size: 0.7rem;
+    }
+    
+    .featured-title {
+      font-size: 1.2rem;
+      line-height: 1.4;
+    }
+    
+    .featured-meta {
+      gap: 0.75rem;
+    }
+    
+    /* Single column grid */
+    .posts-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    
+    /* Horizontal card layout on mobile */
+    .post-card {
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+    }
+    
+    .post-card-image,
+    .no-image {
+      width: 120px;
+      min-width: 120px;
+      aspect-ratio: 1/1;
+      border-radius: 0;
+    }
+    
+    .post-card-body {
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      flex: 1;
+    }
+    
+    .post-card-date {
+      font-size: 0.65rem;
+      margin-bottom: 0.3rem;
+    }
+    
+    .post-card-title {
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+      /* Clamp to 3 lines */
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .post-card-meta {
+      margin-top: auto;
+    }
+    
+    .tag {
+      font-size: 0.6rem;
+      padding: 0.1rem 0.35rem;
+    }
+    
+    .post-link {
+      font-size: 0.7rem;
+    }
+    
+    .no-image {
+      font-size: 1.5rem;
+    }
+  }
+
+  /* ======================= */
+  /* SMALL MOBILE (max-width: 400px) */
+  /* ======================= */
+  @media (max-width: 400px) {
+    .intro p {
+      font-size: 1rem;
+    }
+    
+    .featured-title {
+      font-size: 1.1rem;
+    }
+    
+    .post-card-image,
+    .no-image {
+      width: 100px;
+      min-width: 100px;
+    }
+    
+    .post-card-title {
+      font-size: 0.85rem;
+      -webkit-line-clamp: 2;
+    }
+    
+    /* Hide tags on very small screens */
+    .post-card .post-tags {
+      display: none;
+    }
+  }
+
+  /* Touch device optimizations */
+  @media (hover: none) {
+    .post-card:hover {
+      box-shadow: none;
+      transform: none;
+    }
+    
+    .post-card:active {
+      background: var(--paper-dark);
+    }
+  }
 </style>
 
 <div class="wrap">
@@ -101,37 +352,77 @@ title: Home
   </section>
   
   {% if site.posts.size > 0 %}
-  <ul class="posts">
-    {% for post in site.posts %}
-    <li class="post-item">
-      {% if post.image %}
-      <a href="{{ post.url | relative_url }}">
-        <img src="{{ post.image | relative_url }}" alt="{{ post.title }}" class="post-image" loading="lazy">
+    
+    {% assign first_post = site.posts.first %}
+    
+    <!-- Featured Post -->
+    <article class="featured">
+      {% if first_post.image %}
+      <a href="{{ first_post.url | relative_url }}">
+        <img src="{{ first_post.image | relative_url }}" alt="{{ first_post.title }}" class="featured-image" loading="lazy">
       </a>
       {% endif %}
       
-      <div class="post-date">{{ post.date | date: "%d %b %Y" }}</div>
+      <div class="featured-date">{{ first_post.date | date: "%d %b %Y" }}</div>
       
-      <h2 class="post-title">
-        <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+      <h2 class="featured-title">
+        <a href="{{ first_post.url | relative_url }}">{{ first_post.title }}</a>
       </h2>
       
-      <div class="post-meta">
-        {% if post.tags.size > 0 %}
+      <div class="featured-meta">
+        {% if first_post.tags.size > 0 %}
         <div class="post-tags">
-          {% for tag in post.tags limit:3 %}
+          {% for tag in first_post.tags limit:4 %}
           <span class="tag">{{ tag }}</span>
           {% endfor %}
         </div>
         {% endif %}
         
-        {% if post.repo_url %}
-        <a href="{{ post.repo_url }}" class="post-link" target="_blank">github →</a>
+        {% if first_post.repo_url %}
+        <a href="{{ first_post.repo_url }}" class="post-link" target="_blank">github →</a>
         {% endif %}
       </div>
-    </li>
-    {% endfor %}
-  </ul>
+    </article>
+    
+    <!-- Grid of remaining posts -->
+    {% if site.posts.size > 1 %}
+    <div class="posts-grid">
+      {% for post in site.posts offset:1 %}
+      <article class="post-card">
+        <a href="{{ post.url | relative_url }}">
+          {% if post.image %}
+          <img src="{{ post.image | relative_url }}" alt="{{ post.title }}" class="post-card-image" loading="lazy">
+          {% else %}
+          <div class="no-image">◈</div>
+          {% endif %}
+        </a>
+        
+        <div class="post-card-body">
+          <div class="post-card-date">{{ post.date | date: "%d %b %Y" }}</div>
+          
+          <h3 class="post-card-title">
+            <a href="{{ post.url | relative_url }}">{{ post.title | truncate: 100 }}</a>
+          </h3>
+          
+          <div class="post-card-meta">
+            {% if post.tags.size > 0 %}
+            <div class="post-tags">
+              {% for tag in post.tags limit:2 %}
+              <span class="tag">{{ tag }}</span>
+              {% endfor %}
+            </div>
+            {% endif %}
+            
+            {% if post.repo_url %}
+            <a href="{{ post.repo_url }}" class="post-link" target="_blank">github →</a>
+            {% endif %}
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% endif %}
+    
   {% else %}
   <div class="empty">
     <p>yakında ilk keşifler burada.</p>
