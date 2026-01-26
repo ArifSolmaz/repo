@@ -21,3 +21,4 @@ https://github.com/storytold/artcraft
 https://github.com/supermemoryai/supermemory
 https://github.com/ollama/ollama
 https://github.com/kubernetes-sigs/agent-sandbox
+https://github.com/redis/go-redis
