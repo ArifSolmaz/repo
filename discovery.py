@@ -13,6 +13,7 @@ Filters them using Claude AI to ensure quality.
 import os
 import re
 import json
+import random
 import logging
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -37,7 +38,7 @@ HN_API_BASE = "https://hacker-news.firebaseio.com/v0"
 QUEUE_FILE = Path("queue.txt")
 HISTORY_FILE = Path("history.txt")
 MIN_STARS = 50  # Minimum stars for general repos
-MIN_STARS_ASTRO = 5  # Lower threshold for astronomy repos (niche field)
+MIN_STARS_ASTRO = 3  # Very low threshold for astronomy repos (very niche field)
 MAX_CANDIDATES = 3  # Candidates to evaluate per run
 
 # Astronomy search keywords
@@ -319,7 +320,7 @@ Answer with ONLY "YES" or "NO" - nothing else."""
         seen_urls = set()
         
         # Search with each keyword
-        for keyword in ASTRO_KEYWORDS[:10]:  # Limit to avoid rate limits
+        for keyword in ASTRO_KEYWORDS[:15]:  # Search more keywords
             search_url = f"{GITHUB_API_BASE}/search/repositories"
             params = {
                 "q": f"{keyword} in:name,description,readme stars:>={MIN_STARS_ASTRO}",
@@ -368,6 +369,14 @@ Answer with ONLY "YES" or "NO" - nothing else."""
         # Collect candidates from all sources
         candidates = []
         
+        # Astronomy: Only 10% of runs (roughly 4-5 per day out of 48)
+        if random.random() < 0.10:
+            logger.info("🔭 This run includes astronomy search (10% chance)")
+            astro_repos = self.discover_astronomy_repos()
+            candidates.extend(astro_repos)
+        else:
+            logger.info("⏭️  Skipping astronomy search this run (90% of runs)")
+        
         # GitHub Trending (general)
         github_repos = self.discover_github_trending()
         for repo in github_repos:
@@ -379,10 +388,6 @@ Answer with ONLY "YES" or "NO" - nothing else."""
         for repo in hn_repos:
             repo["category"] = "general"
         candidates.extend(hn_repos)
-        
-        # Astronomy repositories
-        astro_repos = self.discover_astronomy_repos()
-        candidates.extend(astro_repos)
         
         # Deduplicate by URL
         seen_urls = set()
