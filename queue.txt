@@ -1,6 +1,8 @@
-https://github.com/kubernetes-sigs/agent-sandbox|general
 https://github.com/redis/go-redis|general
 https://github.com/remotion-dev/remotion|general
 https://github.com/iOfficeAI/AionUi|general
 https://github.com/obra/superpowers|general
 https://github.com/putyy/res-downloader|general
+https://github.com/evcc-io/evcc|general
+https://github.com/usememos/memos|general
+https://github.com/danielmiessler/Fabric|general

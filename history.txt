@@ -20,3 +20,4 @@ https://github.com/joel-jeremy/emissary
 https://github.com/storytold/artcraft
 https://github.com/supermemoryai/supermemory
 https://github.com/ollama/ollama
+https://github.com/kubernetes-sigs/agent-sandbox
