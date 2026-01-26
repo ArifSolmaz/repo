@@ -1,4 +1,3 @@
-https://github.com/danielmiessler/Fabric|general
 https://github.com/mozilla-mobile/firefox-ios|general
 https://github.com/mikeyobrien/ralph-orchestrator|general
 https://github.com/thu-ml/tianshou|general
@@ -26,3 +25,6 @@ https://github.com/business-science/ai-data-science-team|general
 https://github.com/legacysurvey/imagine|astronomy
 https://github.com/steipete/Peekaboo|general
 https://github.com/argmaxinc/WhisperKit|general
+https://github.com/VectifyAI/PageIndex|general
+https://github.com/kxzk/snapbench|general
+https://github.com/kitlangton/Hex|general
