@@ -23,3 +23,4 @@ https://github.com/ollama/ollama
 https://github.com/kubernetes-sigs/agent-sandbox
 https://github.com/redis/go-redis
 https://github.com/remotion-dev/remotion
+https://github.com/iOfficeAI/AionUi
