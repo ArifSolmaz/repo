@@ -1,2 +1,1 @@
-https://github.com/solo-founders/sf-microclimates|general
 https://github.com/OpenExoplanetCatalogue/oec_gzip|astronomy
