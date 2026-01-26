@@ -26,8 +26,8 @@ title: Home
   
   .featured-image {
     width: 100%;
-    aspect-ratio: 16/9;
-    object-fit: cover;
+    max-height: 400px;
+    object-fit: contain;
     border-radius: 8px;
     margin-bottom: 1.25rem;
     background: var(--paper-dark);
@@ -72,8 +72,8 @@ title: Home
   
   .single-image-post-image {
     width: 100%;
-    aspect-ratio: 16/9;
-    object-fit: cover;
+    max-height: 350px;
+    object-fit: contain;
     border-radius: 8px;
     margin-bottom: 1rem;
     background: var(--paper-dark);
@@ -132,8 +132,8 @@ title: Home
   
   .post-card-image {
     width: 100%;
-    aspect-ratio: 16/10;
-    object-fit: cover;
+    height: 160px;
+    object-fit: contain;
     background: var(--paper-dark);
     display: block;
   }
@@ -278,8 +278,16 @@ title: Home
       font-size: 1.4rem;
     }
     
+    .featured-image {
+      max-height: 300px;
+    }
+    
     .single-image-post-title {
       font-size: 1.2rem;
+    }
+    
+    .single-image-post-image {
+      max-height: 280px;
     }
     
     .posts-grid {
@@ -292,6 +300,10 @@ title: Home
     
     .post-card-title {
       font-size: 0.95rem;
+    }
+    
+    .post-card-image {
+      height: 140px;
     }
   }
 
@@ -313,6 +325,7 @@ title: Home
     .featured-image {
       border-radius: 6px;
       margin-bottom: 1rem;
+      max-height: 250px;
     }
     
     .featured-date {
@@ -335,6 +348,7 @@ title: Home
     
     .single-image-post-image {
       border-radius: 6px;
+      max-height: 220px;
     }
     
     .single-image-post-title {
@@ -357,7 +371,8 @@ title: Home
     .post-card-image {
       width: 120px;
       min-width: 120px;
-      aspect-ratio: 1/1;
+      height: auto;
+      min-height: 100px;
       border-radius: 0;
     }
     
@@ -415,8 +430,16 @@ title: Home
       font-size: 1.1rem;
     }
     
+    .featured-image {
+      max-height: 200px;
+    }
+    
     .single-image-post-title {
       font-size: 1rem;
+    }
+    
+    .single-image-post-image {
+      max-height: 180px;
     }
     
     .post-card-image {
