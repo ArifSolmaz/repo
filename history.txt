@@ -29,3 +29,4 @@ https://github.com/putyy/res-downloader
 https://github.com/evcc-io/evcc
 https://github.com/usememos/memos
 https://github.com/danielmiessler/Fabric
+https://github.com/mozilla-mobile/firefox-ios
