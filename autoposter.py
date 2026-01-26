@@ -459,9 +459,24 @@ Respond with ONLY valid JSON, no markdown code blocks."""
             logger.info(f"✅ Tweet posted: {tweet_url}")
             return tweet_url
             
+        except tweepy.errors.Forbidden as e:
+            # DETAILED ERROR LOGGING
+            logger.error(f"❌ Twitter 403 Forbidden Error!")
+            logger.error(f"   Error message: {e}")
+            logger.error(f"   API Errors: {e.api_errors if hasattr(e, 'api_errors') else 'N/A'}")
+            logger.error(f"   API Codes: {e.api_codes if hasattr(e, 'api_codes') else 'N/A'}")
+            logger.error(f"   API Messages: {e.api_messages if hasattr(e, 'api_messages') else 'N/A'}")
+            if hasattr(e, 'response') and e.response is not None:
+                logger.error(f"   Response Status: {e.response.status_code}")
+                logger.error(f"   Response Text: {e.response.text}")
+            return None
+        except tweepy.errors.TweepyException as e:
+            logger.error(f"❌ Twitter API error: {type(e).__name__}: {e}")
+            if hasattr(e, 'response') and e.response is not None:
+                logger.error(f"   Response: {e.response.text}")
+            return None
         except Exception as e:
-            logger.error(f"❌ Twitter posting failed: {e}")
-            # Continue with Jekyll archiving even if Twitter fails
+            logger.error(f"❌ Twitter posting failed: {type(e).__name__}: {e}")
             return None
     
     def post_to_bluesky(self, content: dict, repo_url: str, image_path: str | None) -> str | None:
