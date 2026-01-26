@@ -14,3 +14,5 @@ https://github.com/danthegoodman1/netfence
 https://github.com/mitjafelicijan/xdgctl
 https://github.com/cacoos/trackhands
 https://github.com/solo-founders/sf-microclimates
+https://github.com/OpenExoplanetCatalogue/oec_gzip
+https://github.com/quaadgras/graphics.gd
