@@ -42,6 +42,7 @@ logger = logging.getLogger(__name__)
 # Constants
 QUEUE_FILE = Path("queue.txt")
 HISTORY_FILE = Path("history.txt")
+PENDING_FILE = Path("pending_posts.json")  # Retry tracking for failed posts
 DOCS_DIR = Path("docs")
 IMAGES_DIR = DOCS_DIR / "assets" / "images"
 POSTS_DIR = DOCS_DIR / "_posts"
@@ -56,6 +57,10 @@ SITE_BASE_URL = "https://arifsolmaz.github.io/depo"
 MIN_STARS = 50
 MIN_STARS_ASTRO = 3
 MIN_LIKES_HF = 100  # Minimum likes for HuggingFace models
+
+# Retry settings
+MAX_RETRY_ATTEMPTS = 8  # 8 attempts * 15 min = 2 hours
+RETRY_INTERVAL_MINUTES = 15
 
 # Telegram settings
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
@@ -175,6 +180,27 @@ class AutoPoster:
         """Add URL to history file."""
         with open(HISTORY_FILE, 'a') as f:
             f.write(url + '\n')
+    
+    def _load_pending(self) -> dict:
+        """Load pending posts that need retry."""
+        if PENDING_FILE.exists():
+            try:
+                return json.loads(PENDING_FILE.read_text())
+            except json.JSONDecodeError:
+                return {}
+        return {}
+    
+    def _save_pending(self, pending: dict):
+        """Save pending posts."""
+        PENDING_FILE.write_text(json.dumps(pending, indent=2, default=str))
+    
+    def _is_in_history(self, url: str) -> bool:
+        """Check if URL is already in history."""
+        if HISTORY_FILE.exists():
+            history = set(HISTORY_FILE.read_text().strip().split('\n'))
+            url_clean = url.rstrip('/')
+            return url_clean in history or url_clean + '/' in history
+        return False
     
     def _parse_repo_url(self, url: str) -> tuple[str, str]:
         """Extract owner and repo name from GitHub URL."""
@@ -628,26 +654,26 @@ Respond with ONLY valid JSON, no markdown code blocks."""
         """
         Post to Twitter/X with image.
         Uses hybrid approach: v1.1 for media upload, v2 for tweet.
-        Now includes first paragraph and links to Jekyll site.
+        Now includes first paragraph and links to GitHub repo.
         Returns tweet URL or None.
         """
         # Format tweet text - EXTENDED FORMAT with first paragraph
         hashtags_str = ' '.join(f"#{tag}" for tag in content['hashtags'])
         first_para = content.get('first_paragraph', '')
         
-        # Build tweet: summary + first paragraph + jekyll link + hashtags
-        tweet_text = f"{content['summary']}\n\n{first_para}\n\n🔗 {jekyll_url}\n\n{hashtags_str}"
+        # Build tweet: summary + first paragraph + repo link + hashtags
+        tweet_text = f"{content['summary']}\n\n{first_para}\n\n🔗 {repo_url}\n\n{hashtags_str}"
         
         # Twitter Blue has extended limit (~4000 chars), but we'll be safe
         max_length = 4000
         if len(tweet_text) > max_length:
             # Truncate first paragraph to fit
-            available = max_length - len(f"{content['summary']}\n\n...\n\n🔗 {jekyll_url}\n\n{hashtags_str}") - 10
+            available = max_length - len(f"{content['summary']}\n\n...\n\n🔗 {repo_url}\n\n{hashtags_str}") - 10
             if available > 100:
                 shortened_para = first_para[:available] + "..."
-                tweet_text = f"{content['summary']}\n\n{shortened_para}\n\n🔗 {jekyll_url}\n\n{hashtags_str}"
+                tweet_text = f"{content['summary']}\n\n{shortened_para}\n\n🔗 {repo_url}\n\n{hashtags_str}"
             else:
-                tweet_text = f"{content['summary']}\n\n🔗 {jekyll_url}\n\n{hashtags_str}"
+                tweet_text = f"{content['summary']}\n\n🔗 {repo_url}\n\n{hashtags_str}"
         
         try:
             media_id = None
@@ -710,21 +736,21 @@ Respond with ONLY valid JSON, no markdown code blocks."""
         hashtags_str = ' '.join(f"#{tag}" for tag in content['hashtags'])
         
         # Build short post: summary + link + hashtags (no first paragraph)
-        post_text = f"{content['summary']}\n\n🔗 {jekyll_url}\n\n{hashtags_str}"
+        post_text = f"{content['summary']}\n\n🔗 {repo_url}\n\n{hashtags_str}"
         
         # Bluesky limit is 300 graphemes
         max_length = 300
         if len(post_text) > max_length:
             # Shorten summary to fit
-            available = max_length - len(f"\n\n🔗 {jekyll_url}\n\n{hashtags_str}") - 3
+            available = max_length - len(f"\n\n🔗 {repo_url}\n\n{hashtags_str}") - 3
             if available > 50:
                 shortened_summary = content['summary'][:available] + "..."
-                post_text = f"{shortened_summary}\n\n🔗 {jekyll_url}\n\n{hashtags_str}"
+                post_text = f"{shortened_summary}\n\n🔗 {repo_url}\n\n{hashtags_str}"
             else:
                 # Even shorter - just summary and link
-                available = max_length - len(f"\n\n🔗 {jekyll_url}") - 3
+                available = max_length - len(f"\n\n🔗 {repo_url}") - 3
                 shortened_summary = content['summary'][:available] + "..."
-                post_text = f"{shortened_summary}\n\n🔗 {jekyll_url}"
+                post_text = f"{shortened_summary}\n\n🔗 {repo_url}"
         
         try:
             # Login to Bluesky
@@ -846,126 +872,234 @@ date: {now_istanbul.strftime("%Y-%m-%d %H:%M:%S")} +0300
     
     def process_one(self) -> bool:
         """
-        Process one repository from the queue.
+        Process one repository from the queue or retry pending posts.
+        Implements retry logic for failed Twitter/Bluesky posts.
         Returns True if successful, False otherwise.
         """
-        # Load queue
-        queue = self._load_queue()
+        now = datetime.now(ISTANBUL_TZ)
         
-        if not queue:
-            logger.info("📭 Queue is empty. Nothing to process.")
-            return False
+        # ========================================
+        # STEP 1: Check for pending retries first
+        # ========================================
+        pending = self._load_pending()
+        repo_url = None
+        category = "general"
+        is_retry = False
+        pending_data = None
         
-        # Get first entry and parse URL|category format
-        queue_entry = queue[0]
-        if "|" in queue_entry:
-            repo_url, category = queue_entry.split("|", 1)
-        else:
-            repo_url = queue_entry
-            category = "general"
+        # Use list() to avoid RuntimeError when modifying dict during iteration
+        for url, data in list(pending.items()):
+            last_attempt = datetime.fromisoformat(data['last_attempt'])
+            minutes_since = (now - last_attempt).total_seconds() / 60
+            
+            # Check if 15 minutes have passed since last attempt
+            if minutes_since >= RETRY_INTERVAL_MINUTES:
+                # Check if max attempts reached
+                if data['attempts'] >= MAX_RETRY_ATTEMPTS:
+                    logger.warning(f"⚠️ Max retries ({MAX_RETRY_ATTEMPTS}) reached for {url}")
+                    # Add to history to prevent future attempts
+                    self._add_to_history(url)
+                    del pending[url]
+                    self._save_pending(pending)
+                    
+                    # Notify about giving up
+                    if TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID:
+                        try:
+                            msg = f"❌ *Post Başarısız (Max Retry)*\n\n📦 {url}\n🔄 {data['attempts']} deneme yapıldı\n🐦 Twitter: {'✅' if data.get('twitter_done') else '❌'}\n🦋 Bluesky: {'✅' if data.get('bluesky_done') else '❌'}"
+                            requests.post(
+                                f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
+                                json={"chat_id": TELEGRAM_CHAT_ID, "text": msg, "parse_mode": "Markdown"},
+                                timeout=10
+                            )
+                        except:
+                            pass
+                    continue
+                
+                repo_url = url
+                category = data.get('category', 'general')
+                is_retry = True
+                pending_data = data
+                logger.info(f"🔄 Retrying pending post: {url} (attempt {data['attempts'] + 1}/{MAX_RETRY_ATTEMPTS})")
+                break
+        
+        # ========================================
+        # STEP 2: If no pending retry, get from queue
+        # ========================================
+        if not repo_url:
+            queue = self._load_queue()
+            
+            if not queue:
+                logger.info("📭 Queue is empty. Nothing to process.")
+                return False
+            
+            # Get first entry and parse URL|category format
+            queue_entry = queue[0]
+            if "|" in queue_entry:
+                repo_url, category = queue_entry.split("|", 1)
+            else:
+                repo_url = queue_entry
+                category = "general"
+            
+            # Check if already in history (prevent duplicates)
+            if self._is_in_history(repo_url):
+                logger.info(f"⏭️ Already in history, skipping: {repo_url}")
+                queue.pop(0)
+                self._save_queue(queue)
+                return False
         
         logger.info(f"🎯 Processing: {repo_url} (category: {category})")
         
         try:
-            # Fetch data based on category
-            logger.info("📡 Fetching data...")
-            if category == "huggingface":
-                repo_data = self.fetch_hf_model_data(repo_url)
-            else:
-                repo_data = self.fetch_repo_data(repo_url)
-            repo_data["category"] = category
-            
             # ========================================
-            # SAFETY CHECK: Verify minimum stars/likes
+            # STEP 3: Fetch repo data (if not retry with cached data)
             # ========================================
-            if category == "huggingface":
-                min_required = MIN_LIKES_HF
-                star_label = "❤️"
-            elif category == "astronomy":
-                min_required = MIN_STARS_ASTRO
-                star_label = "⭐"
+            if is_retry and pending_data.get('content'):
+                # Use cached data from previous attempt
+                content = pending_data['content']
+                social_image = pending_data.get('social_image')
+                jekyll_url = pending_data.get('jekyll_url')
+                repo_data = pending_data.get('repo_data', {'full_name': repo_url, 'url': repo_url})
+                logger.info("📦 Using cached data from previous attempt")
             else:
-                min_required = MIN_STARS
-                star_label = "⭐"
-            
-            if repo_data["stars"] < min_required:
-                logger.warning(f"⚠️  Insufficient stars/likes: {repo_data['stars']}{star_label} < {min_required} required")
-                logger.warning(f"   Skipping {repo_data['full_name']} and removing from queue")
+                # Fresh fetch
+                logger.info("📡 Fetching data...")
+                if category == "huggingface":
+                    repo_data = self.fetch_hf_model_data(repo_url)
+                else:
+                    repo_data = self.fetch_repo_data(repo_url)
+                repo_data["category"] = category
                 
-                # Remove from queue but DON'T add to history (so it could be reconsidered later if stars increase)
-                queue.pop(0)
+                # Safety check: Verify minimum stars/likes
+                if category == "huggingface":
+                    min_required = MIN_LIKES_HF
+                    star_label = "❤️"
+                elif category == "astronomy":
+                    min_required = MIN_STARS_ASTRO
+                    star_label = "⭐"
+                else:
+                    min_required = MIN_STARS
+                    star_label = "⭐"
+                
+                if repo_data["stars"] < min_required:
+                    logger.warning(f"⚠️ Insufficient stars/likes: {repo_data['stars']}{star_label} < {min_required}")
+                    # Remove from queue
+                    queue = self._load_queue()
+                    if queue and queue[0].startswith(repo_url):
+                        queue.pop(0)
+                        self._save_queue(queue)
+                    return False
+                
+                logger.info(f"✅ Stars check passed: {repo_data['stars']}{star_label}")
+                
+                # Extract hero image
+                logger.info("🖼️ Extracting hero image...")
+                image_result = self.extract_hero_image(repo_data)
+                original_image = image_result.get("original") if image_result else None
+                social_image = image_result.get("social") if image_result else None
+                
+                # Generate content with Claude
+                logger.info("🤖 Generating Turkish content...")
+                content = self.generate_content(repo_data)
+                
+                # Create Jekyll post (only once, not on retries)
+                logger.info("📝 Creating Jekyll post...")
+                post_path, jekyll_url = self.create_jekyll_post(repo_data, content, original_image)
+            
+            # ========================================
+            # STEP 4: Post to social media with retry tracking
+            # ========================================
+            twitter_done = pending_data.get('twitter_done', False) if is_retry else False
+            bluesky_done = pending_data.get('bluesky_done', False) if is_retry else False
+            tweet_url = pending_data.get('tweet_url') if is_retry else None
+            bluesky_url_result = pending_data.get('bluesky_url') if is_retry else None
+            
+            # Try Twitter if not done
+            if not twitter_done:
+                logger.info("🐦 Posting to Twitter...")
+                tweet_url = self.post_to_twitter(content, repo_url, social_image, jekyll_url)
+                if tweet_url:
+                    twitter_done = True
+                    logger.info(f"✅ Twitter success: {tweet_url}")
+                else:
+                    logger.warning("❌ Twitter posting failed")
+            
+            # Try Bluesky if not done
+            if not bluesky_done:
+                logger.info("🦋 Posting to Bluesky...")
+                bluesky_url_result = self.post_to_bluesky(content, repo_url, social_image, jekyll_url)
+                if bluesky_url_result:
+                    bluesky_done = True
+                    logger.info(f"✅ Bluesky success: {bluesky_url_result}")
+                else:
+                    logger.warning("❌ Bluesky posting failed")
+            
+            # ========================================
+            # STEP 5: Handle results
+            # ========================================
+            if twitter_done and bluesky_done:
+                # Both successful - complete!
+                logger.info(f"✅ Successfully posted: {repo_url}")
+                
+                # Remove from queue
+                queue = self._load_queue()
+                queue = [q for q in queue if not q.startswith(repo_url)]
                 self._save_queue(queue)
                 
-                # Send notification about skipped repo
-                if TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID:
-                    skip_message = f"⏭️ *Atlandı (Düşük {'Like' if category == 'huggingface' else 'Yıldız'})*\n\n📦 {repo_data['full_name']}\n{star_label} {repo_data['stars']} < {min_required} gerekli"
-                    try:
-                        requests.post(
-                            f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
-                            json={"chat_id": TELEGRAM_CHAT_ID, "text": skip_message, "parse_mode": "Markdown"},
-                            timeout=10
-                        )
-                    except:
-                        pass
+                # Remove from pending if was a retry
+                if repo_url in pending:
+                    del pending[repo_url]
+                    self._save_pending(pending)
+                
+                # Add to history
+                self._add_to_history(repo_url)
+                
+                # Send success notification
+                send_telegram_notification(
+                    repo_name=repo_data.get('full_name', repo_url),
+                    summary=content['summary'],
+                    repo_url=repo_url,
+                    tweet_url=tweet_url,
+                    bluesky_url=bluesky_url_result,
+                    category=category,
+                    jekyll_url=jekyll_url
+                )
+                
+                return True
+            else:
+                # At least one failed - save for retry
+                attempts = (pending_data['attempts'] + 1) if is_retry else 1
+                
+                pending[repo_url] = {
+                    'category': category,
+                    'attempts': attempts,
+                    'first_attempt': pending_data.get('first_attempt', now.isoformat()) if is_retry else now.isoformat(),
+                    'last_attempt': now.isoformat(),
+                    'twitter_done': twitter_done,
+                    'bluesky_done': bluesky_done,
+                    'tweet_url': tweet_url,
+                    'bluesky_url': bluesky_url_result,
+                    'jekyll_url': jekyll_url,
+                    'social_image': social_image,
+                    'content': content,
+                    'repo_data': {'full_name': repo_data.get('full_name', repo_url), 'url': repo_url}
+                }
+                self._save_pending(pending)
+                
+                # Remove from queue (will be retried from pending)
+                queue = self._load_queue()
+                queue = [q for q in queue if not q.startswith(repo_url)]
+                self._save_queue(queue)
+                
+                logger.info(f"📋 Saved for retry (attempt {attempts}/{MAX_RETRY_ATTEMPTS})")
+                logger.info(f"   🐦 Twitter: {'✅' if twitter_done else '❌ will retry'}")
+                logger.info(f"   🦋 Bluesky: {'✅' if bluesky_done else '❌ will retry'}")
                 
                 return False
-            
-            logger.info(f"✅ Check passed: {repo_data['stars']}{star_label} >= {min_required}")
-            
-            # Extract hero image (returns dict with 'original' and 'social' paths, or None)
-            logger.info("🖼️  Extracting hero image...")
-            image_result = self.extract_hero_image(repo_data)
-            
-            # Separate paths for Jekyll (original) and social media (processed)
-            original_image = image_result.get("original") if image_result else None
-            social_image = image_result.get("social") if image_result else None
-            
-            # Generate content with Claude
-            logger.info("🤖 Generating Turkish content...")
-            content = self.generate_content(repo_data)
-            
-            # Create Jekyll post FIRST with ORIGINAL image (so we have the URL)
-            logger.info("📝 Creating Jekyll post...")
-            post_path, jekyll_url = self.create_jekyll_post(repo_data, content, original_image)
-            
-            # Post to Twitter with PROCESSED image
-            logger.info("🐦 Posting to Twitter...")
-            tweet_url = self.post_to_twitter(content, repo_url, social_image, jekyll_url)
-            
-            # Post to Bluesky with PROCESSED image
-            logger.info("🦋 Posting to Bluesky...")
-            bluesky_url = self.post_to_bluesky(content, repo_url, social_image, jekyll_url)
-            
-            # Cleanup: Remove from queue, add to history
-            queue.pop(0)
-            self._save_queue(queue)
-            self._add_to_history(repo_url)
-            
-            logger.info(f"✅ Successfully processed: {repo_data['full_name']}")
-            if tweet_url:
-                logger.info(f"   🐦 Tweet: {tweet_url}")
-            if bluesky_url:
-                logger.info(f"   🦋 Bluesky: {bluesky_url}")
-            logger.info(f"   📝 Post: {post_path}")
-            logger.info(f"   🔗 Jekyll URL: {jekyll_url}")
-            
-            # Send Telegram notification (now with Jekyll URL)
-            logger.info("📱 Sending Telegram notification...")
-            send_telegram_notification(
-                repo_name=repo_data['full_name'],
-                summary=content['summary'],
-                repo_url=repo_url,
-                tweet_url=tweet_url,
-                bluesky_url=bluesky_url,
-                category=category,
-                jekyll_url=jekyll_url
-            )
-            
-            return True
-            
+                
         except Exception as e:
             logger.error(f"❌ Failed to process {repo_url}: {e}")
-            # Optionally: move failed URL to end of queue or separate failed list
+            import traceback
+            traceback.print_exc()
             return False
 
 
