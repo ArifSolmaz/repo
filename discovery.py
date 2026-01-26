@@ -38,12 +38,14 @@ logger = logging.getLogger(__name__)
 GITHUB_API_BASE = "https://api.github.com"
 GITHUB_TRENDING_URL = "https://github.com/trending"
 HN_API_BASE = "https://hacker-news.firebaseio.com/v0"
+HF_API_BASE = "https://huggingface.co/api"
 QUEUE_FILE = Path("queue.txt")
 HISTORY_FILE = Path("history.txt")
 
-# Minimum stars (only for HN repos - trending already has quality)
+# Minimum stars/likes
 MIN_STARS_HN = 50
 MIN_STARS_ASTRO = 3
+MIN_LIKES_HF = 100  # Minimum likes for HuggingFace models
 
 # Languages to check for trending
 TRENDING_LANGUAGES = [
@@ -291,6 +293,169 @@ class RepoDiscovery:
         except requests.RequestException:
             return None
     
+    def discover_huggingface(self) -> list:
+        """
+        Discover trending models from HuggingFace.
+        Returns list of models formatted similarly to GitHub repos.
+        """
+        logger.info("🤗 Scanning HuggingFace for trending models...")
+        
+        models = []
+        
+        try:
+            # Get trending models sorted by likes
+            params = {
+                "sort": "likes",
+                "direction": -1,
+                "limit": 20,
+                "full": "true"
+            }
+            
+            response = requests.get(
+                f"{HF_API_BASE}/models",
+                params=params,
+                headers=self.web_headers,
+                timeout=30
+            )
+            response.raise_for_status()
+            data = response.json()
+            
+            for item in data:
+                try:
+                    model_id = item.get("modelId", "")
+                    likes = item.get("likes", 0)
+                    downloads = item.get("downloads", 0)
+                    
+                    # Filter by minimum likes
+                    if likes < MIN_LIKES_HF:
+                        continue
+                    
+                    # Get pipeline tag (model type)
+                    pipeline_tag = item.get("pipeline_tag", "unknown")
+                    tags = item.get("tags", [])
+                    
+                    # Build description
+                    description = f"{pipeline_tag.replace('-', ' ').title()} model"
+                    if "library_name" in item:
+                        description += f" ({item['library_name']})"
+                    
+                    models.append({
+                        "url": f"https://huggingface.co/{model_id}",
+                        "name": model_id,
+                        "description": description,
+                        "stars": likes,  # Use likes as "stars" equivalent
+                        "downloads": downloads,
+                        "language": item.get("library_name", "Unknown"),
+                        "topics": tags[:5],  # Limit tags
+                        "pipeline_tag": pipeline_tag,
+                        "source": "huggingface",
+                        "category": "huggingface"
+                    })
+                    
+                    logger.info(f"  ✅ HF: {model_id} ({likes}❤️, {downloads:,} downloads)")
+                    
+                except Exception as e:
+                    logger.warning(f"  ⚠️ Failed to parse HF model: {e}")
+                    continue
+            
+            # Also get recently trending (sorted by trending score)
+            try:
+                trending_response = requests.get(
+                    f"{HF_API_BASE}/models",
+                    params={"sort": "trending", "direction": -1, "limit": 10},
+                    headers=self.web_headers,
+                    timeout=30
+                )
+                if trending_response.status_code == 200:
+                    trending_data = trending_response.json()
+                    seen_ids = {m["name"] for m in models}
+                    
+                    for item in trending_data:
+                        model_id = item.get("modelId", "")
+                        if model_id in seen_ids:
+                            continue
+                        
+                        likes = item.get("likes", 0)
+                        if likes < MIN_LIKES_HF // 2:  # Lower threshold for trending
+                            continue
+                        
+                        pipeline_tag = item.get("pipeline_tag", "unknown")
+                        
+                        models.append({
+                            "url": f"https://huggingface.co/{model_id}",
+                            "name": model_id,
+                            "description": f"{pipeline_tag.replace('-', ' ').title()} model (trending)",
+                            "stars": likes,
+                            "downloads": item.get("downloads", 0),
+                            "language": item.get("library_name", "Unknown"),
+                            "topics": item.get("tags", [])[:5],
+                            "pipeline_tag": pipeline_tag,
+                            "source": "huggingface_trending",
+                            "category": "huggingface"
+                        })
+                        
+                        logger.info(f"  🔥 HF Trending: {model_id} ({likes}❤️)")
+                        
+            except Exception as e:
+                logger.warning(f"  ⚠️ Failed to fetch HF trending: {e}")
+            
+            logger.info(f"✅ Found {len(models)} HuggingFace models")
+            return models
+            
+        except requests.RequestException as e:
+            logger.error(f"❌ HuggingFace API error: {e}")
+            return []
+    
+    def is_good_hf_model(self, model: dict) -> bool:
+        """
+        Use Claude AI to determine if the HuggingFace model is worth sharing.
+        """
+        # Auto-approve very popular models
+        if model.get('stars', 0) >= 1000:
+            logger.info(f"  ✅ Auto-approved (high likes): {model['name']} ({model['stars']}❤️)")
+            return True
+        
+        prompt = f"""Analyze this HuggingFace model and determine if it would be interesting and useful for a Turkish developer/AI audience.
+
+Model: {model['name']}
+Type: {model.get('pipeline_tag', 'unknown')}
+Likes: {model['stars']}
+Downloads: {model.get('downloads', 0)}
+Tags: {', '.join(model['topics']) if model['topics'] else 'None'}
+
+Criteria for YES:
+- Useful AI/ML models (text generation, image generation, embeddings, etc.)
+- Popular open-source models (Llama, Mistral, Stable Diffusion variants, etc.)
+- Models with practical applications
+- Turkish language models (high priority!)
+- Innovative or state-of-the-art models
+
+Criteria for NO:
+- Fine-tunes with very specific/niche use cases
+- Test or demo models
+- Duplicate/copy models
+- Low quality or incomplete models
+- NSFW models
+
+Answer with ONLY "YES" or "NO" - nothing else."""
+
+        try:
+            response = self.anthropic_client.messages.create(
+                model="claude-sonnet-4-20250514",
+                max_tokens=10,
+                messages=[{"role": "user", "content": prompt}]
+            )
+            
+            answer = response.content[0].text.strip().upper()
+            is_approved = answer == "YES"
+            
+            logger.info(f"  {'✅' if is_approved else '❌'} {model['name']}: {answer}")
+            return is_approved
+            
+        except Exception as e:
+            logger.error(f"❌ Claude API error for {model['name']}: {e}")
+            return False
+    
     def is_greater_good(self, repo: dict) -> bool:
         """
         Use Claude AI to determine if the repository serves the "greater good".
@@ -472,7 +637,15 @@ Answer with ONLY "YES" or "NO" - nothing else."""
             repo["category"] = "general"
         candidates.extend(hn_repos)
         
-        # 3. Astronomy (10% chance)
+        # 3. HuggingFace (20% chance - AI models)
+        if random.random() < 0.20:
+            logger.info("🤗 This run includes HuggingFace search (20% chance)")
+            hf_models = self.discover_huggingface()
+            candidates.extend(hf_models)
+        else:
+            logger.info("⏭️ Skipping HuggingFace search this run")
+        
+        # 4. Astronomy (10% chance)
         if random.random() < 0.10:
             logger.info("🔭 This run includes astronomy search (10% chance)")
             astro_repos = self.discover_astronomy_repos()
@@ -511,12 +684,17 @@ Answer with ONLY "YES" or "NO" - nothing else."""
             
             category = repo.get("category", "general")
             
-            # Apply appropriate filter
+            # Apply appropriate filter based on category
             if category == "astronomy":
                 logger.info(f"🔭 Evaluating astronomy repo: {repo['name']} ({repo['stars']}⭐)")
                 if self.is_astronomy_repo(repo):
                     new_repos.append(f"{repo['url']}|astronomy")
                     logger.info(f"  ✨ Added astronomy repo: {repo['name']}")
+            elif category == "huggingface":
+                logger.info(f"🤗 Evaluating HF model: {repo['name']} ({repo['stars']}❤️)")
+                if self.is_good_hf_model(repo):
+                    new_repos.append(f"{repo['url']}|huggingface")
+                    logger.info(f"  ✨ Added HF model: {repo['name']}")
             else:
                 logger.info(f"🤖 Evaluating: {repo['name']} ({repo['stars']}⭐) [{repo.get('source', 'unknown')}]")
                 if self.is_greater_good(repo):

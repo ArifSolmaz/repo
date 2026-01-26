@@ -55,6 +55,7 @@ SITE_BASE_URL = "https://arifsolmaz.github.io/turkish-repo-showcase"
 # Minimum stars threshold (safety check before posting)
 MIN_STARS = 50
 MIN_STARS_ASTRO = 3
+MIN_LIKES_HF = 100  # Minimum likes for HuggingFace models
 
 # Telegram settings
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
@@ -79,19 +80,23 @@ def send_telegram_notification(repo_name: str, summary: str, repo_url: str, twee
     if category == "astronomy":
         cat_emoji = "🔭"
         cat_label = "Astronomi"
+    elif category == "huggingface":
+        cat_emoji = "🤗"
+        cat_label = "HuggingFace Model"
     else:
         cat_emoji = "💻"
-        cat_label = "Genel"
+        cat_label = "GitHub"
     
     # Build message
-    message = f"""🚀 *Yeni Repo Paylaşıldı!*
+    link_label = "HuggingFace'te Gör" if category == "huggingface" else "GitHub'da Gör"
+    message = f"""🚀 *Yeni {'Model' if category == 'huggingface' else 'Repo'} Paylaşıldı!*
 
 {cat_emoji} *Kategori:* {cat_label}
 📦 *{repo_name}*
 
 📝 {summary}
 
-🔗 [GitHub'da Gör]({repo_url})"""
+🔗 [{link_label}]({repo_url})"""
     
     if jekyll_url:
         message += f"\n📄 [Detaylı İnceleme]({jekyll_url})"
@@ -178,6 +183,56 @@ class AutoPoster:
         if len(parts) >= 2:
             return parts[0], parts[1]
         raise ValueError(f"Invalid GitHub URL: {url}")
+    
+    def _parse_hf_url(self, url: str) -> str:
+        """Extract model ID from HuggingFace URL."""
+        # URL format: https://huggingface.co/org/model-name
+        parsed = urlparse(url)
+        model_id = parsed.path.strip('/')
+        return model_id
+    
+    def fetch_hf_model_data(self, url: str) -> dict:
+        """Fetch HuggingFace model metadata."""
+        model_id = self._parse_hf_url(url)
+        
+        # Fetch model metadata from HuggingFace API
+        api_url = f"https://huggingface.co/api/models/{model_id}"
+        response = requests.get(api_url, timeout=30)
+        response.raise_for_status()
+        model_data = response.json()
+        
+        # Try to get README/model card
+        readme_content = ""
+        try:
+            readme_url = f"https://huggingface.co/{model_id}/raw/main/README.md"
+            readme_response = requests.get(readme_url, timeout=15)
+            if readme_response.status_code == 200:
+                readme_content = readme_response.text
+        except:
+            pass
+        
+        # Build description from model info
+        pipeline_tag = model_data.get("pipeline_tag", "unknown")
+        library = model_data.get("library_name", "")
+        description = f"{pipeline_tag.replace('-', ' ').title()}"
+        if library:
+            description += f" ({library})"
+        
+        return {
+            "url": url,
+            "owner": model_id.split('/')[0] if '/' in model_id else "unknown",
+            "repo": model_id.split('/')[-1] if '/' in model_id else model_id,
+            "full_name": model_id,
+            "description": description,
+            "stars": model_data.get("likes", 0),
+            "downloads": model_data.get("downloads", 0),
+            "language": library or "Unknown",
+            "topics": model_data.get("tags", [])[:5],
+            "pipeline_tag": pipeline_tag,
+            "readme_content": readme_content,
+            "default_branch": "main",
+            "is_huggingface": True
+        }
     
     def fetch_repo_data(self, url: str) -> dict:
         """Fetch repository metadata and README content."""
@@ -418,7 +473,38 @@ class AutoPoster:
         category = repo_data.get("category", "general")
         
         # Category-specific prompt instructions
-        if category == "astronomy":
+        if category == "huggingface":
+            # HuggingFace model specific prompt
+            pipeline_tag = repo_data.get("pipeline_tag", "unknown")
+            downloads = repo_data.get("downloads", 0)
+            
+            prompt = f"""Analyze this HuggingFace AI model and generate Turkish content for a Twitter post and blog article.
+
+Model: {repo_data['full_name']}
+Type: {pipeline_tag}
+Library: {repo_data['language']}
+Likes: {repo_data['stars']}❤️
+Downloads: {downloads:,}
+Tags: {', '.join(repo_data['topics']) if repo_data['topics'] else 'None'}
+
+Model Card Preview:
+{readme_preview}
+
+Generate a JSON response with EXACTLY these fields:
+1. "summary": A single, powerful Turkish sentence (max 180 characters) explaining what this AI model does and why it's useful. Be specific about capabilities.
+2. "hashtags": Exactly 3 relevant AI/ML hashtags (without # symbol), e.g. ["YapayZeka", "LLM", "HuggingFace", "MachineLearning", "DeepLearning", "NLP", "ComputerVision"]
+3. "body": A 2-paragraph Turkish blog post explanation for AI/ML practitioners and developers. First paragraph: What is this model and what problem does it solve? Second paragraph: Key features, performance, and use cases.
+
+IMPORTANT FOR HUGGINGFACE CONTENT:
+- Use Turkish AI/ML terminology
+- Mention model size/parameters if available
+- Highlight practical use cases
+- Note if it supports Turkish language
+- Compare to similar models if relevant
+
+Respond with ONLY valid JSON, no markdown code blocks."""
+
+        elif category == "astronomy":
             hashtag_instruction = '2. "hashtags": Exactly 3 relevant astronomy hashtags (without # symbol), e.g. ["Exoplanet", "Astronomi", "Astrofizik", "TESS", "Kepler", "JWST", "Yıldız", "Gezegen"]'
             audience_instruction = "astronomlar ve astrofizikçiler"
             extra_instruction = """
@@ -427,12 +513,39 @@ IMPORTANT FOR ASTRONOMY CONTENT:
 - Be accurate about scientific concepts
 - Target audience is astronomers and astrophysicists
 - Hashtags should be astronomy-specific"""
+            
+            prompt = f"""Analyze this GitHub repository and generate Turkish content for a Twitter post and blog article.
+
+Repository: {repo_data['full_name']}
+Description: {repo_data['description']}
+Language: {repo_data['language']}
+Stars: {repo_data['stars']}⭐
+Topics: {', '.join(repo_data['topics']) if repo_data['topics'] else 'None'}
+Category: {category}
+
+README Preview:
+{readme_preview}
+
+Generate a JSON response with EXACTLY these fields:
+1. "summary": A single, powerful Turkish sentence (max 180 characters) explaining exactly what this tool does. Be specific and impactful. No fluff, no generic descriptions.
+{hashtag_instruction}
+3. "body": A 2-paragraph Turkish blog post explanation for {audience_instruction}. First paragraph: What problem does it solve? Second paragraph: Key features and why they should care.
+
+IMPORTANT:
+- Write in natural, professional Turkish
+- Be specific about what the tool does
+- Avoid generic phrases
+- The summary must be punchy and Twitter-friendly
+{extra_instruction}
+
+Respond with ONLY valid JSON, no markdown code blocks."""
+
         else:
             hashtag_instruction = '2. "hashtags": Exactly 3 relevant hashtags (without # symbol), e.g. ["Python", "Geliştirici", "Araçlar"]'
             audience_instruction = "geliştiriciler"
             extra_instruction = ""
         
-        prompt = f"""Analyze this GitHub repository and generate Turkish content for a Twitter post and blog article.
+            prompt = f"""Analyze this GitHub repository and generate Turkish content for a Twitter post and blog article.
 
 Repository: {repo_data['full_name']}
 Description: {repo_data['description']}
@@ -692,6 +805,24 @@ Respond with ONLY valid JSON, no markdown code blocks."""
         # Escape quotes in summary for YAML
         escaped_summary = content['summary'].replace('"', '\\"')
         
+        # Category-specific footer
+        category = repo_data.get("category", "general")
+        if category == "huggingface":
+            downloads = repo_data.get('downloads', 0)
+            footer = f"""---
+
+❤️ **Likes:** {repo_data['stars']}  
+📥 **Downloads:** {downloads:,}  
+🤗 **Model:** [{repo_data['full_name']}]({repo_data['url']})
+"""
+        else:
+            footer = f"""---
+
+⭐ **Stars:** {repo_data['stars']}  
+💻 **Language:** {repo_data['language']}  
+🔗 **Repository:** [{repo_data['full_name']}]({repo_data['url']})
+"""
+        
         # Build markdown content (image shown via template, not in body)
         post_content = f"""---
 layout: post
@@ -704,12 +835,7 @@ date: {now_istanbul.strftime("%Y-%m-%d %H:%M:%S")} +0300
 
 {content['body']}
 
----
-
-⭐ **Stars:** {repo_data['stars']}  
-💻 **Language:** {repo_data['language']}  
-🔗 **Repository:** [{repo_data['full_name']}]({repo_data['url']})
-"""
+{footer}"""
         
         # Write file
         filepath.write_text(post_content, encoding='utf-8')
@@ -740,17 +866,29 @@ date: {now_istanbul.strftime("%Y-%m-%d %H:%M:%S")} +0300
         logger.info(f"🎯 Processing: {repo_url} (category: {category})")
         
         try:
-            # Fetch repository data
-            logger.info("📡 Fetching repository data...")
-            repo_data = self.fetch_repo_data(repo_url)
+            # Fetch data based on category
+            logger.info("📡 Fetching data...")
+            if category == "huggingface":
+                repo_data = self.fetch_hf_model_data(repo_url)
+            else:
+                repo_data = self.fetch_repo_data(repo_url)
             repo_data["category"] = category
             
             # ========================================
-            # SAFETY CHECK: Verify minimum stars
+            # SAFETY CHECK: Verify minimum stars/likes
             # ========================================
-            min_required = MIN_STARS_ASTRO if category == "astronomy" else MIN_STARS
+            if category == "huggingface":
+                min_required = MIN_LIKES_HF
+                star_label = "❤️"
+            elif category == "astronomy":
+                min_required = MIN_STARS_ASTRO
+                star_label = "⭐"
+            else:
+                min_required = MIN_STARS
+                star_label = "⭐"
+            
             if repo_data["stars"] < min_required:
-                logger.warning(f"⚠️  Repo has insufficient stars: {repo_data['stars']}⭐ < {min_required} required")
+                logger.warning(f"⚠️  Insufficient stars/likes: {repo_data['stars']}{star_label} < {min_required} required")
                 logger.warning(f"   Skipping {repo_data['full_name']} and removing from queue")
                 
                 # Remove from queue but DON'T add to history (so it could be reconsidered later if stars increase)
@@ -759,7 +897,7 @@ date: {now_istanbul.strftime("%Y-%m-%d %H:%M:%S")} +0300
                 
                 # Send notification about skipped repo
                 if TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID:
-                    skip_message = f"⏭️ *Repo Atlandı (Düşük Yıldız)*\n\n📦 {repo_data['full_name']}\n⭐ {repo_data['stars']} < {min_required} gerekli"
+                    skip_message = f"⏭️ *Atlandı (Düşük {'Like' if category == 'huggingface' else 'Yıldız'})*\n\n📦 {repo_data['full_name']}\n{star_label} {repo_data['stars']} < {min_required} gerekli"
                     try:
                         requests.post(
                             f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
@@ -771,7 +909,7 @@ date: {now_istanbul.strftime("%Y-%m-%d %H:%M:%S")} +0300
                 
                 return False
             
-            logger.info(f"✅ Star check passed: {repo_data['stars']}⭐ >= {min_required}")
+            logger.info(f"✅ Check passed: {repo_data['stars']}{star_label} >= {min_required}")
             
             # Extract hero image (returns dict with 'original' and 'social' paths, or None)
             logger.info("🖼️  Extracting hero image...")
