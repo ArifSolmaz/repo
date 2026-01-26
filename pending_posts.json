@@ -1,9 +1,9 @@
 {
   "https://github.com/putyy/res-downloader": {
     "category": "general",
-    "attempts": 1,
+    "attempts": 2,
     "first_attempt": "2026-01-26T18:01:01.188485+03:00",
-    "last_attempt": "2026-01-26T18:01:01.188485+03:00",
+    "last_attempt": "2026-01-26T18:30:45.025273+03:00",
     "twitter_done": false,
     "bluesky_done": true,
     "tweet_url": null,
