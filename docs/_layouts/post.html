@@ -112,6 +112,57 @@ layout: default
     color: var(--ink);
     font-weight: 500;
   }
+  
+  /* Share buttons */
+  .share-section {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--line);
+  }
+  
+  .share-label {
+    font-size: 0.8rem;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.75rem;
+  }
+  
+  .share-buttons {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+  
+  .share-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+  
+  .share-btn:hover {
+    opacity: 0.85;
+  }
+  
+  .share-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .share-btn.twitter {
+    background: #000;
+    color: #fff;
+  }
+  
+  .share-btn.bluesky {
+    background: #0085ff;
+    color: #fff;
+  }
 </style>
 
 <div class="wrap">
@@ -144,6 +195,23 @@ layout: default
     
     <div class="article-body">
       {{ content }}
+    </div>
+    
+    <!-- Share Section -->
+    <div class="share-section">
+      <div class="share-label">paylaş</div>
+      <div class="share-buttons">
+        <a href="https://twitter.com/intent/tweet?text={{ page.title | url_encode }}&url={{ page.url | absolute_url | url_encode }}" 
+           class="share-btn twitter" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          X'te Paylaş
+        </a>
+        <a href="https://bsky.app/intent/compose?text={{ page.title | url_encode }}%20{{ page.url | absolute_url | url_encode }}" 
+           class="share-btn bluesky" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 10.8c-1.087-2.114-4.046-6.053-6.798-7.995C2.566.944 1.561 1.266.902 1.565.139 1.908 0 3.08 0 3.768c0 .69.378 5.65.624 6.479.815 2.736 3.713 3.66 6.383 3.364.136-.02.275-.039.415-.056-.138.022-.276.04-.415.054-3.643.453-6.892 1.577-6.892 5.719 0 3.28 2.893 6.672 7.778 6.672 5.14 0 7.107-3.958 7.107-7.107V12c.003.347.012.874.012 1.07 0 3.149 1.967 7.107 7.107 7.107 4.885 0 7.778-3.392 7.778-6.672 0-4.142-3.249-5.266-6.892-5.719-.139-.014-.277-.032-.415-.054.14.017.279.036.415.056 2.67.296 5.568-.628 6.383-3.364.246-.829.624-5.789.624-6.479 0-.688-.139-1.86-.902-2.203-.659-.299-1.664-.621-4.3 1.24C16.046 4.747 13.087 8.686 12 10.8z"/></svg>
+          Bluesky'da Paylaş
+        </a>
+      </div>
     </div>
   </article>
 </div>

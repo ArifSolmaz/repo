@@ -26,6 +26,8 @@ from anthropic import Anthropic
 import tweepy
 from atproto import Client as BlueskyClient
 from dotenv import load_dotenv
+from PIL import Image
+import io
 
 # Load environment variables
 load_dotenv()
@@ -288,23 +290,30 @@ class AutoPoster:
                     logger.info(f"  ⏭️  Skipping SVG image (detected from content)")
                     continue
                 
-                # Generate filename
+                # Save ORIGINAL image for Jekyll site
                 ext = self._get_image_extension(content_type, img_url)
-                filename = f"{repo}-hero{ext}"
-                local_path = IMAGES_DIR / filename
+                original_filename = f"{repo}-hero{ext}"
+                original_path = IMAGES_DIR / original_filename
                 
-                # Save image
-                with open(local_path, 'wb') as f:
+                with open(original_path, 'wb') as f:
                     f.write(content)
+                logger.info(f"✅ Original image saved: {original_path}")
                 
-                logger.info(f"✅ Hero image saved: {local_path}")
+                # Create PROCESSED version for social media (JPG, compressed)
+                social_path = self._process_image_for_social(content, repo)
+                
+                # Return both paths
+                return {
+                    "original": str(original_path),  # For Jekyll
+                    "social": social_path  # For Twitter/Bluesky (may be None if processing fails)
+                }
                 return str(local_path)
                 
             except Exception as e:
                 logger.warning(f"⚠️  Failed to download {img_url[:50]}...: {e}")
                 continue
         
-        return None
+        return None  # Returns None if no image found, or dict with original/social paths
     
     def _get_image_extension(self, content_type: str, url: str) -> str:
         """Determine image file extension."""
@@ -326,6 +335,76 @@ class AutoPoster:
             return path_ext
         
         return '.png'  # Default
+    
+    def _process_image_for_social(self, content: bytes, repo_name: str) -> str | None:
+        """
+        Process image for social media compatibility:
+        - Convert webp/gif/bmp to jpg (Twitter doesn't support webp)
+        - Compress to under 900KB (Bluesky limit ~1MB)
+        - Handle animated GIFs (use first frame)
+        """
+        try:
+            # Open image with PIL
+            img = Image.open(io.BytesIO(content))
+            
+            # Handle animated GIF - use first frame
+            if hasattr(img, 'n_frames') and img.n_frames > 1:
+                logger.info(f"  🎞️  Animated image detected, using first frame")
+                img.seek(0)
+            
+            # Convert to RGB if necessary (handles RGBA, P mode, etc.)
+            if img.mode in ('RGBA', 'LA', 'P'):
+                # Create white background for transparency
+                background = Image.new('RGB', img.size, (255, 255, 255))
+                if img.mode == 'P':
+                    img = img.convert('RGBA')
+                background.paste(img, mask=img.split()[-1] if img.mode == 'RGBA' else None)
+                img = background
+            elif img.mode != 'RGB':
+                img = img.convert('RGB')
+            
+            # Resize if too large (max 2048px on longest side)
+            max_dimension = 2048
+            if max(img.size) > max_dimension:
+                ratio = max_dimension / max(img.size)
+                new_size = (int(img.size[0] * ratio), int(img.size[1] * ratio))
+                img = img.resize(new_size, Image.Resampling.LANCZOS)
+                logger.info(f"  📐 Resized to {new_size}")
+            
+            # Save as JPG with compression (different filename from original)
+            filename = f"{repo_name}-hero-social.jpg"
+            local_path = IMAGES_DIR / filename
+            
+            # Try different quality levels to get under 900KB
+            for quality in [90, 80, 70, 60, 50]:
+                buffer = io.BytesIO()
+                img.save(buffer, format='JPEG', quality=quality, optimize=True)
+                size_kb = buffer.tell() / 1024
+                
+                if size_kb < 900:
+                    # Save to file
+                    with open(local_path, 'wb') as f:
+                        f.write(buffer.getvalue())
+                    logger.info(f"✅ Hero image saved: {local_path} ({size_kb:.0f}KB, quality={quality})")
+                    return str(local_path)
+            
+            # If still too large, resize more aggressively
+            ratio = 0.7
+            new_size = (int(img.size[0] * ratio), int(img.size[1] * ratio))
+            img = img.resize(new_size, Image.Resampling.LANCZOS)
+            
+            buffer = io.BytesIO()
+            img.save(buffer, format='JPEG', quality=60, optimize=True)
+            with open(local_path, 'wb') as f:
+                f.write(buffer.getvalue())
+            
+            size_kb = buffer.tell() / 1024
+            logger.info(f"✅ Hero image saved (resized): {local_path} ({size_kb:.0f}KB)")
+            return str(local_path)
+            
+        except Exception as e:
+            logger.warning(f"⚠️  Failed to process image: {e}")
+            return None
     
     def generate_content(self, repo_data: dict) -> dict:
         """
@@ -694,25 +773,29 @@ date: {now_istanbul.strftime("%Y-%m-%d %H:%M:%S")} +0300
             
             logger.info(f"✅ Star check passed: {repo_data['stars']}⭐ >= {min_required}")
             
-            # Extract hero image
+            # Extract hero image (returns dict with 'original' and 'social' paths, or None)
             logger.info("🖼️  Extracting hero image...")
-            image_path = self.extract_hero_image(repo_data)
+            image_result = self.extract_hero_image(repo_data)
+            
+            # Separate paths for Jekyll (original) and social media (processed)
+            original_image = image_result.get("original") if image_result else None
+            social_image = image_result.get("social") if image_result else None
             
             # Generate content with Claude
             logger.info("🤖 Generating Turkish content...")
             content = self.generate_content(repo_data)
             
-            # Create Jekyll post FIRST (so we have the URL)
+            # Create Jekyll post FIRST with ORIGINAL image (so we have the URL)
             logger.info("📝 Creating Jekyll post...")
-            post_path, jekyll_url = self.create_jekyll_post(repo_data, content, image_path)
+            post_path, jekyll_url = self.create_jekyll_post(repo_data, content, original_image)
             
-            # Post to Twitter (now with Jekyll URL)
+            # Post to Twitter with PROCESSED image
             logger.info("🐦 Posting to Twitter...")
-            tweet_url = self.post_to_twitter(content, repo_url, image_path, jekyll_url)
+            tweet_url = self.post_to_twitter(content, repo_url, social_image, jekyll_url)
             
-            # Post to Bluesky (now with Jekyll URL)
+            # Post to Bluesky with PROCESSED image
             logger.info("🦋 Posting to Bluesky...")
-            bluesky_url = self.post_to_bluesky(content, repo_url, image_path, jekyll_url)
+            bluesky_url = self.post_to_bluesky(content, repo_url, social_image, jekyll_url)
             
             # Cleanup: Remove from queue, add to history
             queue.pop(0)
