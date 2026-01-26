@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """
-discovery.py - The Finder
-=========================
+discovery.py - The Finder (v2)
+==============================
 Discovers high-quality GitHub repositories from:
-1. GitHub Trending (high-star repos created in last 7 days)
-2. Hacker News (top stories with GitHub links)
-3. Astronomy/Astrophysics repositories
+1. GitHub Trending page (scraping - daily & weekly)
+2. GitHub Trending by language (Python, TypeScript, Rust, Go, etc.)
+3. Hacker News (top stories with GitHub links)
+4. Astronomy/Astrophysics repositories (10% chance)
 
 Filters them using Claude AI to ensure quality.
 """
@@ -19,6 +20,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 import requests
+from bs4 import BeautifulSoup
 from anthropic import Anthropic
 from dotenv import load_dotenv
 
@@ -34,26 +36,37 @@ logger = logging.getLogger(__name__)
 
 # Constants
 GITHUB_API_BASE = "https://api.github.com"
+GITHUB_TRENDING_URL = "https://github.com/trending"
 HN_API_BASE = "https://hacker-news.firebaseio.com/v0"
 QUEUE_FILE = Path("queue.txt")
 HISTORY_FILE = Path("history.txt")
-MIN_STARS = 50  # Minimum stars for general repos
-MIN_STARS_ASTRO = 3  # Very low threshold for astronomy repos (very niche field)
-MAX_CANDIDATES = 3  # Candidates to evaluate per run
+
+# Minimum stars (only for HN repos - trending already has quality)
+MIN_STARS_HN = 50
+MIN_STARS_ASTRO = 3
+
+# Languages to check for trending
+TRENDING_LANGUAGES = [
+    "",  # All languages
+    "python",
+    "typescript", 
+    "javascript",
+    "rust",
+    "go",
+    "swift",
+    "kotlin",
+]
+
+# Time ranges for trending
+TRENDING_RANGES = ["daily", "weekly"]
 
 # Astronomy search keywords
 ASTRO_KEYWORDS = [
-    # Core topics
     "exoplanet", "astronomy", "astrophysics",
-    # Missions & Telescopes
-    "TESS", "JWST", "Kepler", "CHEOPS", "Gaia", "PLATO", "Hubble",
-    # Methods
-    "radial velocity", "light curve", "spectroscopy", "photometry", "transit photometry",
-    # Python packages
-    "astropy", "lightkurve", "batman-package", "juliet", "emcee", "exoplanet",
-    # Concepts
-    "habitable zone", "TTV", "transit timing", "limb darkening", "starspot", 
-    "eclipsing binary", "stellar activity", "planetary transit"
+    "TESS", "JWST", "Kepler", "CHEOPS", "Gaia",
+    "radial velocity", "light curve", "spectroscopy",
+    "astropy", "lightkurve", "transit photometry",
+    "habitable zone", "stellar activity", "planetary transit"
 ]
 
 
@@ -69,6 +82,13 @@ class RepoDiscovery:
         }
         if self.github_token:
             self.headers["Authorization"] = f"Bearer {self.github_token}"
+        
+        # Web scraping headers
+        self.web_headers = {
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.5",
+        }
         
         # Load history to avoid duplicates
         self.history = self._load_history()
@@ -93,64 +113,120 @@ class RepoDiscovery:
     def _is_already_processed(self, url: str) -> bool:
         """Check if repo URL is in history or queue."""
         current_queue = self._load_queue()
-        return url in self.history or url in current_queue
+        # Check both with and without trailing slash
+        url_clean = url.rstrip('/')
+        return (url_clean in self.history or 
+                url_clean + '/' in self.history or
+                any(url_clean in q for q in current_queue))
     
     def discover_github_trending(self) -> list:
         """
-        Find trending repositories created in the last 7 days with high stars.
-        Uses GitHub Search API since there's no official trending API.
+        Scrape GitHub Trending page for popular repositories.
+        This is the main source of high-quality repos.
         """
-        logger.info("🔍 Searching GitHub for trending repositories...")
+        logger.info("🔥 Scraping GitHub Trending page...")
         
-        # Calculate date 7 days ago
-        week_ago = (datetime.now() - timedelta(days=7)).strftime("%Y-%m-%d")
+        repos = []
+        seen_urls = set()
         
-        # Search for repos created in last 7 days, sorted by stars
-        search_url = f"{GITHUB_API_BASE}/search/repositories"
-        params = {
-            "q": f"created:>{week_ago} stars:>{MIN_STARS}",
-            "sort": "stars",
-            "order": "desc",
-            "per_page": MAX_CANDIDATES
-        }
+        # Pick random language and time range for variety
+        languages_to_check = random.sample(TRENDING_LANGUAGES, min(3, len(TRENDING_LANGUAGES)))
+        time_range = random.choice(TRENDING_RANGES)
         
+        for language in languages_to_check:
+            url = f"{GITHUB_TRENDING_URL}/{language}?since={time_range}"
+            
+            try:
+                logger.info(f"  📡 Fetching: {url}")
+                response = requests.get(url, headers=self.web_headers, timeout=30)
+                response.raise_for_status()
+                
+                soup = BeautifulSoup(response.text, 'html.parser')
+                
+                # Find repo articles
+                articles = soup.select('article.Box-row')
+                
+                for article in articles[:10]:  # Top 10 per language
+                    try:
+                        # Get repo link
+                        h2 = article.select_one('h2 a')
+                        if not h2:
+                            continue
+                        
+                        repo_path = h2.get('href', '').strip('/')
+                        if not repo_path or '/' not in repo_path:
+                            continue
+                        
+                        repo_url = f"https://github.com/{repo_path}"
+                        
+                        if repo_url in seen_urls:
+                            continue
+                        seen_urls.add(repo_url)
+                        
+                        # Get description
+                        desc_elem = article.select_one('p.col-9')
+                        description = desc_elem.get_text(strip=True) if desc_elem else "No description"
+                        
+                        # Get stars
+                        stars_elem = article.select_one('a[href*="/stargazers"]')
+                        stars_text = stars_elem.get_text(strip=True) if stars_elem else "0"
+                        stars = self._parse_stars(stars_text)
+                        
+                        # Get language
+                        lang_elem = article.select_one('[itemprop="programmingLanguage"]')
+                        lang = lang_elem.get_text(strip=True) if lang_elem else "Unknown"
+                        
+                        # Get today's stars (if available)
+                        today_elem = article.select_one('span.d-inline-block.float-sm-right')
+                        today_stars = today_elem.get_text(strip=True) if today_elem else ""
+                        
+                        repos.append({
+                            "url": repo_url,
+                            "name": repo_path,
+                            "description": description,
+                            "stars": stars,
+                            "language": lang,
+                            "topics": [],
+                            "today_stars": today_stars,
+                            "source": f"trending/{language or 'all'}/{time_range}"
+                        })
+                        
+                    except Exception as e:
+                        logger.warning(f"  ⚠️ Failed to parse article: {e}")
+                        continue
+                
+            except requests.RequestException as e:
+                logger.warning(f"  ⚠️ Failed to fetch {url}: {e}")
+                continue
+        
+        logger.info(f"✅ Found {len(repos)} trending repositories")
+        return repos
+    
+    def _parse_stars(self, stars_text: str) -> int:
+        """Parse star count from text like '1.2k' or '45,123'."""
+        stars_text = stars_text.lower().replace(',', '').strip()
         try:
-            response = requests.get(search_url, headers=self.headers, params=params, timeout=30)
-            response.raise_for_status()
-            data = response.json()
-            
-            repos = []
-            for item in data.get("items", []):
-                repos.append({
-                    "url": item["html_url"],
-                    "name": item["full_name"],
-                    "description": item.get("description") or "No description provided",
-                    "stars": item["stargazers_count"],
-                    "language": item.get("language") or "Unknown",
-                    "topics": item.get("topics", [])
-                })
-            
-            logger.info(f"✅ Found {len(repos)} trending repositories from GitHub")
-            return repos
-            
-        except requests.RequestException as e:
-            logger.error(f"❌ GitHub API error: {e}")
-            return []
+            if 'k' in stars_text:
+                return int(float(stars_text.replace('k', '')) * 1000)
+            elif 'm' in stars_text:
+                return int(float(stars_text.replace('m', '')) * 1000000)
+            else:
+                return int(stars_text)
+        except (ValueError, AttributeError):
+            return 0
     
     def discover_hackernews(self) -> list:
         """
         Scrape Hacker News top stories for GitHub repository links.
-        Now includes MIN_STARS filter to avoid low-quality repos.
         """
         logger.info("🔍 Scanning Hacker News for GitHub projects...")
         
         repos = []
         
         try:
-            # Get top story IDs
             response = requests.get(f"{HN_API_BASE}/topstories.json", timeout=30)
             response.raise_for_status()
-            story_ids = response.json()[:50]  # Check top 50 stories
+            story_ids = response.json()[:30]  # Check top 30 stories
             
             github_pattern = re.compile(r'https?://github\.com/([^/]+/[^/]+)/?')
             
@@ -170,20 +246,20 @@ class RepoDiscovery:
                     
                     if match:
                         repo_path = match.group(1)
-                        # Fetch repo details from GitHub API
                         repo_info = self._fetch_repo_info(repo_path)
                         if repo_info:
-                            # FIX: Apply MIN_STARS filter to HN repos too!
-                            if repo_info["stars"] >= MIN_STARS:
+                            if repo_info["stars"] >= MIN_STARS_HN:
+                                repo_info["source"] = "hackernews"
+                                repo_info["hn_points"] = story.get("score", 0)
                                 repos.append(repo_info)
-                                logger.info(f"  ✅ HN repo accepted: {repo_info['name']} ({repo_info['stars']}⭐)")
+                                logger.info(f"  ✅ HN: {repo_info['name']} ({repo_info['stars']}⭐, {repo_info['hn_points']} points)")
                             else:
-                                logger.info(f"  ⏭️  HN repo skipped (low stars): {repo_info['name']} ({repo_info['stars']}⭐ < {MIN_STARS})")
+                                logger.info(f"  ⏭️ HN skipped (low stars): {repo_info['name']} ({repo_info['stars']}⭐)")
                             
                 except (requests.RequestException, json.JSONDecodeError):
                     continue
             
-            logger.info(f"✅ Found {len(repos)} GitHub projects from Hacker News (filtered by MIN_STARS={MIN_STARS})")
+            logger.info(f"✅ Found {len(repos)} GitHub projects from Hacker News")
             return repos
             
         except requests.RequestException as e:
@@ -220,6 +296,12 @@ class RepoDiscovery:
         Use Claude AI to determine if the repository serves the "greater good".
         Filters out meme coins, niche backend libraries, and low-value projects.
         """
+        # For trending repos with very high stars, be more lenient
+        min_stars_for_auto_approve = 5000
+        if repo.get('stars', 0) >= min_stars_for_auto_approve:
+            logger.info(f"  ✅ Auto-approved (high stars): {repo['name']} ({repo['stars']}⭐)")
+            return True
+        
         prompt = f"""Analyze this GitHub repository and determine if it would be useful and interesting for a general developer audience.
 
 Repository: {repo['name']}
@@ -227,6 +309,7 @@ Description: {repo['description']}
 Language: {repo['language']}
 Stars: {repo['stars']}
 Topics: {', '.join(repo['topics']) if repo['topics'] else 'None'}
+Source: {repo.get('source', 'unknown')}
 
 Criteria for YES:
 - Developer tools that boost productivity
@@ -234,13 +317,17 @@ Criteria for YES:
 - Open source tools that serve the "greater good"
 - Educational or learning resources
 - Innovative projects that solve real problems
+- AI/ML tools and models
+- CLI tools and utilities
+- Web frameworks and tools
 
 Criteria for NO:
-- Cryptocurrency/meme coins/NFT projects
-- Highly niche backend libraries with limited appeal
+- Cryptocurrency/meme coins/NFT projects (unless genuinely useful dev tools)
+- Highly niche backend libraries with very limited appeal
 - Abandoned or low-quality projects
 - Spam or self-promotional repos
 - Projects with unclear purpose
+- Personal config files or dotfiles
 
 Answer with ONLY "YES" or "NO" - nothing else."""
 
@@ -264,7 +351,6 @@ Answer with ONLY "YES" or "NO" - nothing else."""
     def is_astronomy_repo(self, repo: dict) -> bool:
         """
         STRICT verification that a repository is genuinely about astronomy/astrophysics.
-        This prevents false positives like 'transit' (deployment) or 'stellar' (performance).
         """
         prompt = f"""You are an expert astronomer. Analyze this GitHub repository and determine if it is GENUINELY related to astronomy, astrophysics, or space science.
 
@@ -283,7 +369,6 @@ STRICT Criteria for YES (must be genuinely astronomical):
 - Orbital mechanics for celestial bodies
 - Telescope control or astronomical instrumentation
 - Astronomical catalogs or databases
-- Educational resources specifically about astronomy/astrophysics
 
 STRICT Criteria for NO:
 - "Transit" referring to software deployment or transportation
@@ -292,7 +377,6 @@ STRICT Criteria for NO:
 - "Orbit" referring to software architecture patterns
 - General physics that's not specifically astronomical
 - Space-themed games or entertainment
-- Any project that uses astronomical terms metaphorically
 
 Be VERY strict. When in doubt, answer NO.
 
@@ -318,15 +402,16 @@ Answer with ONLY "YES" or "NO" - nothing else."""
     def discover_astronomy_repos(self) -> list:
         """
         Search GitHub for astronomy and astrophysics repositories.
-        Uses multiple keyword searches to find relevant projects.
         """
         logger.info("🔭 Searching for astronomy/astrophysics repositories...")
         
         repos = []
         seen_urls = set()
         
-        # Search with each keyword
-        for keyword in ASTRO_KEYWORDS[:15]:  # Search more keywords
+        # Pick random keywords
+        keywords_to_check = random.sample(ASTRO_KEYWORDS, min(5, len(ASTRO_KEYWORDS)))
+        
+        for keyword in keywords_to_check:
             search_url = f"{GITHUB_API_BASE}/search/repositories"
             params = {
                 "q": f"{keyword} in:name,description,readme stars:>={MIN_STARS_ASTRO}",
@@ -356,7 +441,8 @@ Answer with ONLY "YES" or "NO" - nothing else."""
                         "stars": item["stargazers_count"],
                         "language": item.get("language") or "Unknown",
                         "topics": item.get("topics", []),
-                        "category": "astronomy"  # Tag as astronomy
+                        "category": "astronomy",
+                        "source": "astronomy_search"
                     })
                     
             except requests.RequestException:
@@ -372,70 +458,70 @@ Answer with ONLY "YES" or "NO" - nothing else."""
         """
         logger.info("🚀 Starting repository discovery pipeline...")
         
-        # Collect candidates from all sources
         candidates = []
         
-        # Astronomy: Only 10% of runs (roughly 4-5 per day out of 48)
-        if random.random() < 0.10:
-            logger.info("🔭 This run includes astronomy search (10% chance)")
-            astro_repos = self.discover_astronomy_repos()
-            candidates.extend(astro_repos)
-        else:
-            logger.info("⏭️  Skipping astronomy search this run (90% of runs)")
-        
-        # GitHub Trending (general)
-        github_repos = self.discover_github_trending()
-        for repo in github_repos:
+        # 1. GitHub Trending (main source)
+        trending_repos = self.discover_github_trending()
+        for repo in trending_repos:
             repo["category"] = "general"
-        candidates.extend(github_repos)
+        candidates.extend(trending_repos)
         
-        # Hacker News (general)
+        # 2. Hacker News
         hn_repos = self.discover_hackernews()
         for repo in hn_repos:
             repo["category"] = "general"
         candidates.extend(hn_repos)
         
+        # 3. Astronomy (10% chance)
+        if random.random() < 0.10:
+            logger.info("🔭 This run includes astronomy search (10% chance)")
+            astro_repos = self.discover_astronomy_repos()
+            candidates.extend(astro_repos)
+        else:
+            logger.info("⏭️ Skipping astronomy search this run")
+        
         # Deduplicate by URL
         seen_urls = set()
         unique_candidates = []
         for repo in candidates:
-            if repo["url"] not in seen_urls:
-                seen_urls.add(repo["url"])
+            url_clean = repo["url"].rstrip('/')
+            if url_clean not in seen_urls:
+                seen_urls.add(url_clean)
                 unique_candidates.append(repo)
+        
+        # Shuffle for variety
+        random.shuffle(unique_candidates)
         
         logger.info(f"📊 Total unique candidates: {len(unique_candidates)}")
         
         # Filter and queue
         new_repos = []
         current_queue = self._load_queue()
+        max_to_add = 3  # Add up to 3 per run for more content
         
         for repo in unique_candidates:
+            if len(new_repos) >= max_to_add:
+                logger.info(f"📦 Queue limit reached ({max_to_add} repos)")
+                break
+            
             # Skip if already processed
             if self._is_already_processed(repo["url"]):
-                logger.info(f"  ⏭️  Skipping (already processed): {repo['name']}")
+                logger.info(f"  ⏭️ Skipping (already processed): {repo['name']}")
                 continue
             
             category = repo.get("category", "general")
             
-            # Apply appropriate filter based on category
+            # Apply appropriate filter
             if category == "astronomy":
-                # STRICT astronomy verification
                 logger.info(f"🔭 Evaluating astronomy repo: {repo['name']} ({repo['stars']}⭐)")
                 if self.is_astronomy_repo(repo):
-                    # Save with category marker
                     new_repos.append(f"{repo['url']}|astronomy")
-                    logger.info(f"  ✨ Added astronomy repo to queue: {repo['name']}")
+                    logger.info(f"  ✨ Added astronomy repo: {repo['name']}")
             else:
-                # General "greater good" filter
-                logger.info(f"🤖 Evaluating: {repo['name']} ({repo['stars']}⭐)")
+                logger.info(f"🤖 Evaluating: {repo['name']} ({repo['stars']}⭐) [{repo.get('source', 'unknown')}]")
                 if self.is_greater_good(repo):
                     new_repos.append(f"{repo['url']}|general")
                     logger.info(f"  ✨ Added to queue: {repo['name']}")
-            
-            # Limit queue additions per run (1 per run = 48/day)
-            if len(new_repos) >= 1:
-                logger.info("📦 Queue limit reached for this run")
-                break
         
         # Update queue
         if new_repos:
@@ -443,7 +529,11 @@ Answer with ONLY "YES" or "NO" - nothing else."""
             self._save_queue(updated_queue)
             logger.info(f"✅ Added {len(new_repos)} new repos to queue")
         else:
-            logger.info("ℹ️  No new repos added to queue")
+            logger.info("ℹ️ No new repos added to queue")
+        
+        # Log final stats
+        final_queue = self._load_queue()
+        logger.info(f"📋 Queue now has {len(final_queue)} items")
         
         return len(new_repos)
 
@@ -457,6 +547,8 @@ def main():
         return 0
     except Exception as e:
         logger.error(f"❌ Discovery failed: {e}")
+        import traceback
+        traceback.print_exc()
         return 1
 
 
