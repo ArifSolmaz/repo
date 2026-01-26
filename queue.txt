@@ -1,6 +1,2 @@
 https://github.com/clawdbot/clawdbot|general
-https://github.com/clawdbot/clawdbot|general
-https://github.com/clawdbot/clawdbot|general
-https://github.com/clawdbot/clawdbot|general
-https://github.com/clawdbot/clawdbot|general
 https://github.com/Jcparkyn/herd|general
