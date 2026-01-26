@@ -50,6 +50,10 @@ ISTANBUL_TZ = timezone(timedelta(hours=3))
 # Site URL for Jekyll
 SITE_BASE_URL = "https://arifsolmaz.github.io/turkish-repo-showcase"
 
+# Minimum stars threshold (safety check before posting)
+MIN_STARS = 50
+MIN_STARS_ASTRO = 3
+
 # Telegram settings
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
@@ -502,7 +506,7 @@ Respond with ONLY valid JSON, no markdown code blocks."""
     def post_to_bluesky(self, content: dict, repo_url: str, image_path: str | None, jekyll_url: str) -> str | None:
         """
         Post to Bluesky with image.
-        Now includes first paragraph and links to Jekyll site (same format as Twitter).
+        Now includes first paragraph and links to Jekyll site (SAME FORMAT AS TWITTER).
         Returns post URL or None.
         """
         if not BLUESKY_HANDLE or not BLUESKY_APP_PASSWORD:
@@ -658,6 +662,34 @@ date: {now_istanbul.strftime("%Y-%m-%d %H:%M:%S")} +0300
             logger.info("📡 Fetching repository data...")
             repo_data = self.fetch_repo_data(repo_url)
             repo_data["category"] = category
+            
+            # ========================================
+            # SAFETY CHECK: Verify minimum stars
+            # ========================================
+            min_required = MIN_STARS_ASTRO if category == "astronomy" else MIN_STARS
+            if repo_data["stars"] < min_required:
+                logger.warning(f"⚠️  Repo has insufficient stars: {repo_data['stars']}⭐ < {min_required} required")
+                logger.warning(f"   Skipping {repo_data['full_name']} and removing from queue")
+                
+                # Remove from queue but DON'T add to history (so it could be reconsidered later if stars increase)
+                queue.pop(0)
+                self._save_queue(queue)
+                
+                # Send notification about skipped repo
+                if TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID:
+                    skip_message = f"⏭️ *Repo Atlandı (Düşük Yıldız)*\n\n📦 {repo_data['full_name']}\n⭐ {repo_data['stars']} < {min_required} gerekli"
+                    try:
+                        requests.post(
+                            f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
+                            json={"chat_id": TELEGRAM_CHAT_ID, "text": skip_message, "parse_mode": "Markdown"},
+                            timeout=10
+                        )
+                    except:
+                        pass
+                
+                return False
+            
+            logger.info(f"✅ Star check passed: {repo_data['stars']}⭐ >= {min_required}")
             
             # Extract hero image
             logger.info("🖼️  Extracting hero image...")
