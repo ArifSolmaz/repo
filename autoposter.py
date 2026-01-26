@@ -74,6 +74,59 @@ BLUESKY_APP_PASSWORD = os.getenv("BLUESKY_APP_PASSWORD")
 IMAGES_DIR.mkdir(parents=True, exist_ok=True)
 POSTS_DIR.mkdir(parents=True, exist_ok=True)
 
+# Image cleanup settings
+IMAGE_SIZE_THRESHOLD_MB = 1  # Delete images larger than this
+IMAGE_AGE_THRESHOLD_DAYS = 30  # Delete after this many days
+
+
+def cleanup_old_large_images():
+    """
+    Delete images larger than 1MB that are older than 30 days.
+    Helps keep repository size manageable.
+    """
+    if not IMAGES_DIR.exists():
+        return 0
+    
+    now = datetime.now()
+    deleted_count = 0
+    total_freed_mb = 0
+    
+    for image_path in IMAGES_DIR.iterdir():
+        if not image_path.is_file():
+            continue
+        
+        # Check if it's an image file
+        if image_path.suffix.lower() not in ['.png', '.jpg', '.jpeg', '.gif', '.webp']:
+            continue
+        
+        try:
+            # Get file stats
+            stat = image_path.stat()
+            size_mb = stat.st_size / (1024 * 1024)
+            
+            # Skip if under threshold
+            if size_mb < IMAGE_SIZE_THRESHOLD_MB:
+                continue
+            
+            # Check age
+            modified_time = datetime.fromtimestamp(stat.st_mtime)
+            age_days = (now - modified_time).days
+            
+            if age_days >= IMAGE_AGE_THRESHOLD_DAYS:
+                logger.info(f"🗑️  Deleting old large image: {image_path.name} ({size_mb:.1f}MB, {age_days} days old)")
+                image_path.unlink()
+                deleted_count += 1
+                total_freed_mb += size_mb
+                
+        except Exception as e:
+            logger.warning(f"⚠️  Failed to process {image_path.name}: {e}")
+            continue
+    
+    if deleted_count > 0:
+        logger.info(f"✅ Cleanup complete: deleted {deleted_count} images, freed {total_freed_mb:.1f}MB")
+    
+    return deleted_count
+
 
 def send_telegram_notification(repo_name: str, summary: str, repo_url: str, tweet_url: str = None, bluesky_url: str = None, category: str = "general", jekyll_url: str = None):
     """Send a Telegram notification when a new repo is posted."""
@@ -1106,6 +1159,11 @@ date: {now_istanbul.strftime("%Y-%m-%d %H:%M:%S")} +0300
 def main():
     """Entry point for autoposter script."""
     try:
+        # Run cleanup for old large images (>1MB, >30 days)
+        logger.info("🧹 Running image cleanup...")
+        cleanup_old_large_images()
+        
+        # Process posts
         poster = AutoPoster()
         success = poster.process_one()
         return 0 if success else 1
