@@ -18,3 +18,4 @@ https://github.com/OpenExoplanetCatalogue/oec_gzip
 https://github.com/quaadgras/graphics.gd
 https://github.com/joel-jeremy/emissary
 https://github.com/storytold/artcraft
+https://github.com/supermemoryai/supermemory
