@@ -50,7 +50,7 @@ POSTS_DIR = DOCS_DIR / "_posts"
 ISTANBUL_TZ = timezone(timedelta(hours=3))
 
 # Site URL for Jekyll
-SITE_BASE_URL = "https://arifsolmaz.github.io/turkish-repo-showcase"
+SITE_BASE_URL = "https://arifsolmaz.github.io/depo"
 
 # Minimum stars threshold (safety check before posting)
 MIN_STARS = 50
@@ -402,10 +402,11 @@ class AutoPoster:
             # Open image with PIL
             img = Image.open(io.BytesIO(content))
             
-            # Handle animated GIF - use first frame
+            # Handle animated GIF - use LAST frame (first frame is often blank/logo intro)
             if hasattr(img, 'n_frames') and img.n_frames > 1:
-                logger.info(f"  🎞️  Animated image detected, using first frame")
-                img.seek(0)
+                last_frame_idx = img.n_frames - 1
+                logger.info(f"  🎞️  Animated image detected ({img.n_frames} frames), using last frame ({last_frame_idx})")
+                img.seek(last_frame_idx)
             
             # Convert to RGB if necessary (handles RGBA, P mode, etc.)
             if img.mode in ('RGBA', 'LA', 'P'):
