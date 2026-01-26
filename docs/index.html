@@ -63,6 +63,52 @@ title: Home
     flex-wrap: wrap;
   }
   
+  /* Single full-width image post */
+  .single-image-post {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--line);
+  }
+  
+  .single-image-post-image {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    background: var(--paper-dark);
+  }
+  
+  .single-image-post-date {
+    font-size: 0.7rem;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.4rem;
+  }
+  
+  .single-image-post-title {
+    font-family: 'Newsreader', Georgia, serif;
+    font-size: 1.3rem;
+    font-weight: 500;
+    line-height: 1.4;
+    margin-bottom: 0.6rem;
+  }
+  
+  .single-image-post-title a {
+    text-decoration: none;
+    color: var(--ink);
+  }
+  
+  .single-image-post-title a:hover { color: var(--pop); }
+  
+  .single-image-post-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  
   /* Grid for posts with images */
   .posts-grid {
     display: grid;
@@ -225,6 +271,10 @@ title: Home
       font-size: 1.4rem;
     }
     
+    .single-image-post-title {
+      font-size: 1.2rem;
+    }
+    
     .posts-grid {
       gap: 1rem;
     }
@@ -269,6 +319,19 @@ title: Home
     
     .featured-meta {
       gap: 0.75rem;
+    }
+    
+    .single-image-post {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+    }
+    
+    .single-image-post-image {
+      border-radius: 6px;
+    }
+    
+    .single-image-post-title {
+      font-size: 1.1rem;
     }
     
     /* Single column grid */
@@ -345,6 +408,10 @@ title: Home
       font-size: 1.1rem;
     }
     
+    .single-image-post-title {
+      font-size: 1rem;
+    }
+    
     .post-card-image {
       width: 100px;
       min-width: 100px;
@@ -415,7 +482,7 @@ title: Home
       {% assign posts_with_image = site.posts | where_exp: "post", "post.image" %}
       {% assign posts_without_image = site.posts | where_exp: "post", "post.image == nil" %}
       
-      <!-- Grid: Posts with images (excluding first) -->
+      <!-- Remaining posts with images (excluding first) -->
       {% assign remaining_with_image = "" | split: "" %}
       {% for post in posts_with_image %}
         {% unless post.url == first_post.url %}
@@ -423,38 +490,67 @@ title: Home
         {% endunless %}
       {% endfor %}
       
-      {% if remaining_with_image.size > 0 %}
-      <div class="posts-grid">
-        {% for post in remaining_with_image %}
-        <article class="post-card">
-          <a href="{{ post.url | relative_url }}">
-            <img src="{{ post.image | relative_url }}" alt="{{ post.title }}" class="post-card-image" loading="lazy">
+      {% if remaining_with_image.size == 1 %}
+        <!-- Single image post: full width -->
+        {% assign single_post = remaining_with_image[0] %}
+        <article class="single-image-post">
+          <a href="{{ single_post.url | relative_url }}">
+            <img src="{{ single_post.image | relative_url }}" alt="{{ single_post.title }}" class="single-image-post-image" loading="lazy">
           </a>
           
-          <div class="post-card-body">
-            <div class="post-card-date">{{ post.date | date: "%d %b %Y" }}</div>
-            
-            <h3 class="post-card-title">
-              <a href="{{ post.url | relative_url }}">{{ post.title | truncate: 100 }}</a>
-            </h3>
-            
-            <div class="post-card-meta">
-              {% if post.tags.size > 0 %}
-              <div class="post-tags">
-                {% for tag in post.tags limit:2 %}
-                <span class="tag">{{ tag }}</span>
-                {% endfor %}
-              </div>
-              {% endif %}
-              
-              {% if post.repo_url %}
-              <a href="{{ post.repo_url }}" class="post-link" target="_blank">github →</a>
-              {% endif %}
+          <div class="single-image-post-date">{{ single_post.date | date: "%d %b %Y" }}</div>
+          
+          <h3 class="single-image-post-title">
+            <a href="{{ single_post.url | relative_url }}">{{ single_post.title }}</a>
+          </h3>
+          
+          <div class="single-image-post-meta">
+            {% if single_post.tags.size > 0 %}
+            <div class="post-tags">
+              {% for tag in single_post.tags limit:3 %}
+              <span class="tag">{{ tag }}</span>
+              {% endfor %}
             </div>
+            {% endif %}
+            
+            {% if single_post.repo_url %}
+            <a href="{{ single_post.repo_url }}" class="post-link" target="_blank">github →</a>
+            {% endif %}
           </div>
         </article>
-        {% endfor %}
-      </div>
+      {% elsif remaining_with_image.size > 1 %}
+        <!-- Multiple image posts: grid -->
+        <div class="posts-grid">
+          {% for post in remaining_with_image %}
+          <article class="post-card">
+            <a href="{{ post.url | relative_url }}">
+              <img src="{{ post.image | relative_url }}" alt="{{ post.title }}" class="post-card-image" loading="lazy">
+            </a>
+            
+            <div class="post-card-body">
+              <div class="post-card-date">{{ post.date | date: "%d %b %Y" }}</div>
+              
+              <h3 class="post-card-title">
+                <a href="{{ post.url | relative_url }}">{{ post.title | truncate: 100 }}</a>
+              </h3>
+              
+              <div class="post-card-meta">
+                {% if post.tags.size > 0 %}
+                <div class="post-tags">
+                  {% for tag in post.tags limit:2 %}
+                  <span class="tag">{{ tag }}</span>
+                  {% endfor %}
+                </div>
+                {% endif %}
+                
+                {% if post.repo_url %}
+                <a href="{{ post.repo_url }}" class="post-link" target="_blank">github →</a>
+                {% endif %}
+              </div>
+            </div>
+          </article>
+          {% endfor %}
+        </div>
       {% endif %}
       
       <!-- List: Posts without images (excluding first) -->
