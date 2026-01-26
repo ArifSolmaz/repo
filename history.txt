@@ -26,3 +26,4 @@ https://github.com/remotion-dev/remotion
 https://github.com/iOfficeAI/AionUi
 https://github.com/obra/superpowers
 https://github.com/putyy/res-downloader
+https://github.com/evcc-io/evcc
