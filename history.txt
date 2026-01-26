@@ -5,3 +5,4 @@ https://github.com/op7418/Humanizer-zh
 https://github.com/lukilabs/craft-agents-oss
 https://github.com/remotion-dev/skills
 https://github.com/op7418/Youtube-clipper-skill
+https://github.com/tldev/posturr
