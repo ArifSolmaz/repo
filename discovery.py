@@ -93,7 +93,9 @@ class RepoDiscovery:
     def _is_already_processed(self, url: str) -> bool:
         """Check if repo URL is in history or queue."""
         current_queue = self._load_queue()
-        return url in self.history or url in current_queue
+        # FIX: Extract just URLs from queue entries (format: url|category)
+        queue_urls = [entry.split('|')[0] for entry in current_queue]
+        return url in self.history or url in queue_urls
     
     def discover_github_trending(self) -> list:
         """
