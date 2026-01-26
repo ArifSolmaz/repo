@@ -1,12 +1,930 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="robots" content="noindex" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
   <title>keşif - Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fafaf9;
+      --surface: #ffffff;
+      --border: #e5e5e3;
+      --text: #1a1a1a;
+      --text-muted: #666;
+      --accent: #c4410a;
+      --success: #16a34a;
+      --warning: #d97706;
+      --error: #dc2626;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    h1 {
+      font-family: 'Newsreader', Georgia, serif;
+      font-size: 1.75rem;
+      font-weight: 500;
+    }
+
+    .btn {
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: var(--text);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: #333;
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: #fff;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-outline:hover {
+      background: var(--surface);
+      border-color: var(--text);
+    }
+
+    .btn-small {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.8rem;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .stats {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      background: var(--surface);
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .search-box {
+      margin-bottom: 1.5rem;
+    }
+
+    .search-box input {
+      width: 100%;
+      max-width: 400px;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--surface);
+      color: var(--text);
+      font-size: 0.9rem;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .posts-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .post-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .post-item:hover {
+      border-color: var(--accent);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .post-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .post-title {
+      font-family: 'Newsreader', Georgia, serif;
+      font-weight: 500;
+      font-size: 1rem;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .post-date {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .post-meta {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .tag {
+      font-size: 0.7rem;
+      padding: 0.2rem 0.5rem;
+      background: var(--bg);
+      border-radius: 4px;
+      color: var(--text-muted);
+    }
+
+    .has-image {
+      font-size: 0.7rem;
+      padding: 0.2rem 0.5rem;
+      background: rgba(196, 65, 10, 0.1);
+      border-radius: 4px;
+      color: var(--accent);
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      z-index: 1000;
+      overflow-y: auto;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--surface);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 700px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background: var(--surface);
+      z-index: 10;
+    }
+
+    .modal-header h2 {
+      font-family: 'Newsreader', Georgia, serif;
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .modal-close:hover {
+      color: var(--text);
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+    }
+
+    .modal-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      position: sticky;
+      bottom: 0;
+      background: var(--surface);
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      color: var(--text-muted);
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 0.9rem;
+      font-family: inherit;
+    }
+
+    .form-group textarea {
+      min-height: 200px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .form-hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.3rem;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      padding: 1rem 1.5rem;
+      background: var(--text);
+      color: #fff;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      opacity: 0;
+      transform: translateY(1rem);
+      transition: all 0.3s;
+      z-index: 2000;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .toast.success { background: var(--success); }
+    .toast.error { background: var(--error); }
+    .toast.warning { background: var(--warning); }
+
+    /* Access denied */
+    .access-denied {
+      display: none;
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+
+    .access-denied h2 {
+      font-family: 'Newsreader', Georgia, serif;
+      margin-bottom: 1rem;
+    }
+
+    .access-denied p {
+      color: var(--text-muted);
+    }
+
+    #adminPanel {
+      display: none;
+    }
+
+    /* Unsaved indicator */
+    .unsaved-badge {
+      display: none;
+      background: var(--warning);
+      color: #fff;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 4px;
+      margin-left: 0.5rem;
+    }
+
+    /* Token modal */
+    .token-info {
+      background: var(--bg);
+      padding: 1rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+
+    .token-info code {
+      background: var(--surface);
+      padding: 0.15rem 0.4rem;
+      border-radius: 3px;
+      font-size: 0.8rem;
+    }
+
+    .token-info ol {
+      margin-left: 1.25rem;
+      margin-top: 0.5rem;
+    }
+
+    .token-info li {
+      margin-bottom: 0.25rem;
+    }
+
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 600px) {
+      body { padding: 1rem; }
+      header { flex-direction: column; align-items: flex-start; }
+      .toolbar { width: 100%; }
+      .stats { flex-direction: column; gap: 0.75rem; }
+      .stat { padding: 0.75rem 1rem; }
+    }
+  </style>
 </head>
 <body>
-  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  <div class="container">
+    <!-- Access Denied -->
+    <div class="access-denied" id="accessDenied">
+      <h2>🔒 Erişim Gerekli</h2>
+      <p>Bu sayfaya erişmek için doğru anahtar gerekli.</p>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="adminPanel">
+      <header>
+        <h1>◈ keşif admin <span class="unsaved-badge" id="unsavedBadge">kaydedilmedi</span></h1>
+        <div class="toolbar">
+          <button class="btn btn-outline" onclick="loadPosts()">↻ Yenile</button>
+          <button class="btn btn-outline" onclick="showTokenModal()">🔑 Token</button>
+          <button class="btn btn-success" onclick="saveToGitHub()">💾 GitHub'a Kaydet</button>
+        </div>
+      </header>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-value" id="totalCount">-</div>
+          <div class="stat-label">Toplam Post</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="imageCount">-</div>
+          <div class="stat-label">Görselli</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="editedCount">0</div>
+          <div class="stat-label">Düzenlenen</div>
+        </div>
+      </div>
+
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Post ara..." oninput="filterPosts()">
+      </div>
+
+      <div class="posts-list" id="postsList">
+        <div class="loading">Yükleniyor...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div class="modal-overlay" id="editModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>📝 Post Düzenle</h2>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Başlık (Özet)</label>
+          <textarea id="editTitle" rows="3"></textarea>
+          <div class="form-hint">Twitter/Bluesky'da görünen özet cümlesi</div>
+        </div>
+        <div class="form-group">
+          <label>İçerik</label>
+          <textarea id="editBody" rows="8"></textarea>
+          <div class="form-hint">Markdown formatında ana açıklama</div>
+        </div>
+        <div class="form-group">
+          <label>Etiketler</label>
+          <input type="text" id="editTags" placeholder="Python, AI, Araçlar">
+          <div class="form-hint">Virgülle ayırın</div>
+        </div>
+        <div class="form-group">
+          <label>GitHub URL</label>
+          <input type="text" id="editRepoUrl" placeholder="https://github.com/...">
+        </div>
+        <div class="form-group">
+          <label>Görsel (opsiyonel)</label>
+          <input type="text" id="editImage" placeholder="/assets/images/...">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal()">İptal</button>
+        <button class="btn btn-primary" onclick="saveEdit()">💾 Kaydet</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Token Modal -->
+  <div class="modal-overlay" id="tokenModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>🔑 GitHub Token</h2>
+        <button class="modal-close" onclick="closeTokenModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="token-info">
+          <strong>Token nasıl alınır:</strong>
+          <ol>
+            <li>GitHub → Settings → Developer settings</li>
+            <li>Personal access tokens → Tokens (classic)</li>
+            <li>Generate new token (classic)</li>
+            <li><code>repo</code> scope'unu seçin</li>
+            <li>Token'ı kopyalayın</li>
+          </ol>
+        </div>
+        <div class="form-group">
+          <label>Personal Access Token</label>
+          <input type="password" id="githubToken" placeholder="ghp_...">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeTokenModal()">İptal</button>
+        <button class="btn btn-primary" onclick="saveToken()">Kaydet</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <span id="toastMessage"></span>
+  </div>
+
+  <script>
+    // Config
+    const GITHUB_REPO = 'arifsolmaz/turkish-repo-showcase';
+    const GITHUB_BRANCH = 'main';
+    const POSTS_PATH = 'docs/_posts';
+    
+    // Access key hash (change this to your own)
+    // To generate: console.log(simpleHash("your-secret-phrase"))
+    const EXPECTED_HASH = "4a8c5f2b";  // Hash of "kesif-admin-2026"
+
+    let postsData = [];
+    let originalPosts = [];
+    let editingIndex = -1;
+    let editedCount = 0;
+
+    // Simple hash
+    function simpleHash(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+      }
+      return Math.abs(hash).toString(16);
+    }
+
+    // Check access
+    function checkAccess() {
+      const urlKey = window.location.hash.slice(1);
+      
+      if (!urlKey) {
+        document.getElementById('accessDenied').style.display = 'block';
+        return false;
+      }
+      
+      if (simpleHash(urlKey) === EXPECTED_HASH) {
+        document.getElementById('adminPanel').style.display = 'block';
+        loadPosts();
+        return true;
+      } else {
+        document.getElementById('accessDenied').style.display = 'block';
+        return false;
+      }
+    }
+
+    // Parse Jekyll frontmatter
+    function parsePost(content, filename) {
+      const match = content.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+      if (!match) return null;
+
+      const frontmatter = match[1];
+      const body = match[2].trim();
+
+      const post = {
+        filename: filename,
+        body: body,
+        raw: content
+      };
+
+      // Parse frontmatter
+      const lines = frontmatter.split('\n');
+      for (const line of lines) {
+        const colonIndex = line.indexOf(':');
+        if (colonIndex === -1) continue;
+        
+        const key = line.slice(0, colonIndex).trim();
+        let value = line.slice(colonIndex + 1).trim();
+        
+        // Remove quotes
+        if ((value.startsWith('"') && value.endsWith('"')) || 
+            (value.startsWith("'") && value.endsWith("'"))) {
+          value = value.slice(1, -1);
+        }
+        
+        // Parse tags array
+        if (key === 'tags') {
+          const tagMatch = line.match(/\[(.*)\]/);
+          if (tagMatch) {
+            post.tags = tagMatch[1].split(',').map(t => t.trim().replace(/"/g, ''));
+          }
+        } else if (key === 'date') {
+          post.date = value;
+        } else {
+          post[key] = value;
+        }
+      }
+
+      return post;
+    }
+
+    // Build Jekyll post content
+    function buildPostContent(post) {
+      const tags = post.tags ? post.tags.map(t => `"${t}"`).join(', ') : '';
+      
+      let frontmatter = `---
+layout: post
+title: "${post.title.replace(/"/g, '\\"')}"`;
+      
+      if (post.image) {
+        frontmatter += `\nimage: "${post.image}"`;
+      }
+      
+      frontmatter += `
+repo_url: "${post.repo_url || ''}"
+tags: [${tags}]
+date: ${post.date}
+---`;
+
+      return frontmatter + '\n\n' + post.body;
+    }
+
+    // Load posts from GitHub
+    async function loadPosts() {
+      const token = localStorage.getItem('github_token');
+      
+      try {
+        document.getElementById('postsList').innerHTML = '<div class="loading">Yükleniyor...</div>';
+        
+        // Get list of files
+        const headers = token ? { 'Authorization': `token ${token}` } : {};
+        
+        const response = await fetch(
+          `https://api.github.com/repos/${GITHUB_REPO}/contents/${POSTS_PATH}?ref=${GITHUB_BRANCH}`,
+          { headers }
+        );
+        
+        if (!response.ok) {
+          throw new Error('Dosyalar yüklenemedi');
+        }
+        
+        const files = await response.json();
+        const mdFiles = files.filter(f => f.name.endsWith('.md'));
+        
+        // Load each file
+        postsData = [];
+        for (const file of mdFiles) {
+          const contentResponse = await fetch(file.download_url);
+          const content = await contentResponse.text();
+          const post = parsePost(content, file.name);
+          if (post) {
+            post.sha = file.sha;
+            postsData.push(post);
+          }
+        }
+        
+        // Sort by date (newest first)
+        postsData.sort((a, b) => new Date(b.date) - new Date(a.date));
+        
+        // Keep original copy
+        originalPosts = JSON.parse(JSON.stringify(postsData));
+        
+        renderPosts();
+        updateStats();
+        
+      } catch (error) {
+        console.error('Load error:', error);
+        document.getElementById('postsList').innerHTML = 
+          `<div class="loading">❌ Hata: ${error.message}</div>`;
+      }
+    }
+
+    // Render posts list
+    function renderPosts() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const container = document.getElementById('postsList');
+      
+      let html = '';
+      postsData.forEach((post, index) => {
+        const title = post.title || '';
+        const body = post.body || '';
+        
+        if (searchTerm && !title.toLowerCase().includes(searchTerm) && 
+            !body.toLowerCase().includes(searchTerm)) {
+          return;
+        }
+        
+        const date = post.date ? new Date(post.date).toLocaleDateString('tr-TR') : '';
+        const tags = post.tags || [];
+        
+        html += `
+          <div class="post-item" onclick="openEdit(${index})">
+            <div class="post-header">
+              <div class="post-title">${escapeHtml(title)}</div>
+              <div class="post-date">${date}</div>
+            </div>
+            <div class="post-meta">
+              ${post.image ? '<span class="has-image">🖼️ görsel</span>' : ''}
+              ${tags.slice(0, 3).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}
+            </div>
+          </div>
+        `;
+      });
+      
+      container.innerHTML = html || '<div class="loading">Post bulunamadı</div>';
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function filterPosts() {
+      renderPosts();
+    }
+
+    function updateStats() {
+      document.getElementById('totalCount').textContent = postsData.length;
+      document.getElementById('imageCount').textContent = postsData.filter(p => p.image).length;
+      document.getElementById('editedCount').textContent = editedCount;
+      
+      const badge = document.getElementById('unsavedBadge');
+      badge.style.display = editedCount > 0 ? 'inline' : 'none';
+    }
+
+    // Edit modal
+    function openEdit(index) {
+      editingIndex = index;
+      const post = postsData[index];
+      
+      document.getElementById('editTitle').value = post.title || '';
+      document.getElementById('editBody').value = post.body || '';
+      document.getElementById('editTags').value = (post.tags || []).join(', ');
+      document.getElementById('editRepoUrl').value = post.repo_url || '';
+      document.getElementById('editImage').value = post.image || '';
+      
+      document.getElementById('editModal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('editModal').classList.remove('active');
+      editingIndex = -1;
+    }
+
+    function saveEdit() {
+      if (editingIndex < 0) return;
+      
+      const post = postsData[editingIndex];
+      
+      post.title = document.getElementById('editTitle').value;
+      post.body = document.getElementById('editBody').value;
+      post.tags = document.getElementById('editTags').value.split(',').map(t => t.trim()).filter(t => t);
+      post.repo_url = document.getElementById('editRepoUrl').value;
+      post.image = document.getElementById('editImage').value || null;
+      
+      editedCount++;
+      closeModal();
+      renderPosts();
+      updateStats();
+      showToast('Post güncellendi (henüz kaydedilmedi)', 'warning');
+    }
+
+    // Token modal
+    function showTokenModal() {
+      document.getElementById('githubToken').value = localStorage.getItem('github_token') || '';
+      document.getElementById('tokenModal').classList.add('active');
+    }
+
+    function closeTokenModal() {
+      document.getElementById('tokenModal').classList.remove('active');
+    }
+
+    function saveToken() {
+      const token = document.getElementById('githubToken').value.trim();
+      if (token) {
+        localStorage.setItem('github_token', token);
+        showToast('Token kaydedildi', 'success');
+      } else {
+        localStorage.removeItem('github_token');
+        showToast('Token silindi', 'success');
+      }
+      closeTokenModal();
+    }
+
+    // Save to GitHub
+    async function saveToGitHub() {
+      const token = localStorage.getItem('github_token');
+      
+      if (!token) {
+        showToast('Önce GitHub token girin', 'error');
+        showTokenModal();
+        return;
+      }
+      
+      if (editedCount === 0) {
+        showToast('Değişiklik yok', 'warning');
+        return;
+      }
+      
+      try {
+        showToast('Kaydediliyor...', 'warning');
+        
+        // Find changed posts
+        for (let i = 0; i < postsData.length; i++) {
+          const post = postsData[i];
+          const original = originalPosts.find(p => p.filename === post.filename);
+          
+          const newContent = buildPostContent(post);
+          const originalContent = original ? buildPostContent(original) : '';
+          
+          if (newContent !== originalContent) {
+            // Update file
+            const response = await fetch(
+              `https://api.github.com/repos/${GITHUB_REPO}/contents/${POSTS_PATH}/${post.filename}`,
+              {
+                method: 'PUT',
+                headers: {
+                  'Authorization': `token ${token}`,
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  message: `Update ${post.filename} via admin panel`,
+                  content: btoa(unescape(encodeURIComponent(newContent))),
+                  sha: post.sha,
+                  branch: GITHUB_BRANCH
+                })
+              }
+            );
+            
+            if (!response.ok) {
+              const error = await response.json();
+              throw new Error(error.message || 'Kaydetme hatası');
+            }
+            
+            // Update SHA
+            const result = await response.json();
+            post.sha = result.content.sha;
+          }
+        }
+        
+        // Reset
+        originalPosts = JSON.parse(JSON.stringify(postsData));
+        editedCount = 0;
+        updateStats();
+        showToast('✅ GitHub\'a kaydedildi!', 'success');
+        
+      } catch (error) {
+        console.error('Save error:', error);
+        
+        if (error.message.includes('401')) {
+          showToast('Token geçersiz', 'error');
+          showTokenModal();
+        } else {
+          showToast(`Hata: ${error.message}`, 'error');
+        }
+      }
+    }
+
+    // Toast
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      const toastMessage = document.getElementById('toastMessage');
+      
+      toast.className = `toast show ${type}`;
+      toastMessage.textContent = message;
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeModal();
+        closeTokenModal();
+      }
+    });
+
+    // Modal overlay click
+    document.getElementById('editModal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('editModal')) closeModal();
+    });
+
+    document.getElementById('tokenModal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('tokenModal')) closeTokenModal();
+    });
+
+    // Init
+    checkAccess();
+  </script>
 </body>
 </html>
