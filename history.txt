@@ -11,3 +11,4 @@ https://github.com/Jcparkyn/herd
 https://github.com/eringrand/astropic
 https://github.com/steffest/DPaint-js
 https://github.com/danthegoodman1/netfence
+https://github.com/mitjafelicijan/xdgctl
