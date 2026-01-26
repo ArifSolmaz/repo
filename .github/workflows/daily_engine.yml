@@ -1,10 +1,6 @@
 name: 🤖 Daily Content Engine
 
 on:
-  # Schedule (GitHub'ın kendi scheduler'ı - güvenilmez)
-  schedule:
-    - cron: '5,35 * * * *'
-  
   # Harici servisler için (cron-job.org vb.)
   repository_dispatch:
     types: [trigger-content-engine]
