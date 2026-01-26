@@ -506,29 +506,32 @@ Respond with ONLY valid JSON, no markdown code blocks."""
     def post_to_bluesky(self, content: dict, repo_url: str, image_path: str | None, jekyll_url: str) -> str | None:
         """
         Post to Bluesky with image.
-        Now includes first paragraph and links to Jekyll site (SAME FORMAT AS TWITTER).
+        Bluesky has 300 grapheme limit - shorter format than Twitter.
         Returns post URL or None.
         """
         if not BLUESKY_HANDLE or not BLUESKY_APP_PASSWORD:
             logger.warning("⚠️  Bluesky credentials not set, skipping")
             return None
         
-        # Format post text - SAME FORMAT AS TWITTER
+        # Format post text - Bluesky has strict 300 grapheme limit
         hashtags_str = ' '.join(f"#{tag}" for tag in content['hashtags'])
-        first_para = content.get('first_paragraph', '')
         
-        # Build post: summary + first paragraph + jekyll link + hashtags
-        post_text = f"{content['summary']}\n\n{first_para}\n\n🔗 {jekyll_url}\n\n{hashtags_str}"
+        # Build short post: summary + link + hashtags (no first paragraph)
+        post_text = f"{content['summary']}\n\n🔗 {jekyll_url}\n\n{hashtags_str}"
         
-        # Bluesky grapheme limit is ~3000 for long posts
-        max_length = 3000
+        # Bluesky limit is 300 graphemes
+        max_length = 300
         if len(post_text) > max_length:
-            available = max_length - len(f"{content['summary']}\n\n...\n\n🔗 {jekyll_url}\n\n{hashtags_str}") - 10
-            if available > 100:
-                shortened_para = first_para[:available] + "..."
-                post_text = f"{content['summary']}\n\n{shortened_para}\n\n🔗 {jekyll_url}\n\n{hashtags_str}"
+            # Shorten summary to fit
+            available = max_length - len(f"\n\n🔗 {jekyll_url}\n\n{hashtags_str}") - 3
+            if available > 50:
+                shortened_summary = content['summary'][:available] + "..."
+                post_text = f"{shortened_summary}\n\n🔗 {jekyll_url}\n\n{hashtags_str}"
             else:
-                post_text = f"{content['summary']}\n\n🔗 {jekyll_url}\n\n{hashtags_str}"
+                # Even shorter - just summary and link
+                available = max_length - len(f"\n\n🔗 {jekyll_url}") - 3
+                shortened_summary = content['summary'][:available] + "..."
+                post_text = f"{shortened_summary}\n\n🔗 {jekyll_url}"
         
         try:
             # Login to Bluesky
