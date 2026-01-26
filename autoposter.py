@@ -16,7 +16,7 @@ import re
 import json
 import logging
 import hashlib
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from urllib.parse import urlparse, urljoin
 
@@ -43,6 +43,9 @@ HISTORY_FILE = Path("history.txt")
 DOCS_DIR = Path("docs")
 IMAGES_DIR = DOCS_DIR / "assets" / "images"
 POSTS_DIR = DOCS_DIR / "_posts"
+
+# Istanbul timezone (+03:00)
+ISTANBUL_TZ = timezone(timedelta(hours=3))
 
 # Telegram settings
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
@@ -535,8 +538,9 @@ Respond with ONLY valid JSON, no markdown code blocks."""
         Create a Jekyll markdown post for the repository.
         Returns the path to the created file.
         """
-        # Generate filename
-        today = datetime.now().strftime("%Y-%m-%d")
+        # Use Istanbul timezone for consistent date handling
+        now_istanbul = datetime.now(ISTANBUL_TZ)
+        today = now_istanbul.strftime("%Y-%m-%d")
         slug = re.sub(r'[^a-z0-9]+', '-', repo_data['repo'].lower()).strip('-')
         filename = f"{today}-{slug}.md"
         filepath = POSTS_DIR / filename
@@ -563,7 +567,7 @@ title: "{escaped_summary}"
 {image_frontmatter}
 repo_url: "{repo_data['url']}"
 tags: [{tags_str}]
-date: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} +0300
+date: {now_istanbul.strftime("%Y-%m-%d %H:%M:%S")} +0300
 ---
 
 {content['body']}
