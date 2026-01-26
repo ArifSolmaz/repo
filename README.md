@@ -11,7 +11,7 @@ GitHub'dan ilginç açık kaynak projeleri keşfedip Türkçe özetlerini payla�
 
 ## Site
 
-[arifsolmaz.github.io/turkish-repo-showcase](https://arifsolmaz.github.io/turkish-repo-showcase/)
+[arifsolmaz.github.io/depo](https://arifsolmaz.github.io/depo/)
 
 ## Çalışma
 
