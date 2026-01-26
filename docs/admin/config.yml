@@ -69,6 +69,7 @@ collections:
         widget: "list"
         hint: "Virgülle ayrılmış etiketler"
         field:
+          name: "tag"
           widget: "string"
       
       - label: "Tarih"
