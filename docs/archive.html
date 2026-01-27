@@ -1,0 +1,331 @@
+---
+layout: default
+title: Archive
+permalink: /archive/
+---
+
+<style>
+  .archive-header {
+    padding: 2rem 0;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 2rem;
+  }
+  
+  .archive-header h1 {
+    font-family: 'Newsreader', Georgia, serif;
+    font-size: 1.8rem;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 0.5rem;
+  }
+  
+  .archive-header p {
+    color: var(--ink-light);
+    font-size: 0.95rem;
+  }
+  
+  .archive-stats {
+    display: flex;
+    gap: 2rem;
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: var(--ink-faint);
+  }
+  
+  .archive-stats span {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  
+  /* Month sections */
+  .month-section {
+    margin-bottom: 2.5rem;
+  }
+  
+  .month-header {
+    font-family: 'Newsreader', Georgia, serif;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  
+  .month-count {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--ink-faint);
+  }
+  
+  /* Archive table */
+  .archive-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .archive-table th {
+    text-align: left;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  
+  .archive-table td {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  
+  .archive-table tr:last-child td {
+    border-bottom: none;
+  }
+  
+  .archive-table .col-date {
+    width: 70px;
+    font-size: 0.75rem;
+    color: var(--ink-faint);
+    white-space: nowrap;
+  }
+  
+  .archive-table .col-repo {
+    width: 30%;
+  }
+  
+  .archive-table .col-summary {
+    width: auto;
+  }
+  
+  .archive-table .col-action {
+    width: 70px;
+    text-align: right;
+  }
+  
+  .repo-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--ink);
+    text-decoration: none;
+    display: block;
+    line-height: 1.3;
+  }
+  
+  .repo-name:hover {
+    color: var(--pop);
+  }
+  
+  .repo-owner {
+    font-size: 0.75rem;
+    color: var(--ink-faint);
+    font-weight: 400;
+  }
+  
+  .repo-summary {
+    font-size: 0.85rem;
+    color: var(--ink-light);
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .details-link {
+    font-size: 0.75rem;
+    color: var(--pop);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  
+  .details-link:hover {
+    text-decoration: underline;
+  }
+  
+  /* Tags filter */
+  .tags-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--line);
+  }
+  
+  .tags-filter a {
+    font-size: 0.75rem;
+    color: var(--ink-faint);
+    background: var(--paper-dark);
+    padding: 0.3rem 0.6rem;
+    border-radius: 3px;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+  }
+  
+  .tags-filter a:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  
+  /* Empty state */
+  .empty {
+    padding: 3rem 0;
+    text-align: center;
+    color: var(--ink-faint);
+    font-family: 'Newsreader', Georgia, serif;
+    font-style: italic;
+  }
+
+  /* ======================= */
+  /* RESPONSIVE              */
+  /* ======================= */
+  @media (max-width: 700px) {
+    .archive-header h1 {
+      font-size: 1.5rem;
+    }
+    
+    .archive-stats {
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    
+    /* Hide date column on mobile */
+    .archive-table .col-date {
+      display: none;
+    }
+    
+    .archive-table .col-repo {
+      width: 40%;
+    }
+    
+    .archive-table td {
+      padding: 0.6rem 0;
+    }
+    
+    .repo-name {
+      font-size: 0.85rem;
+    }
+    
+    .repo-summary {
+      font-size: 0.8rem;
+      -webkit-line-clamp: 2;
+    }
+  }
+  
+  @media (max-width: 500px) {
+    .archive-table .col-summary {
+      display: none;
+    }
+    
+    .archive-table .col-repo {
+      width: auto;
+    }
+    
+    .archive-table .col-action {
+      width: 60px;
+    }
+    
+    .repo-name {
+      font-size: 0.8rem;
+    }
+    
+    .month-header {
+      font-size: 1rem;
+    }
+  }
+</style>
+
+<div class="wrap">
+  <header class="archive-header">
+    <h1>Archive</h1>
+    <p>All discoveries, organized by date</p>
+    
+    <div class="archive-stats">
+      <span>📦 {{ site.posts.size }} repos</span>
+      {% assign all_tags = "" | split: "" %}
+      {% for post in site.posts %}
+        {% for tag in post.tags %}
+          {% assign all_tags = all_tags | push: tag %}
+        {% endfor %}
+      {% endfor %}
+      {% assign unique_tags = all_tags | uniq %}
+      <span>🏷️ {{ unique_tags.size }} tags</span>
+    </div>
+  </header>
+  
+  <!-- Tags filter -->
+  {% if unique_tags.size > 0 %}
+  <div class="tags-filter">
+    {% assign sorted_tags = unique_tags | sort_natural %}
+    {% for tag in sorted_tags %}
+    <a href="{{ '/tags' | relative_url }}#{{ tag | slugify }}">{{ tag }}</a>
+    {% endfor %}
+  </div>
+  {% endif %}
+  
+  {% if site.posts.size > 0 %}
+    
+    {% assign posts_by_month = site.posts | group_by_exp: "post", "post.date | date: '%Y-%m'" %}
+    
+    {% for month in posts_by_month %}
+      {% assign month_display = month.items[0].date | date: "%B %Y" %}
+      
+      <section class="month-section">
+        <h2 class="month-header">
+          {{ month_display }}
+          <span class="month-count">{{ month.items.size }} {% if month.items.size == 1 %}repo{% else %}repos{% endif %}</span>
+        </h2>
+        
+        <table class="archive-table">
+          <thead>
+            <tr>
+              <th class="col-date">Date</th>
+              <th class="col-repo">Repository</th>
+              <th class="col-summary">Summary</th>
+              <th class="col-action"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for post in month.items %}
+            <tr>
+              <td class="col-date">{{ post.date | date: "%b %d" }}</td>
+              <td class="col-repo">
+                {% if post.repo_url %}
+                <a href="{{ post.repo_url }}" class="repo-name" target="_blank" rel="noopener">
+                  {% assign repo_parts = post.repo_url | split: "/" %}
+                  {% assign repo_name = repo_parts | last %}
+                  {% assign owner_name = repo_parts[-2] %}
+                  {{ repo_name }}
+                  <span class="repo-owner">{{ owner_name }}</span>
+                </a>
+                {% else %}
+                <span class="repo-name">{{ post.title | truncate: 40 }}</span>
+                {% endif %}
+              </td>
+              <td class="col-summary">
+                <span class="repo-summary">{{ post.title }}</span>
+              </td>
+              <td class="col-action">
+                <a href="{{ post.url | relative_url }}" class="details-link">details →</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+    {% endfor %}
+    
+  {% else %}
+    <div class="empty">
+      <p>No discoveries yet. Check back soon!</p>
+    </div>
+  {% endif %}
+</div>
