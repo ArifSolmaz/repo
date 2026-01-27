@@ -35,3 +35,4 @@ https://github.com/thu-ml/tianshou
 https://github.com/wechat-article/wechat-article-exporter
 https://github.com/TermoraDev/termora
 https://github.com/AI4Finance-Foundation/FinRobot
+https://github.com/d4rken-org/sdmaid-se
