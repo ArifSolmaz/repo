@@ -1,5 +1,4 @@
 https://huggingface.co/bigscience/bloom|huggingface
-https://github.com/qeeqbox/social-analyzer|general
 https://github.com/Braveheart53/FitsAutoPlot|astronomy
 https://huggingface.co/hexgrad/Kokoro-82M|huggingface
 https://github.com/HapeLee/legado-with-MD3|general
