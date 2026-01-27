@@ -1,12 +1,12 @@
 https://huggingface.co/bigscience/bloom|huggingface
 https://github.com/qeeqbox/social-analyzer|general
-https://github.com/avapolzin/spike|astronomy
+https://github.com/titans-ge/CONAN|astronomy
 https://huggingface.co/hexgrad/Kokoro-82M|huggingface
 https://github.com/HapeLee/legado-with-MD3|general
-https://github.com/titans-ge/CONAN|astronomy
+https://github.com/juanaldayparejo/archnemesis-dist|astronomy
 https://huggingface.co/mistralai/Mixtral-8x7B-Instruct-v0.1|huggingface
 https://github.com/altstoreio/AltStore|general
-https://github.com/juanaldayparejo/archnemesis-dist|astronomy
+https://github.com/Braveheart53/FitsAutoPlot|astronomy
 https://huggingface.co/black-forest-labs/FLUX.1-dev|huggingface
 https://github.com/openwrt/luci|general
 https://github.com/LibChecker/LibChecker|general

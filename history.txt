@@ -39,3 +39,4 @@ https://github.com/d4rken-org/sdmaid-se
 https://github.com/nicklockwood/SwiftFormat
 https://github.com/legacysurvey/imagine
 https://github.com/lsst-ts/ts_xml
+https://github.com/avapolzin/spike
