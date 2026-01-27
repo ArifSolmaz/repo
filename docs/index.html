@@ -471,7 +471,7 @@ title: Home
 
 <div class="wrap">
   <section class="intro">
-    <p>Her gün GitHub'dan seçilen ilginç açık kaynak projelerin Türkçe özetleri.</p>
+    <p>Daily discoveries from the open source universe. Handpicked repos, explained.</p>
   </section>
   
   {% if site.posts.size > 0 %}
@@ -486,7 +486,7 @@ title: Home
       </a>
       {% endif %}
       
-      <div class="featured-date">{{ first_post.date | date: "%d %b %Y" }}</div>
+      <div class="featured-date">{{ first_post.date | date: "%b %d, %Y" }}</div>
       
       <h2 class="featured-title">
         <a href="{{ first_post.url | relative_url }}">{{ first_post.title }}</a>
@@ -528,7 +528,7 @@ title: Home
             <img src="{{ single_post.image | relative_url }}" alt="{{ single_post.title }}" class="single-image-post-image" loading="lazy">
           </a>
           
-          <div class="single-image-post-date">{{ single_post.date | date: "%d %b %Y" }}</div>
+          <div class="single-image-post-date">{{ single_post.date | date: "%b %d, %Y" }}</div>
           
           <h3 class="single-image-post-title">
             <a href="{{ single_post.url | relative_url }}">{{ single_post.title }}</a>
@@ -558,7 +558,7 @@ title: Home
             </a>
             
             <div class="post-card-body">
-              <div class="post-card-date">{{ post.date | date: "%d %b %Y" }}</div>
+              <div class="post-card-date">{{ post.date | date: "%b %d, %Y" }}</div>
               
               <h3 class="post-card-title">
                 <a href="{{ post.url | relative_url }}">{{ post.title | truncate: 100 }}</a>
@@ -595,7 +595,7 @@ title: Home
       <ul class="posts-list">
         {% for post in remaining_without_image %}
         <li class="post-item">
-          <div class="post-item-date">{{ post.date | date: "%d %b %Y" }}</div>
+          <div class="post-item-date">{{ post.date | date: "%b %d, %Y" }}</div>
           
           <h3 class="post-item-title">
             <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
@@ -623,7 +623,7 @@ title: Home
     
   {% else %}
   <div class="empty">
-    <p>yakında ilk keşifler burada.</p>
+    <p>first discoveries coming soon.</p>
   </div>
   {% endif %}
 </div>

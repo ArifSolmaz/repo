@@ -1,18 +1,21 @@
-GitHub'dan ilginç açık kaynak projeleri keşfedip Türkçe özetlerini paylaşan bot.
+# pulse
 
-## Ne Yapıyor?
+Daily discoveries from the open source universe. Handpicked repos, explained.
 
-- GitHub Trending ve Hacker News'den repo buluyor
-- Astronomi/astrofizik repolarını ayrıca arıyor
-- Claude AI ile Türkçe özet oluşturuyor
-- Twitter ve Bluesky'da paylaşıyor
-- Bunları Telegram ile size iletiyor
-- Jekyll sitesine arşivliyor
+## What it does
+
+- Finds interesting repos from GitHub Trending and Hacker News
+- Discovers astronomy/astrophysics tools
+- Finds trending HuggingFace models
+- Generates witty English descriptions using Claude AI
+- Posts to Twitter and Bluesky
+- Sends Telegram notifications
+- Archives everything on the Jekyll site
 
 ## Site
 
-[arifsolmaz.github.io/depo](https://arifsolmaz.github.io/depo/)
+[arifsolmaz.github.io/repo](https://arifsolmaz.github.io/repo/)
 
-## Çalışma
+## How it works
 
-Her 30 dakikada GitHub Actions ile otomatik çalışır.
+Runs automatically every 2 hours via cron-job.org triggering GitHub Actions.

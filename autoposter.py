@@ -4,9 +4,9 @@ autoposter.py - The Creator
 ===========================
 Processes repositories from the queue:
 1. Extracts hero image from README
-2. Generates Turkish content using Claude AI
-3. Posts to Twitter/X with image (links to Jekyll site)
-4. Posts to Bluesky with image (links to Jekyll site)
+2. Generates English content using Claude AI (witty, engaging)
+3. Posts to Twitter/X with image
+4. Posts to Bluesky with image
 5. Archives to Jekyll site
 6. Sends Telegram notification
 """
@@ -50,7 +50,7 @@ POSTS_DIR = DOCS_DIR / "_posts"
 ISTANBUL_TZ = timezone(timedelta(hours=3))
 
 # Site URL for Jekyll
-SITE_BASE_URL = "https://arifsolmaz.github.io/depo"
+SITE_BASE_URL = "https://arifsolmaz.github.io/repo"
 
 # Minimum stars threshold (safety check before posting)
 MIN_STARS = 50
@@ -132,7 +132,7 @@ def send_telegram_notification(repo_name: str, summary: str, repo_url: str, twee
     # Category emoji
     if category == "astronomy":
         cat_emoji = "🔭"
-        cat_label = "Astronomi"
+        cat_label = "Astronomy"
     elif category == "huggingface":
         cat_emoji = "🤗"
         cat_label = "HuggingFace Model"
@@ -141,10 +141,10 @@ def send_telegram_notification(repo_name: str, summary: str, repo_url: str, twee
         cat_label = "GitHub"
     
     # Build message
-    link_label = "HuggingFace'te Gör" if category == "huggingface" else "GitHub'da Gör"
-    message = f"""🚀 *Yeni {'Model' if category == 'huggingface' else 'Repo'} Paylaşıldı!*
+    link_label = "View on HuggingFace" if category == "huggingface" else "View on GitHub"
+    message = f"""🚀 *New {'Model' if category == 'huggingface' else 'Repo'} Posted!*
 
-{cat_emoji} *Kategori:* {cat_label}
+{cat_emoji} *Category:* {cat_label}
 📦 *{repo_name}*
 
 📝 {summary}
@@ -152,13 +152,13 @@ def send_telegram_notification(repo_name: str, summary: str, repo_url: str, twee
 🔗 [{link_label}]({repo_url})"""
     
     if jekyll_url:
-        message += f"\n📄 [Detaylı İnceleme]({jekyll_url})"
+        message += f"\n📄 [Read Full Article]({jekyll_url})"
     
     if tweet_url:
-        message += f"\n🐦 [Tweet'i Gör]({tweet_url})"
+        message += f"\n🐦 [View Tweet]({tweet_url})"
     
     if bluesky_url:
-        message += f"\n🦋 [Bluesky'da Gör]({bluesky_url})"
+        message += f"\n🦋 [View on Bluesky]({bluesky_url})"
     
     try:
         url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
@@ -423,7 +423,6 @@ class AutoPoster:
                     "original": str(original_path),  # For Jekyll
                     "social": social_path  # For Twitter/Bluesky (may be None if processing fails)
                 }
-                return str(local_path)
                 
             except Exception as e:
                 logger.warning(f"⚠️  Failed to download {img_url[:50]}...: {e}")
@@ -525,9 +524,9 @@ class AutoPoster:
     
     def generate_content(self, repo_data: dict) -> dict:
         """
-        Generate Turkish content using Claude AI.
+        Generate English content using Claude AI.
+        Creates witty, engaging, clever descriptions.
         Returns dict with summary, hashtags, body, and first_paragraph.
-        Uses category-specific prompts and hashtags.
         """
         # Truncate README for context
         readme_preview = repo_data["readme_content"][:3000] if repo_data["readme_content"] else "README not available"
@@ -536,11 +535,10 @@ class AutoPoster:
         
         # Category-specific prompt instructions
         if category == "huggingface":
-            # HuggingFace model specific prompt
             pipeline_tag = repo_data.get("pipeline_tag", "unknown")
             downloads = repo_data.get("downloads", 0)
             
-            prompt = f"""Analyze this HuggingFace AI model and generate Turkish content for a Twitter post and blog article.
+            prompt = f"""You're a sharp tech writer with a gift for making AI models sound exciting. Analyze this HuggingFace model and write engaging English content.
 
 Model: {repo_data['full_name']}
 Type: {pipeline_tag}
@@ -553,83 +551,88 @@ Model Card Preview:
 {readme_preview}
 
 Generate a JSON response with EXACTLY these fields:
-1. "summary": A single, powerful Turkish sentence (max 180 characters) explaining what this AI model does and why it's useful. Be specific about capabilities.
-2. "hashtags": Exactly 3 relevant AI/ML hashtags (without # symbol), e.g. ["YapayZeka", "LLM", "HuggingFace", "MachineLearning", "DeepLearning", "NLP", "ComputerVision"]
-3. "body": A 2-paragraph Turkish blog post explanation for AI/ML practitioners and developers. First paragraph: What is this model and what problem does it solve? Second paragraph: Key features, performance, and use cases.
 
-IMPORTANT FOR HUGGINGFACE CONTENT:
-- Use Turkish AI/ML terminology
-- Mention model size/parameters if available
-- Highlight practical use cases
-- Note if it supports Turkish language
-- Compare to similar models if relevant
+1. "summary": A punchy, clever one-liner (max 200 chars) that makes developers WANT to click. No boring corporate speak. Be witty but informative.
+
+2. "hashtags": Exactly 3 relevant hashtags (without # symbol). Mix of specific and broad: e.g. ["TextToSpeech", "OpenSource", "AI"]
+
+3. "body": 2-3 paragraphs of engaging English content. Write like you're telling a friend about a cool discovery:
+   - First paragraph: Hook them. What problem does this solve? Why should anyone care?
+   - Second paragraph: The good stuff. Key capabilities, what makes it special.
+   - Optional third: Who should use this, practical applications.
+   
+   STYLE GUIDE:
+   - Be conversational but smart
+   - Use vivid language, not jargon soup
+   - Include specific details (numbers, comparisons)
+   - Avoid clichés like "game-changer" or "revolutionary"
+   - Write like a clever friend, not a press release
 
 Respond with ONLY valid JSON, no markdown code blocks."""
 
         elif category == "astronomy":
-            hashtag_instruction = '2. "hashtags": Exactly 3 relevant astronomy hashtags (without # symbol), e.g. ["Exoplanet", "Astronomi", "Astrofizik", "TESS", "Kepler", "JWST", "Yıldız", "Gezegen"]'
-            audience_instruction = "astronomlar ve astrofizikçiler"
-            extra_instruction = """
-IMPORTANT FOR ASTRONOMY CONTENT:
-- Use proper Turkish astronomical terminology
-- Be accurate about scientific concepts
-- Target audience is astronomers and astrophysicists
-- Hashtags should be astronomy-specific"""
-            
-            prompt = f"""Analyze this GitHub repository and generate Turkish content for a Twitter post and blog article.
+            prompt = f"""You're a science writer who makes astronomy tools sound fascinating. Analyze this repository and write engaging English content for developers and researchers.
 
 Repository: {repo_data['full_name']}
 Description: {repo_data['description']}
 Language: {repo_data['language']}
 Stars: {repo_data['stars']}⭐
 Topics: {', '.join(repo_data['topics']) if repo_data['topics'] else 'None'}
-Category: {category}
 
 README Preview:
 {readme_preview}
 
 Generate a JSON response with EXACTLY these fields:
-1. "summary": A single, powerful Turkish sentence (max 180 characters) explaining exactly what this tool does. Be specific and impactful. No fluff, no generic descriptions.
-{hashtag_instruction}
-3. "body": A 2-paragraph Turkish blog post explanation for {audience_instruction}. First paragraph: What problem does it solve? Second paragraph: Key features and why they should care.
 
-IMPORTANT:
-- Write in natural, professional Turkish
-- Be specific about what the tool does
-- Avoid generic phrases
-- The summary must be punchy and Twitter-friendly
-{extra_instruction}
+1. "summary": A compelling one-liner (max 200 chars) that captures both the technical utility and the cosmic wonder. Make astronomers and developers equally excited.
+
+2. "hashtags": Exactly 3 relevant hashtags (without # symbol). e.g. ["Exoplanet", "Astronomy", "OpenSource"]
+
+3. "body": 2-3 paragraphs of engaging English content:
+   - First paragraph: Set the scene. What astronomical challenge does this address?
+   - Second paragraph: Technical meat. What does it actually do? Key features.
+   - Optional third: Real-world applications, who's using it, future potential.
+   
+   STYLE GUIDE:
+   - Balance scientific accuracy with accessibility
+   - Use astronomical terminology correctly
+   - Be enthusiastic but not breathless
+   - Include specific capabilities
+   - Write for astronomers who code AND coders who love space
 
 Respond with ONLY valid JSON, no markdown code blocks."""
 
         else:
-            hashtag_instruction = '2. "hashtags": Exactly 3 relevant hashtags (without # symbol), e.g. ["Python", "Geliştirici", "Araçlar"]'
-            audience_instruction = "geliştiriciler"
-            extra_instruction = ""
-        
-            prompt = f"""Analyze this GitHub repository and generate Turkish content for a Twitter post and blog article.
+            prompt = f"""You're a sharp-eyed tech scout who finds the best open source tools. Analyze this repository and write engaging English content that makes developers want to star it immediately.
 
 Repository: {repo_data['full_name']}
 Description: {repo_data['description']}
 Language: {repo_data['language']}
 Stars: {repo_data['stars']}⭐
 Topics: {', '.join(repo_data['topics']) if repo_data['topics'] else 'None'}
-Category: {category}
+Source: {repo_data.get('source', 'discovery')}
 
 README Preview:
 {readme_preview}
 
 Generate a JSON response with EXACTLY these fields:
-1. "summary": A single, powerful Turkish sentence (max 180 characters) explaining exactly what this tool does. Be specific and impactful. No fluff, no generic descriptions.
-{hashtag_instruction}
-3. "body": A 2-paragraph Turkish blog post explanation for {audience_instruction}. First paragraph: What problem does it solve? Second paragraph: Key features and why they should care.
 
-IMPORTANT:
-- Write in natural, professional Turkish
-- Be specific about what the tool does
-- Avoid generic phrases
-- The summary must be punchy and Twitter-friendly
-{extra_instruction}
+1. "summary": A punchy, clever one-liner (max 200 chars) that hooks developers instantly. Be specific about what it does. No fluff, no buzzwords. If it's genuinely impressive, let that show.
+
+2. "hashtags": Exactly 3 relevant hashtags (without # symbol). Be specific: e.g. ["Rust", "CLI", "DevTools"] not generic ["Coding", "Tech", "Software"]
+
+3. "body": 2-3 paragraphs of engaging English content:
+   - First paragraph: The hook. What pain point does this solve? Why now?
+   - Second paragraph: The substance. Key features, what makes it stand out from alternatives.
+   - Optional third: Who should use this, quick-start appeal, community/momentum.
+   
+   STYLE GUIDE:
+   - Write like a smart friend sharing a discovery, not a PR agency
+   - Be specific: numbers, comparisons, concrete examples
+   - Avoid: "revolutionary", "game-changer", "powerful", "robust"
+   - Include: actual features, real benefits, honest assessment
+   - If something is genuinely impressive, explain WHY
+   - Match the tone to the project (playful for fun tools, precise for serious infra)
 
 Respond with ONLY valid JSON, no markdown code blocks."""
 
@@ -662,18 +665,20 @@ Respond with ONLY valid JSON, no markdown code blocks."""
             paragraphs = [p.strip() for p in content['body'].split('\n\n') if p.strip()]
             content["first_paragraph"] = paragraphs[0] if paragraphs else ""
             
-            logger.info(f"✅ Generated Turkish content successfully (category: {category})")
+            logger.info(f"✅ Generated English content successfully (category: {category})")
             return content
             
         except json.JSONDecodeError as e:
             logger.error(f"❌ Failed to parse Claude response as JSON: {e}")
             # Fallback content based on category
             if category == "astronomy":
-                hashtags = ["Astronomi", "Astrofizik", "OpenSource"]
+                hashtags = ["Astronomy", "OpenSource", "Science"]
+            elif category == "huggingface":
+                hashtags = ["AI", "MachineLearning", "OpenSource"]
             else:
-                hashtags = ["OpenSource", "GitHub", "Geliştirici"]
+                hashtags = ["OpenSource", "Developer", "Tools"]
             
-            fallback_body = f"{repo_data['description']}\n\n{repo_data['language']} ile geliştirilmiş bu proje."
+            fallback_body = f"{repo_data['description']}\n\nBuilt with {repo_data['language']}."
             return {
                 "summary": f"{repo_data['full_name']} - {repo_data['description'][:100]}",
                 "hashtags": hashtags,
@@ -689,26 +694,15 @@ Respond with ONLY valid JSON, no markdown code blocks."""
         """
         Post to Twitter/X with image.
         Uses hybrid approach: v1.1 for media upload, v2 for tweet.
-        Now includes first paragraph and links to GitHub repo.
+        No character limit for this account.
         Returns tweet URL or None.
         """
-        # Format tweet text - EXTENDED FORMAT with first paragraph
+        # Format tweet text - full content since no char limit
         hashtags_str = ' '.join(f"#{tag}" for tag in content['hashtags'])
         first_para = content.get('first_paragraph', '')
         
         # Build tweet: summary + first paragraph + repo link + hashtags
         tweet_text = f"{content['summary']}\n\n{first_para}\n\n🔗 {repo_url}\n\n{hashtags_str}"
-        
-        # Twitter Blue has extended limit (~4000 chars), but we'll be safe
-        max_length = 4000
-        if len(tweet_text) > max_length:
-            # Truncate first paragraph to fit
-            available = max_length - len(f"{content['summary']}\n\n...\n\n🔗 {repo_url}\n\n{hashtags_str}") - 10
-            if available > 100:
-                shortened_para = first_para[:available] + "..."
-                tweet_text = f"{content['summary']}\n\n{shortened_para}\n\n🔗 {repo_url}\n\n{hashtags_str}"
-            else:
-                tweet_text = f"{content['summary']}\n\n🔗 {repo_url}\n\n{hashtags_str}"
         
         try:
             media_id = None
@@ -731,27 +725,19 @@ Respond with ONLY valid JSON, no markdown code blocks."""
                 response = self.twitter_client.create_tweet(text=tweet_text)
             
             tweet_id = response.data['id']
-            # Construct tweet URL (we don't have username easily, use generic format)
             tweet_url = f"https://twitter.com/i/web/status/{tweet_id}"
             
             logger.info(f"✅ Tweet posted: {tweet_url}")
             return tweet_url
             
         except tweepy.errors.Forbidden as e:
-            # DETAILED ERROR LOGGING
             logger.error(f"❌ Twitter 403 Forbidden Error!")
             logger.error(f"   Error message: {e}")
-            logger.error(f"   API Errors: {e.api_errors if hasattr(e, 'api_errors') else 'N/A'}")
-            logger.error(f"   API Codes: {e.api_codes if hasattr(e, 'api_codes') else 'N/A'}")
-            logger.error(f"   API Messages: {e.api_messages if hasattr(e, 'api_messages') else 'N/A'}")
             if hasattr(e, 'response') and e.response is not None:
-                logger.error(f"   Response Status: {e.response.status_code}")
-                logger.error(f"   Response Text: {e.response.text}")
+                logger.error(f"   Response: {e.response.text}")
             return None
         except tweepy.errors.TweepyException as e:
             logger.error(f"❌ Twitter API error: {type(e).__name__}: {e}")
-            if hasattr(e, 'response') and e.response is not None:
-                logger.error(f"   Response: {e.response.text}")
             return None
         except Exception as e:
             logger.error(f"❌ Twitter posting failed: {type(e).__name__}: {e}")
@@ -824,8 +810,6 @@ Respond with ONLY valid JSON, no markdown code blocks."""
             
             # Construct post URL
             post_uri = response.uri
-            # URI format: at://did:plc:xxx/app.bsky.feed.post/xxx
-            # Convert to web URL
             parts = post_uri.split('/')
             post_id = parts[-1]
             bluesky_url = f"https://bsky.app/profile/{BLUESKY_HANDLE}/post/{post_id}"
@@ -885,7 +869,7 @@ Respond with ONLY valid JSON, no markdown code blocks."""
 🔗 **Repository:** [{repo_data['full_name']}]({repo_data['url']})
 """
         
-        # Build markdown content (image shown via template, not in body)
+        # Build markdown content
         post_content = f"""---
 layout: post
 title: "{escaped_summary}"
@@ -971,7 +955,7 @@ date: {now_istanbul.strftime("%Y-%m-%d %H:%M:%S")} +0300
             social_image = image_result.get("social") if image_result else None
             
             # Generate content with Claude
-            logger.info("🤖 Generating Turkish content...")
+            logger.info("🤖 Generating English content...")
             content = self.generate_content(repo_data)
             
             # Create Jekyll post

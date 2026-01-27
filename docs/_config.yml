@@ -1,8 +1,8 @@
 # Site Configuration
-title: "keşif"
-description: "Türkçe açıklamalı açık kaynak projeler"
+title: "pulse"
+description: "Daily discoveries from the open source universe"
 url: "https://arifsolmaz.github.io"
-baseurl: "/depo"
+baseurl: "/repo"
 
 markdown: kramdown
 

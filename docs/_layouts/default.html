@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% if page.title and page.title != "Home" %}{{ page.title }} | {% endif %}keşif</title>
-  <meta name="description" content="Türkçe açıklamalı açık kaynak projeler">
+  <title>{% if page.title and page.title != "Home" %}{{ page.title }} | {% endif %}pulse</title>
+  <meta name="description" content="Daily discoveries from the open source universe">
   
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◈</text></svg>">
   
-  <meta property="og:title" content="{{ page.title | default: 'keşif' }}">
-  <meta property="og:description" content="Türkçe açıklamalı açık kaynak projeler">
+  <meta property="og:title" content="{{ page.title | default: 'pulse' }}">
+  <meta property="og:description" content="Daily discoveries from the open source universe">
   {% if page.image %}<meta property="og:image" content="{{ page.image | absolute_url }}">{% endif %}
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -89,7 +89,7 @@
   
   <footer>
     <div class="wrap">
-      türkçe · açık kaynak · her gün yeni
+      open source · daily · curated
     </div>
   </footer>
 </body>

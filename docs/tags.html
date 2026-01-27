@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Etiketler
+title: Tags
 permalink: /tags/
 ---
 
@@ -154,11 +154,11 @@ permalink: /tags/
 </style>
 
 <div class="wrap">
-  <a href="{{ '/' | relative_url }}" class="back-link">← tüm projeler</a>
+  <a href="{{ '/' | relative_url }}" class="back-link">← all projects</a>
   
   <header class="tags-header">
-    <h1>Etiketler</h1>
-    <p>Projeleri konularına göre keşfedin</p>
+    <h1>Tags</h1>
+    <p>Browse projects by topic</p>
   </header>
   
   {% assign all_tags = "" | split: "" %}
@@ -194,7 +194,7 @@ permalink: /tags/
     <section class="tag-section" id="{{ tag | slugify }}">
       <header class="tag-section-header">
         <h2>{{ tag }}</h2>
-        <span class="tag-section-count">{{ tagged_posts.size }} proje</span>
+        <span class="tag-section-count">{{ tagged_posts.size }} projects</span>
       </header>
       
       <ul class="tag-posts">
@@ -203,7 +203,7 @@ permalink: /tags/
           <span class="tag-post-title">
             <a href="{{ post.url | relative_url }}">{{ post.title | truncate: 80 }}</a>
           </span>
-          <span class="tag-post-date">{{ post.date | date: "%d %b %Y" }}</span>
+          <span class="tag-post-date">{{ post.date | date: "%b %d, %Y" }}</span>
         </li>
         {% endfor %}
       </ul>
