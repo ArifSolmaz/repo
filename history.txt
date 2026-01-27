@@ -40,3 +40,4 @@ https://github.com/nicklockwood/SwiftFormat
 https://github.com/legacysurvey/imagine
 https://github.com/lsst-ts/ts_xml
 https://github.com/avapolzin/spike
+https://github.com/titans-ge/CONAN
