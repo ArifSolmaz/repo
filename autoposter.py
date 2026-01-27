@@ -42,9 +42,13 @@ logger = logging.getLogger(__name__)
 # Constants
 QUEUE_FILE = Path("queue.txt")
 HISTORY_FILE = Path("history.txt")
+LAST_CATEGORY_FILE = Path("last_category.txt")  # Track category rotation
 DOCS_DIR = Path("docs")
 IMAGES_DIR = DOCS_DIR / "assets" / "images"
 POSTS_DIR = DOCS_DIR / "_posts"
+
+# Category rotation order: general → huggingface → astronomy → general → ...
+CATEGORY_ORDER = ["general", "huggingface", "astronomy"]
 
 # Istanbul timezone (+03:00)
 ISTANBUL_TZ = timezone(timedelta(hours=3))
@@ -891,9 +895,8 @@ date: {now_istanbul.strftime("%Y-%m-%d %H:%M:%S")} +0300
     
     def process_one(self) -> bool:
         """
-        Process one repository from the queue.
-        Posts to Jekyll, Twitter, and Bluesky.
-        If Twitter/Bluesky fail, continues anyway and completes the post.
+        Process one repository from the queue using CATEGORY ROTATION.
+        Cycles through: general → huggingface → astronomy → general → ...
         Returns True if successful, False otherwise.
         """
         # Load queue
@@ -903,18 +906,91 @@ date: {now_istanbul.strftime("%Y-%m-%d %H:%M:%S")} +0300
             logger.info("📭 Queue is empty. Nothing to process.")
             return False
         
-        # Get first entry and parse URL|category format
-        queue_entry = queue[0]
-        if "|" in queue_entry:
-            repo_url, category = queue_entry.split("|", 1)
+        # === CATEGORY ROTATION LOGIC ===
+        # Read last posted category
+        last_category = "astronomy"  # Default so first post is "general"
+        if LAST_CATEGORY_FILE.exists():
+            last_category = LAST_CATEGORY_FILE.read_text().strip()
+        
+        # Calculate next category in rotation
+        try:
+            current_idx = CATEGORY_ORDER.index(last_category)
+            next_idx = (current_idx + 1) % len(CATEGORY_ORDER)
+        except ValueError:
+            next_idx = 0
+        
+        target_category = CATEGORY_ORDER[next_idx]
+        logger.info(f"🔄 Category rotation: last={last_category} → next={target_category}")
+        
+        # Find first item of target category in queue
+        selected_entry = None
+        selected_index = -1
+        fallback_entry = None
+        fallback_index = -1
+        
+        for i, entry in enumerate(queue):
+            if "|" in entry:
+                url, cat = entry.rsplit("|", 1)
+            else:
+                url = entry
+                cat = "general"
+            
+            # Found target category
+            if cat == target_category and selected_entry is None:
+                selected_entry = entry
+                selected_index = i
+                break
+            
+            # Keep first entry as fallback
+            if fallback_entry is None:
+                fallback_entry = entry
+                fallback_index = i
+        
+        # If target category not found, try next categories in order
+        if selected_entry is None:
+            logger.warning(f"⚠️ No {target_category} in queue, trying other categories...")
+            
+            for try_offset in range(1, len(CATEGORY_ORDER)):
+                try_idx = (next_idx + try_offset) % len(CATEGORY_ORDER)
+                try_category = CATEGORY_ORDER[try_idx]
+                
+                for i, entry in enumerate(queue):
+                    if "|" in entry:
+                        url, cat = entry.rsplit("|", 1)
+                    else:
+                        cat = "general"
+                    
+                    if cat == try_category:
+                        selected_entry = entry
+                        selected_index = i
+                        target_category = try_category
+                        logger.info(f"  ✅ Found {try_category} instead")
+                        break
+                
+                if selected_entry:
+                    break
+        
+        # Still nothing? Use first item
+        if selected_entry is None:
+            selected_entry = fallback_entry
+            selected_index = fallback_index
+            if "|" in selected_entry:
+                _, target_category = selected_entry.rsplit("|", 1)
+            else:
+                target_category = "general"
+            logger.info(f"  ℹ️ Using first item: {target_category}")
+        
+        # Parse selected entry
+        if "|" in selected_entry:
+            repo_url, category = selected_entry.split("|", 1)
         else:
-            repo_url = queue_entry
+            repo_url = selected_entry
             category = "general"
         
         # Check if already in history (prevent duplicates)
         if self._is_in_history(repo_url):
             logger.info(f"⏭️ Already in history, skipping: {repo_url}")
-            queue.pop(0)
+            queue.pop(selected_index)
             self._save_queue(queue)
             return False
         
@@ -942,7 +1018,7 @@ date: {now_istanbul.strftime("%Y-%m-%d %H:%M:%S")} +0300
             
             if repo_data["stars"] < min_required:
                 logger.warning(f"⚠️ Insufficient stars/likes: {repo_data['stars']}{star_label} < {min_required}")
-                queue.pop(0)
+                queue.pop(selected_index)
                 self._save_queue(queue)
                 return False
             
@@ -979,9 +1055,13 @@ date: {now_istanbul.strftime("%Y-%m-%d %H:%M:%S")} +0300
                 logger.warning("⚠️ Bluesky posting failed - continuing anyway")
             
             # Remove from queue and add to history
-            queue.pop(0)
+            queue.pop(selected_index)
             self._save_queue(queue)
             self._add_to_history(repo_url)
+            
+            # === UPDATE CATEGORY ROTATION ===
+            LAST_CATEGORY_FILE.write_text(category)
+            logger.info(f"🔄 Updated last_category: {category}")
             
             logger.info(f"✅ Successfully processed: {repo_data['full_name']}")
             logger.info(f"   📝 Post: {post_path}")
