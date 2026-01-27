@@ -9,6 +9,7 @@ Discovers high-quality GitHub repositories from:
 4. Astronomy/Astrophysics repositories (10% chance)
 
 Filters them using Claude AI to ensure quality.
+Now includes English language filter to exclude non-English repos.
 """
 
 import os
@@ -456,6 +457,65 @@ Answer with ONLY "YES" or "NO" - nothing else."""
             logger.error(f"❌ Claude API error for {model['name']}: {e}")
             return False
     
+    def is_english_content(self, repo: dict) -> bool:
+        """
+        Use Claude AI to determine if the repository content is primarily in English.
+        Filters out Chinese, Russian, Japanese, Korean and other non-English repos.
+        """
+        # Build context from available data
+        description = repo.get('description', '') or ''
+        name = repo.get('name', '')
+        topics = repo.get('topics', [])
+        
+        # Quick check: if description contains significant non-ASCII characters
+        # that are clearly from non-English languages, we can filter early
+        non_ascii_chars = sum(1 for c in description if ord(c) > 127)
+        if len(description) > 0 and non_ascii_chars / len(description) > 0.3:
+            logger.info(f"  🌐 Skipped (non-English detected): {name}")
+            return False
+        
+        prompt = f"""Analyze this GitHub repository and determine if its content is primarily in ENGLISH.
+
+Repository: {name}
+Description: {description}
+Topics: {', '.join(topics) if topics else 'None'}
+
+Criteria for YES (English):
+- Description is in English
+- Repository name uses English words or common programming terms
+- Topics are in English
+
+Criteria for NO (Not English):
+- Description contains significant Chinese (中文), Japanese (日本語), Korean (한국어), Russian (русский), or other non-English text
+- Repository clearly targets non-English speaking audience based on description
+- Name or description has non-ASCII characters from non-English alphabets (excluding common programming symbols)
+
+Note: Repositories with minimal/no description should be considered English if the name is in English.
+Code/programming language keywords don't count as non-English.
+A few non-English words in an otherwise English description is OK (answer YES).
+
+Answer with ONLY "YES" or "NO" - nothing else."""
+
+        try:
+            response = self.anthropic_client.messages.create(
+                model="claude-sonnet-4-20250514",
+                max_tokens=10,
+                messages=[{"role": "user", "content": prompt}]
+            )
+            
+            answer = response.content[0].text.strip().upper()
+            is_english = answer == "YES"
+            
+            if not is_english:
+                logger.info(f"  🌐 Skipped (non-English): {repo['name']}")
+            
+            return is_english
+            
+        except Exception as e:
+            logger.error(f"❌ Claude API error for language check {repo['name']}: {e}")
+            # Default to True to avoid blocking repos on API errors
+            return True
+    
     def is_greater_good(self, repo: dict) -> bool:
         """
         Use Claude AI to determine if the repository serves the "greater good".
@@ -683,6 +743,12 @@ Answer with ONLY "YES" or "NO" - nothing else."""
                 continue
             
             category = repo.get("category", "general")
+            
+            # FIRST: Check if content is in English (skip for HuggingFace - models are usually in English)
+            if category != "huggingface":
+                logger.info(f"🌐 Checking language: {repo['name']}")
+                if not self.is_english_content(repo):
+                    continue  # Skip non-English repos
             
             # Apply appropriate filter based on category
             if category == "astronomy":
