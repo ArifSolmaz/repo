@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
 """
-discovery.py - The Finder (v2)
+discovery.py - The Finder (v3)
 ==============================
 Discovers high-quality GitHub repositories from:
 1. GitHub Trending page (scraping - daily & weekly)
 2. GitHub Trending by language (Python, TypeScript, Rust, Go, etc.)
 3. Hacker News (top stories with GitHub links)
-4. Astronomy/Astrophysics repositories (10% chance)
+4. Astronomy/Astrophysics repositories
+5. HuggingFace trending models
 
-Filters them using Claude AI to ensure quality.
-Now includes English language filter to exclude non-English repos.
+NEW in v3:
+- Balanced category distribution: 4 astro, 4 HF, 4 general per day
+- Round-robin queue ordering: astro → hf → general → astro → ...
+- Need-based discovery instead of random chance
+- Fallback to general if astro/hf not available
 """
 
 import os
@@ -19,6 +23,7 @@ import random
 import logging
 from datetime import datetime, timedelta
 from pathlib import Path
+from collections import Counter
 
 import requests
 from bs4 import BeautifulSoup
@@ -47,6 +52,10 @@ HISTORY_FILE = Path("history.txt")
 MIN_STARS_HN = 50
 MIN_STARS_ASTRO = 3
 MIN_LIKES_HF = 100  # Minimum likes for HuggingFace models
+
+# === NEW: Category targets for balanced distribution ===
+TARGET_PER_CATEGORY = 4  # 4 astro + 4 hf + 4 general = 12 posts/day
+CATEGORY_ORDER = ["astronomy", "huggingface", "general"]  # Round-robin order
 
 # Languages to check for trending
 TRENDING_LANGUAGES = [
@@ -121,6 +130,58 @@ class RepoDiscovery:
         return (url_clean in self.history or 
                 url_clean + '/' in self.history or
                 any(url_clean in q for q in current_queue))
+    
+    def _count_queue_categories(self) -> dict:
+        """
+        Count how many items of each category are in the queue.
+        Returns dict like {"astronomy": 3, "huggingface": 2, "general": 10}
+        """
+        queue = self._load_queue()
+        counts = {"astronomy": 0, "huggingface": 0, "general": 0}
+        
+        for entry in queue:
+            if "|" in entry:
+                _, category = entry.rsplit("|", 1)
+                if category in counts:
+                    counts[category] += 1
+                else:
+                    counts["general"] += 1
+            else:
+                counts["general"] += 1
+        
+        return counts
+    
+    def _reorder_queue_round_robin(self, queue: list) -> list:
+        """
+        Reorder queue in round-robin fashion: astro → hf → general → astro → ...
+        This ensures balanced posting throughout the day.
+        """
+        # Separate by category
+        by_category = {"astronomy": [], "huggingface": [], "general": []}
+        
+        for entry in queue:
+            if "|" in entry:
+                url, category = entry.rsplit("|", 1)
+                if category in by_category:
+                    by_category[category].append(entry)
+                else:
+                    by_category["general"].append(entry)
+            else:
+                by_category["general"].append(entry)
+        
+        # Build round-robin order
+        reordered = []
+        max_len = max(len(by_category[cat]) for cat in CATEGORY_ORDER) if by_category else 0
+        
+        for i in range(max_len):
+            for category in CATEGORY_ORDER:
+                if i < len(by_category[category]):
+                    reordered.append(by_category[category][i])
+        
+        logger.info(f"📋 Queue reordered: {len(by_category['astronomy'])} astro, "
+                   f"{len(by_category['huggingface'])} HF, {len(by_category['general'])} general")
+        
+        return reordered
     
     def discover_github_trending(self) -> list:
         """
@@ -633,8 +694,8 @@ Answer with ONLY "YES" or "NO" - nothing else."""
         repos = []
         seen_urls = set()
         
-        # Pick random keywords
-        keywords_to_check = random.sample(ASTRO_KEYWORDS, min(5, len(ASTRO_KEYWORDS)))
+        # Use MORE keywords for better coverage
+        keywords_to_check = random.sample(ASTRO_KEYWORDS, min(8, len(ASTRO_KEYWORDS)))
         
         for keyword in keywords_to_check:
             search_url = f"{GITHUB_API_BASE}/search/repositories"
@@ -642,7 +703,7 @@ Answer with ONLY "YES" or "NO" - nothing else."""
                 "q": f"{keyword} in:name,description,readme stars:>={MIN_STARS_ASTRO}",
                 "sort": "updated",
                 "order": "desc",
-                "per_page": 5
+                "per_page": 10  # Increased from 5
             }
             
             try:
@@ -676,65 +737,14 @@ Answer with ONLY "YES" or "NO" - nothing else."""
         logger.info(f"✅ Found {len(repos)} potential astronomy repositories")
         return repos
     
-    def run(self) -> int:
+    def _filter_and_add_repos(self, candidates: list, category: str, needed: int) -> list:
         """
-        Main discovery pipeline.
-        Returns the number of new repos added to queue.
+        Filter candidates and return up to 'needed' approved repos for the given category.
         """
-        logger.info("🚀 Starting repository discovery pipeline...")
+        approved = []
         
-        candidates = []
-        
-        # 1. GitHub Trending (main source)
-        trending_repos = self.discover_github_trending()
-        for repo in trending_repos:
-            repo["category"] = "general"
-        candidates.extend(trending_repos)
-        
-        # 2. Hacker News
-        hn_repos = self.discover_hackernews()
-        for repo in hn_repos:
-            repo["category"] = "general"
-        candidates.extend(hn_repos)
-        
-        # 3. HuggingFace (20% chance - AI models)
-        if random.random() < 0.20:
-            logger.info("🤗 This run includes HuggingFace search (20% chance)")
-            hf_models = self.discover_huggingface()
-            candidates.extend(hf_models)
-        else:
-            logger.info("⏭️ Skipping HuggingFace search this run")
-        
-        # 4. Astronomy (10% chance)
-        if random.random() < 0.10:
-            logger.info("🔭 This run includes astronomy search (10% chance)")
-            astro_repos = self.discover_astronomy_repos()
-            candidates.extend(astro_repos)
-        else:
-            logger.info("⏭️ Skipping astronomy search this run")
-        
-        # Deduplicate by URL
-        seen_urls = set()
-        unique_candidates = []
         for repo in candidates:
-            url_clean = repo["url"].rstrip('/')
-            if url_clean not in seen_urls:
-                seen_urls.add(url_clean)
-                unique_candidates.append(repo)
-        
-        # Shuffle for variety
-        random.shuffle(unique_candidates)
-        
-        logger.info(f"📊 Total unique candidates: {len(unique_candidates)}")
-        
-        # Filter and queue
-        new_repos = []
-        current_queue = self._load_queue()
-        max_to_add = 3  # Add up to 3 per run for more content
-        
-        for repo in unique_candidates:
-            if len(new_repos) >= max_to_add:
-                logger.info(f"📦 Queue limit reached ({max_to_add} repos)")
+            if len(approved) >= needed:
                 break
             
             # Skip if already processed
@@ -742,42 +752,137 @@ Answer with ONLY "YES" or "NO" - nothing else."""
                 logger.info(f"  ⏭️ Skipping (already processed): {repo['name']}")
                 continue
             
-            category = repo.get("category", "general")
-            
-            # FIRST: Check if content is in English (skip for HuggingFace - models are usually in English)
+            # Check English content (skip for HuggingFace)
             if category != "huggingface":
                 logger.info(f"🌐 Checking language: {repo['name']}")
                 if not self.is_english_content(repo):
-                    continue  # Skip non-English repos
+                    continue
             
-            # Apply appropriate filter based on category
+            # Apply category-specific filter
             if category == "astronomy":
                 logger.info(f"🔭 Evaluating astronomy repo: {repo['name']} ({repo['stars']}⭐)")
                 if self.is_astronomy_repo(repo):
-                    new_repos.append(f"{repo['url']}|astronomy")
+                    approved.append(f"{repo['url']}|astronomy")
                     logger.info(f"  ✨ Added astronomy repo: {repo['name']}")
             elif category == "huggingface":
                 logger.info(f"🤗 Evaluating HF model: {repo['name']} ({repo['stars']}❤️)")
                 if self.is_good_hf_model(repo):
-                    new_repos.append(f"{repo['url']}|huggingface")
+                    approved.append(f"{repo['url']}|huggingface")
                     logger.info(f"  ✨ Added HF model: {repo['name']}")
             else:
                 logger.info(f"🤖 Evaluating: {repo['name']} ({repo['stars']}⭐) [{repo.get('source', 'unknown')}]")
                 if self.is_greater_good(repo):
-                    new_repos.append(f"{repo['url']}|general")
+                    approved.append(f"{repo['url']}|general")
                     logger.info(f"  ✨ Added to queue: {repo['name']}")
         
-        # Update queue
+        return approved
+    
+    def run(self) -> int:
+        """
+        Main discovery pipeline with balanced category distribution.
+        Targets: 4 astronomy, 4 HuggingFace, 4 general repos in queue.
+        Uses round-robin ordering for balanced daily posting.
+        """
+        logger.info("🚀 Starting repository discovery pipeline (v3 - balanced mode)...")
+        
+        # Check current queue composition
+        queue_counts = self._count_queue_categories()
+        logger.info(f"📊 Current queue: {queue_counts['astronomy']} astro, "
+                   f"{queue_counts['huggingface']} HF, {queue_counts['general']} general")
+        
+        # Calculate how many we need for each category
+        needed = {
+            "astronomy": max(0, TARGET_PER_CATEGORY - queue_counts["astronomy"]),
+            "huggingface": max(0, TARGET_PER_CATEGORY - queue_counts["huggingface"]),
+            "general": max(0, TARGET_PER_CATEGORY - queue_counts["general"])
+        }
+        
+        logger.info(f"🎯 Need to find: {needed['astronomy']} astro, "
+                   f"{needed['huggingface']} HF, {needed['general']} general")
+        
+        new_repos = []
+        current_queue = self._load_queue()
+        
+        # === 1. ASTRONOMY: Search if needed ===
+        if needed["astronomy"] > 0:
+            logger.info(f"🔭 Searching for {needed['astronomy']} astronomy repos...")
+            astro_candidates = self.discover_astronomy_repos()
+            random.shuffle(astro_candidates)
+            astro_approved = self._filter_and_add_repos(astro_candidates, "astronomy", needed["astronomy"])
+            new_repos.extend(astro_approved)
+            
+            # If we couldn't find enough astronomy, note for fallback
+            astro_shortfall = needed["astronomy"] - len(astro_approved)
+            if astro_shortfall > 0:
+                logger.warning(f"⚠️ Could only find {len(astro_approved)} astronomy repos "
+                             f"(needed {needed['astronomy']}). Will fill with general.")
+                needed["general"] += astro_shortfall
+        
+        # === 2. HUGGINGFACE: Search if needed ===
+        if needed["huggingface"] > 0:
+            logger.info(f"🤗 Searching for {needed['huggingface']} HuggingFace models...")
+            hf_candidates = self.discover_huggingface()
+            random.shuffle(hf_candidates)
+            hf_approved = self._filter_and_add_repos(hf_candidates, "huggingface", needed["huggingface"])
+            new_repos.extend(hf_approved)
+            
+            # If we couldn't find enough HF, note for fallback
+            hf_shortfall = needed["huggingface"] - len(hf_approved)
+            if hf_shortfall > 0:
+                logger.warning(f"⚠️ Could only find {len(hf_approved)} HF models "
+                             f"(needed {needed['huggingface']}). Will fill with general.")
+                needed["general"] += hf_shortfall
+        
+        # === 3. GENERAL: GitHub Trending + HackerNews ===
+        if needed["general"] > 0:
+            logger.info(f"💻 Searching for {needed['general']} general repos...")
+            
+            # Collect from multiple sources
+            general_candidates = []
+            
+            # GitHub Trending
+            trending_repos = self.discover_github_trending()
+            for repo in trending_repos:
+                repo["category"] = "general"
+            general_candidates.extend(trending_repos)
+            
+            # Hacker News
+            hn_repos = self.discover_hackernews()
+            for repo in hn_repos:
+                repo["category"] = "general"
+            general_candidates.extend(hn_repos)
+            
+            # Deduplicate
+            seen_urls = set()
+            unique_general = []
+            for repo in general_candidates:
+                url_clean = repo["url"].rstrip('/')
+                if url_clean not in seen_urls:
+                    seen_urls.add(url_clean)
+                    unique_general.append(repo)
+            
+            random.shuffle(unique_general)
+            general_approved = self._filter_and_add_repos(unique_general, "general", needed["general"])
+            new_repos.extend(general_approved)
+        
+        # === 4. Update queue with new repos ===
         if new_repos:
             updated_queue = current_queue + new_repos
-            self._save_queue(updated_queue)
+            
+            # === 5. REORDER queue in round-robin fashion ===
+            reordered_queue = self._reorder_queue_round_robin(updated_queue)
+            
+            self._save_queue(reordered_queue)
             logger.info(f"✅ Added {len(new_repos)} new repos to queue")
         else:
             logger.info("ℹ️ No new repos added to queue")
         
         # Log final stats
+        final_counts = self._count_queue_categories()
         final_queue = self._load_queue()
-        logger.info(f"📋 Queue now has {len(final_queue)} items")
+        logger.info(f"📋 Final queue: {len(final_queue)} items "
+                   f"({final_counts['astronomy']} astro, {final_counts['huggingface']} HF, "
+                   f"{final_counts['general']} general)")
         
         return len(new_repos)
 
