@@ -37,3 +37,4 @@ https://github.com/TermoraDev/termora
 https://github.com/AI4Finance-Foundation/FinRobot
 https://github.com/d4rken-org/sdmaid-se
 https://github.com/nicklockwood/SwiftFormat
+https://github.com/legacysurvey/imagine
