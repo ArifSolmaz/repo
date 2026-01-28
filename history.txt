@@ -51,3 +51,4 @@ https://github.com/r-baruah/Exo-Checkmate
 https://github.com/altstoreio/AltStore
 https://huggingface.co/mistralai/Mixtral-8x7B-Instruct-v0.1
 https://github.com/astronomy-commons/hats-import
+https://github.com/openwrt/luci
