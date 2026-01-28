@@ -49,3 +49,4 @@ https://github.com/HapeLee/legado-with-MD3
 https://huggingface.co/hexgrad/Kokoro-82M
 https://github.com/r-baruah/Exo-Checkmate
 https://github.com/altstoreio/AltStore
+https://huggingface.co/mistralai/Mixtral-8x7B-Instruct-v0.1
