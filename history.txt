@@ -46,3 +46,4 @@ https://github.com/qeeqbox/social-analyzer
 https://huggingface.co/bigscience/bloom
 https://github.com/Braveheart53/FitsAutoPlot
 https://github.com/HapeLee/legado-with-MD3
+https://huggingface.co/hexgrad/Kokoro-82M
