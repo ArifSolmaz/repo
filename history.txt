@@ -48,3 +48,4 @@ https://github.com/Braveheart53/FitsAutoPlot
 https://github.com/HapeLee/legado-with-MD3
 https://huggingface.co/hexgrad/Kokoro-82M
 https://github.com/r-baruah/Exo-Checkmate
+https://github.com/altstoreio/AltStore
