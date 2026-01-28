@@ -1,5 +1,4 @@
 https://huggingface.co/hexgrad/Kokoro-82M|huggingface
-https://github.com/HapeLee/legado-with-MD3|general
 https://github.com/r-baruah/Exo-Checkmate|astronomy
 https://huggingface.co/mistralai/Mixtral-8x7B-Instruct-v0.1|huggingface
 https://github.com/altstoreio/AltStore|general
@@ -41,3 +40,4 @@ https://github.com/zen-browser/desktop|general
 https://github.com/vsouza/awesome-ios|general
 https://github.com/florisboard/florisboard|general
 https://github.com/khcrysalis/Impactor|general
+https://github.com/olozhika/ArXivDaily_StarFormation|astronomy
