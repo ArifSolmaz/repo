@@ -1,4 +1,3 @@
-https://github.com/Braveheart53/FitsAutoPlot|astronomy
 https://huggingface.co/hexgrad/Kokoro-82M|huggingface
 https://github.com/HapeLee/legado-with-MD3|general
 https://github.com/r-baruah/Exo-Checkmate|astronomy

@@ -44,3 +44,4 @@ https://github.com/titans-ge/CONAN
 https://github.com/juanaldayparejo/archnemesis-dist
 https://github.com/qeeqbox/social-analyzer
 https://huggingface.co/bigscience/bloom
+https://github.com/Braveheart53/FitsAutoPlot
