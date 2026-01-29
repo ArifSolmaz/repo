@@ -60,3 +60,4 @@ https://github.com/3fon3fonov/exostriker
 https://github.com/tauri-apps/tauri
 https://huggingface.co/openai/whisper-large-v3
 https://github.com/opencodeiiita/habitable-planet-hunter
+https://github.com/supabase/supabase-swift
