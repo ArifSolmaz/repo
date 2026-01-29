@@ -61,3 +61,4 @@ https://github.com/tauri-apps/tauri
 https://huggingface.co/openai/whisper-large-v3
 https://github.com/opencodeiiita/habitable-planet-hunter
 https://github.com/supabase/supabase-swift
+https://huggingface.co/openai/gpt-oss-20b
