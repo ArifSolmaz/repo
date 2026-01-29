@@ -66,3 +66,4 @@ https://github.com/PlasmaPy/PlasmaPy
 https://github.com/RikkaApps/Shizuku
 https://huggingface.co/deepseek-ai/DeepSeek-V3
 https://github.com/lightkurve/lightkurve
+https://github.com/google-ai-edge/gallery
