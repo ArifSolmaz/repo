@@ -31,8 +31,8 @@ https://github.com/zen-browser/desktop|general
 https://github.com/vsouza/awesome-ios|general
 https://github.com/florisboard/florisboard|general
 https://github.com/khcrysalis/Impactor|general
-https://github.com/opencodeiiita/habitable-planet-hunter|astronomy
 https://huggingface.co/openai/gpt-oss-20b|huggingface
 https://github.com/PlasmaPy/PlasmaPy|astronomy
 https://huggingface.co/deepseek-ai/DeepSeek-V3|huggingface
 https://github.com/lightkurve/lightkurve|astronomy
+https://huggingface.co/CompVis/stable-diffusion-v1-4|huggingface
