@@ -29,7 +29,6 @@ https://github.com/zen-browser/desktop|general
 https://github.com/vsouza/awesome-ios|general
 https://github.com/florisboard/florisboard|general
 https://github.com/khcrysalis/Impactor|general
-https://huggingface.co/deepseek-ai/DeepSeek-V3|huggingface
 https://github.com/lightkurve/lightkurve|astronomy
 https://huggingface.co/CompVis/stable-diffusion-v1-4|huggingface
 https://github.com/Skywalker690/nasa-space-apps|astronomy

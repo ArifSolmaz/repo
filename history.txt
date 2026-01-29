@@ -64,3 +64,4 @@ https://github.com/supabase/supabase-swift
 https://huggingface.co/openai/gpt-oss-20b
 https://github.com/PlasmaPy/PlasmaPy
 https://github.com/RikkaApps/Shizuku
+https://huggingface.co/deepseek-ai/DeepSeek-V3
