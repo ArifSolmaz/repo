@@ -1,4 +1,3 @@
-https://github.com/tauri-apps/tauri|general
 https://github.com/supabase/supabase-swift|general
 https://github.com/RikkaApps/Shizuku|general
 https://github.com/google-ai-edge/gallery|general
@@ -37,3 +36,4 @@ https://github.com/opencodeiiita/habitable-planet-hunter|astronomy
 https://huggingface.co/openai/gpt-oss-20b|huggingface
 https://github.com/PlasmaPy/PlasmaPy|astronomy
 https://huggingface.co/deepseek-ai/DeepSeek-V3|huggingface
+https://github.com/lightkurve/lightkurve|astronomy
