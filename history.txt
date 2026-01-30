@@ -74,3 +74,4 @@ https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct
 https://github.com/FormingWorlds/PROTEUS
 https://github.com/recloudstream/cloudstream
 https://huggingface.co/meta-llama/Llama-2-7b-chat-hf
+https://github.com/10110111/CalcMySky
