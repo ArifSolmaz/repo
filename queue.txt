@@ -28,8 +28,8 @@ https://github.com/zen-browser/desktop|general
 https://github.com/vsouza/awesome-ios|general
 https://github.com/florisboard/florisboard|general
 https://github.com/khcrysalis/Impactor|general
-https://github.com/Skywalker690/nasa-space-apps|astronomy
 https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct|huggingface
 https://github.com/FormingWorlds/PROTEUS|astronomy
 https://huggingface.co/meta-llama/Llama-2-7b-chat-hf|huggingface
 https://github.com/10110111/CalcMySky|astronomy
+https://huggingface.co/mistralai/Mistral-7B-v0.1|huggingface
