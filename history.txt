@@ -67,3 +67,4 @@ https://github.com/RikkaApps/Shizuku
 https://huggingface.co/deepseek-ai/DeepSeek-V3
 https://github.com/lightkurve/lightkurve
 https://github.com/google-ai-edge/gallery
+https://huggingface.co/CompVis/stable-diffusion-v1-4
