@@ -1,4 +1,3 @@
-https://github.com/open-ani/animeko|general
 https://github.com/business-science/ai-data-science-team|general
 https://github.com/steipete/Peekaboo|general
 https://github.com/argmaxinc/WhisperKit|general
@@ -30,3 +29,4 @@ https://github.com/LucaMalavolta/PyORBIT|astronomy
 https://huggingface.co/black-forest-labs/FLUX.1-schnell|huggingface
 https://github.com/SteveGreaves/AstroBinUploader|astronomy
 https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct|huggingface
+https://github.com/lightkurve/lksearch|astronomy
