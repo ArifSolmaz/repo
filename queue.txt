@@ -25,8 +25,8 @@ https://github.com/zen-browser/desktop|general
 https://github.com/vsouza/awesome-ios|general
 https://github.com/florisboard/florisboard|general
 https://github.com/khcrysalis/Impactor|general
-https://github.com/sky-map-team/stardroid|astronomy
 https://huggingface.co/openai/gpt-oss-120b|huggingface
 https://github.com/LucaMalavolta/PyORBIT|astronomy
 https://huggingface.co/black-forest-labs/FLUX.1-schnell|huggingface
 https://github.com/SteveGreaves/AstroBinUploader|astronomy
+https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct|huggingface
