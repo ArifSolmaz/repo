@@ -69,3 +69,4 @@ https://github.com/lightkurve/lightkurve
 https://github.com/google-ai-edge/gallery
 https://huggingface.co/CompVis/stable-diffusion-v1-4
 https://github.com/Skywalker690/nasa-space-apps
+https://github.com/k4yt3x/video2x
