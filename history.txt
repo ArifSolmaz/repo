@@ -87,3 +87,4 @@ https://github.com/SteveGreaves/AstroBinUploader
 https://github.com/steipete/Peekaboo
 https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct
 https://github.com/lightkurve/lksearch
+https://github.com/argmaxinc/WhisperKit
