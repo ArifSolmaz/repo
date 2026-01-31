@@ -80,3 +80,4 @@ https://huggingface.co/mistralai/Mistral-7B-v0.1
 https://github.com/sky-map-team/stardroid
 https://github.com/open-ani/animeko
 https://huggingface.co/openai/gpt-oss-120b
+https://github.com/LucaMalavolta/PyORBIT
