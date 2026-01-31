@@ -84,3 +84,4 @@ https://github.com/LucaMalavolta/PyORBIT
 https://github.com/business-science/ai-data-science-team
 https://huggingface.co/black-forest-labs/FLUX.1-schnell
 https://github.com/SteveGreaves/AstroBinUploader
+https://github.com/steipete/Peekaboo
