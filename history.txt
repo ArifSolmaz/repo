@@ -90,3 +90,4 @@ https://github.com/lightkurve/lksearch
 https://github.com/argmaxinc/WhisperKit
 https://huggingface.co/stabilityai/stable-diffusion-3-medium
 https://github.com/Caltech-IPAC/firefly
+https://github.com/VectifyAI/PageIndex

@@ -1,4 +1,3 @@
-https://github.com/VectifyAI/PageIndex|general
 https://github.com/kxzk/snapbench|general
 https://github.com/kitlangton/Hex|general
 https://github.com/linuxmint/cinnamon|general
@@ -26,3 +25,4 @@ https://github.com/ccnmtl/astro-simulations|astronomy
 https://huggingface.co/meta-llama/Llama-2-7b|huggingface
 https://github.com/OpenExoplanetCatalogue/open_exoplanet_catalogue|astronomy
 https://huggingface.co/deepseek-ai/DeepSeek-R1|huggingface
+https://github.com/ekaterinailin/AltaiPony|astronomy
