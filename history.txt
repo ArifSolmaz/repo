@@ -82,3 +82,4 @@ https://github.com/open-ani/animeko
 https://huggingface.co/openai/gpt-oss-120b
 https://github.com/LucaMalavolta/PyORBIT
 https://github.com/business-science/ai-data-science-team
+https://huggingface.co/black-forest-labs/FLUX.1-schnell
