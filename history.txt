@@ -93,3 +93,4 @@ https://github.com/Caltech-IPAC/firefly
 https://github.com/VectifyAI/PageIndex
 https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0
 https://github.com/ccnmtl/astro-simulations
+https://github.com/kxzk/snapbench
