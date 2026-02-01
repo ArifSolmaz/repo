@@ -101,3 +101,4 @@ https://huggingface.co/deepseek-ai/DeepSeek-R1
 https://github.com/ekaterinailin/AltaiPony
 https://github.com/linuxmint/cinnamon
 https://huggingface.co/meta-llama/Meta-Llama-3-8B
+https://github.com/aaronwmorris/indi-allsky
