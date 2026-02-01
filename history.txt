@@ -95,3 +95,4 @@ https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0
 https://github.com/ccnmtl/astro-simulations
 https://github.com/kxzk/snapbench
 https://huggingface.co/meta-llama/Llama-2-7b
+https://github.com/OpenExoplanetCatalogue/open_exoplanet_catalogue
