@@ -19,7 +19,6 @@ https://github.com/zen-browser/desktop|general
 https://github.com/vsouza/awesome-ios|general
 https://github.com/florisboard/florisboard|general
 https://github.com/khcrysalis/Impactor|general
-https://huggingface.co/meta-llama/Llama-2-7b|huggingface
 https://github.com/OpenExoplanetCatalogue/open_exoplanet_catalogue|astronomy
 https://huggingface.co/deepseek-ai/DeepSeek-R1|huggingface
 https://github.com/ekaterinailin/AltaiPony|astronomy
