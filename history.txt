@@ -99,3 +99,4 @@ https://github.com/OpenExoplanetCatalogue/open_exoplanet_catalogue
 https://github.com/kitlangton/Hex
 https://huggingface.co/deepseek-ai/DeepSeek-R1
 https://github.com/ekaterinailin/AltaiPony
+https://github.com/linuxmint/cinnamon
