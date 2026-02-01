@@ -97,3 +97,4 @@ https://github.com/kxzk/snapbench
 https://huggingface.co/meta-llama/Llama-2-7b
 https://github.com/OpenExoplanetCatalogue/open_exoplanet_catalogue
 https://github.com/kitlangton/Hex
+https://huggingface.co/deepseek-ai/DeepSeek-R1

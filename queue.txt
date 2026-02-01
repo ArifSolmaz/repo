@@ -18,8 +18,8 @@ https://github.com/zen-browser/desktop|general
 https://github.com/vsouza/awesome-ios|general
 https://github.com/florisboard/florisboard|general
 https://github.com/khcrysalis/Impactor|general
-https://huggingface.co/deepseek-ai/DeepSeek-R1|huggingface
 https://github.com/ekaterinailin/AltaiPony|astronomy
 https://huggingface.co/meta-llama/Meta-Llama-3-8B|huggingface
 https://github.com/aaronwmorris/indi-allsky|astronomy
 https://github.com/astropy/astropy|astronomy
+https://huggingface.co/Tongyi-MAI/Z-Image-Turbo|huggingface
