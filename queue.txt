@@ -1,4 +1,3 @@
-https://github.com/kitlangton/Hex|general
 https://github.com/linuxmint/cinnamon|general
 https://github.com/evolus/pencil|general
 https://github.com/TryGhost/Ghost|general
@@ -23,3 +22,4 @@ https://huggingface.co/deepseek-ai/DeepSeek-R1|huggingface
 https://github.com/ekaterinailin/AltaiPony|astronomy
 https://huggingface.co/meta-llama/Meta-Llama-3-8B|huggingface
 https://github.com/aaronwmorris/indi-allsky|astronomy
+https://github.com/astropy/astropy|astronomy
