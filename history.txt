@@ -108,3 +108,4 @@ https://github.com/astropy/astropy
 https://github.com/TryGhost/Ghost
 https://github.com/gaxmann/gordonssunclock
 https://github.com/cilium/cilium
+https://github.com/indigo-astronomy/indigo
