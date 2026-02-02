@@ -17,6 +17,5 @@ https://github.com/vsouza/awesome-ios|general
 https://github.com/florisboard/florisboard|general
 https://github.com/khcrysalis/Impactor|general
 https://github.com/astropy/astropy|astronomy
-https://huggingface.co/Tongyi-MAI/Z-Image-Turbo|huggingface
 https://github.com/gaxmann/gordonssunclock|astronomy
 https://github.com/indigo-astronomy/indigo|astronomy
