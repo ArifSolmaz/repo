@@ -106,3 +106,4 @@ https://github.com/evolus/pencil
 https://huggingface.co/Tongyi-MAI/Z-Image-Turbo
 https://github.com/astropy/astropy
 https://github.com/TryGhost/Ghost
+https://github.com/gaxmann/gordonssunclock
