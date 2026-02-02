@@ -111,3 +111,4 @@ https://github.com/cilium/cilium
 https://github.com/indigo-astronomy/indigo
 https://github.com/ChaoMixian/vFlow
 https://github.com/MelBartels/AstronomyCalculatorsJavaScript
+https://github.com/clusterzx/paperless-ai
