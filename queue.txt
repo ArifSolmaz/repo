@@ -1,4 +1,3 @@
-https://github.com/firecrawl/firecrawl-mcp-server|general
 https://github.com/Blaizzy/mlx-audio|general
 https://github.com/v2fly/domain-list-community|general
 https://github.com/upstash/context7|general
@@ -14,3 +13,4 @@ https://github.com/florisboard/florisboard|general
 https://github.com/khcrysalis/Impactor|general
 https://github.com/TeamCOMPAS/COMPAS|astronomy
 https://github.com/nasa/ExoMiner|astronomy
+https://github.com/Smithsonian/SuperNOVAS|astronomy
