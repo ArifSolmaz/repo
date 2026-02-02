@@ -104,3 +104,4 @@ https://huggingface.co/meta-llama/Meta-Llama-3-8B
 https://github.com/aaronwmorris/indi-allsky
 https://github.com/evolus/pencil
 https://huggingface.co/Tongyi-MAI/Z-Image-Turbo
+https://github.com/astropy/astropy
