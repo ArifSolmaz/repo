@@ -12,6 +12,5 @@ https://github.com/zen-browser/desktop|general
 https://github.com/vsouza/awesome-ios|general
 https://github.com/florisboard/florisboard|general
 https://github.com/khcrysalis/Impactor|general
-https://github.com/quokka-astro/quokka|astronomy
 https://github.com/TeamCOMPAS/COMPAS|astronomy
 https://github.com/nasa/ExoMiner|astronomy

@@ -112,3 +112,4 @@ https://github.com/indigo-astronomy/indigo
 https://github.com/ChaoMixian/vFlow
 https://github.com/MelBartels/AstronomyCalculatorsJavaScript
 https://github.com/clusterzx/paperless-ai
+https://github.com/quokka-astro/quokka
