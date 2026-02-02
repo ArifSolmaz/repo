@@ -1,4 +1,3 @@
-https://github.com/TryGhost/Ghost|general
 https://github.com/cilium/cilium|general
 https://github.com/ChaoMixian/vFlow|general
 https://github.com/clusterzx/paperless-ai|general
@@ -18,3 +17,4 @@ https://github.com/florisboard/florisboard|general
 https://github.com/khcrysalis/Impactor|general
 https://github.com/gaxmann/gordonssunclock|astronomy
 https://github.com/indigo-astronomy/indigo|astronomy
+https://github.com/MelBartels/AstronomyCalculatorsJavaScript|astronomy
