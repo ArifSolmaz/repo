@@ -1,4 +1,3 @@
-https://github.com/upstash/context7|general
 https://github.com/serverless/serverless|general
 https://github.com/hamed-elfayome/Claude-Usage-Tracker|general
 https://github.com/guardianproject/orbot-android|general
@@ -11,3 +10,4 @@ https://github.com/florisboard/florisboard|general
 https://github.com/khcrysalis/Impactor|general
 https://github.com/feder-observatory/stellarphot|astronomy
 https://github.com/oiwn/exoplanets-catalog|astronomy
+https://github.com/OpenSpace/OpenSpace|astronomy
