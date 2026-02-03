@@ -116,3 +116,4 @@ https://github.com/quokka-astro/quokka
 https://github.com/firecrawl/firecrawl-mcp-server
 https://github.com/TeamCOMPAS/COMPAS
 https://github.com/Blaizzy/mlx-audio
+https://github.com/nasa/ExoMiner

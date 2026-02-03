@@ -10,6 +10,5 @@ https://github.com/zen-browser/desktop|general
 https://github.com/vsouza/awesome-ios|general
 https://github.com/florisboard/florisboard|general
 https://github.com/khcrysalis/Impactor|general
-https://github.com/nasa/ExoMiner|astronomy
 https://github.com/Smithsonian/SuperNOVAS|astronomy
 https://github.com/feder-observatory/stellarphot|astronomy
