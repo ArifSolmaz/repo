@@ -122,3 +122,4 @@ https://github.com/Smithsonian/SuperNOVAS
 https://github.com/upstash/context7
 https://github.com/feder-observatory/stellarphot
 https://github.com/serverless/serverless
+https://github.com/oiwn/exoplanets-catalog
