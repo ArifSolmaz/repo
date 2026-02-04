@@ -1,4 +1,3 @@
-https://github.com/anthropics/skills|general
 https://github.com/mastra-ai/mastra|general
 https://github.com/simple-icons/simple-icons|general
 https://github.com/zen-browser/desktop|general
@@ -7,3 +6,4 @@ https://github.com/florisboard/florisboard|general
 https://github.com/khcrysalis/Impactor|general
 https://github.com/NewStrangeWorlds/BeAR|astronomy
 https://github.com/LSST-AGN-Variability/EzTaoX|astronomy
+https://github.com/KDE/kstars|astronomy
