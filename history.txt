@@ -134,3 +134,4 @@ https://github.com/LSST-AGN-Variability/EzTaoX
 https://github.com/simple-icons/simple-icons
 https://github.com/KDE/kstars
 https://github.com/zen-browser/desktop
+https://github.com/astropy/astroquery
