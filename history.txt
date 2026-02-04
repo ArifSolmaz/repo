@@ -128,3 +128,4 @@ https://github.com/OpenSpace/OpenSpace
 https://github.com/guardianproject/orbot-android
 https://github.com/ivh/PyReduce
 https://github.com/anthropics/skills
+https://github.com/NewStrangeWorlds/BeAR
