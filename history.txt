@@ -137,3 +137,4 @@ https://github.com/zen-browser/desktop
 https://github.com/astropy/astroquery
 https://github.com/vsouza/awesome-ios
 https://github.com/langurmonkey/gaiasky
+https://github.com/florisboard/florisboard
