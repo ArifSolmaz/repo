@@ -1,5 +1,5 @@
-https://github.com/vsouza/awesome-ios|general
 https://github.com/florisboard/florisboard|general
 https://github.com/khcrysalis/Impactor|general
 https://github.com/langurmonkey/gaiasky|astronomy
 https://github.com/mikuru1096/ASGARD_GRBAfterglow|astronomy
+https://github.com/synthesizer-project/synthesizer|astronomy
