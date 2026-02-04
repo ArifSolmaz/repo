@@ -5,6 +5,5 @@ https://github.com/zen-browser/desktop|general
 https://github.com/vsouza/awesome-ios|general
 https://github.com/florisboard/florisboard|general
 https://github.com/khcrysalis/Impactor|general
-https://github.com/ivh/PyReduce|astronomy
 https://github.com/NewStrangeWorlds/BeAR|astronomy
 https://github.com/LSST-AGN-Variability/EzTaoX|astronomy
