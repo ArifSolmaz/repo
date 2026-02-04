@@ -3,6 +3,5 @@ https://github.com/zen-browser/desktop|general
 https://github.com/vsouza/awesome-ios|general
 https://github.com/florisboard/florisboard|general
 https://github.com/khcrysalis/Impactor|general
-https://github.com/LSST-AGN-Variability/EzTaoX|astronomy
 https://github.com/KDE/kstars|astronomy
 https://github.com/astropy/astroquery|astronomy
