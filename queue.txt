@@ -1,4 +1,3 @@
-https://github.com/asgeirtj/system_prompts_leaks|general
 https://github.com/ipta/pulsar-clock-corrections|astronomy
 https://github.com/thedotmack/claude-mem|general
 https://github.com/ahmedkerouat/black-hole-papers|astronomy
