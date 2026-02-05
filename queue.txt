@@ -1,5 +1,5 @@
-https://github.com/openai/skills|general
 https://github.com/kirxkirx/vast|astronomy
 https://github.com/anilbeesetti/nextplayer|general
 https://github.com/spacetelescope/romancal|astronomy
 https://github.com/git-ai-project/git-ai|general
+https://github.com/lichtgestalter/curvesimulator|astronomy
