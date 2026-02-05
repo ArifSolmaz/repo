@@ -145,3 +145,4 @@ https://github.com/asgeirtj/system_prompts_leaks
 https://github.com/ipta/pulsar-clock-corrections
 https://github.com/thedotmack/claude-mem
 https://github.com/ahmedkerouat/black-hole-papers
+https://github.com/ThePrimeagen/99
