@@ -149,3 +149,4 @@ https://github.com/ThePrimeagen/99
 https://github.com/iraf-community/iraf
 https://github.com/openai/skills
 https://github.com/kirxkirx/vast
+https://github.com/anilbeesetti/nextplayer
