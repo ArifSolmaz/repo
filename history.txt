@@ -143,3 +143,4 @@ https://github.com/khcrysalis/Impactor
 https://github.com/synthesizer-project/synthesizer
 https://github.com/asgeirtj/system_prompts_leaks
 https://github.com/ipta/pulsar-clock-corrections
+https://github.com/thedotmack/claude-mem
