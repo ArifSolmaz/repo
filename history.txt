@@ -142,3 +142,4 @@ https://github.com/mikuru1096/ASGARD_GRBAfterglow
 https://github.com/khcrysalis/Impactor
 https://github.com/synthesizer-project/synthesizer
 https://github.com/asgeirtj/system_prompts_leaks
+https://github.com/ipta/pulsar-clock-corrections

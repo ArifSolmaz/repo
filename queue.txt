@@ -1,4 +1,5 @@
-https://github.com/ipta/pulsar-clock-corrections|astronomy
 https://github.com/thedotmack/claude-mem|general
 https://github.com/ahmedkerouat/black-hole-papers|astronomy
 https://github.com/ThePrimeagen/99|general
+https://github.com/iraf-community/iraf|astronomy
+https://github.com/openai/skills|general
