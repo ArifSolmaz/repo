@@ -151,3 +151,4 @@ https://github.com/openai/skills
 https://github.com/kirxkirx/vast
 https://github.com/anilbeesetti/nextplayer
 https://github.com/spacetelescope/romancal
+https://github.com/git-ai-project/git-ai

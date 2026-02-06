@@ -1,5 +1,5 @@
-https://github.com/git-ai-project/git-ai|general
 https://github.com/lichtgestalter/curvesimulator|astronomy
 https://github.com/kubernetes/ingress-nginx|general
 https://github.com/FunKite/solunatus|astronomy
 https://github.com/tailscale/tailscale|general
+https://github.com/spacetelescope/exovetter|astronomy
