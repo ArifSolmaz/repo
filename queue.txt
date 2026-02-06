@@ -1,5 +1,5 @@
-https://github.com/FunKite/solunatus|astronomy
 https://github.com/tailscale/tailscale|general
 https://github.com/spacetelescope/exovetter|astronomy
 https://github.com/Tencent/WeKnora|general
 https://github.com/jrenaud90/TidalPy|astronomy
+https://github.com/microsoft/playwright-cli|general
