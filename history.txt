@@ -158,3 +158,4 @@ https://github.com/FunKite/solunatus
 https://github.com/tailscale/tailscale
 https://github.com/spacetelescope/exovetter
 https://github.com/Tencent/WeKnora
+https://github.com/jrenaud90/TidalPy
