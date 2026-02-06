@@ -1,5 +1,5 @@
-https://github.com/Alamofire/Alamofire|general
 https://github.com/sefffal/Octofitter.jl|astronomy
 https://github.com/NevaMind-AI/memU|general
 https://github.com/mmomtchev/orbitron|astronomy
 https://github.com/LearningCircuit/local-deep-research|general
+https://github.com/qminor/qlens-beta|astronomy
