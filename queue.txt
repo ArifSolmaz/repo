@@ -1,5 +1,5 @@
-https://github.com/cloudflare/pingora|general
 https://github.com/astropy/photutils|astronomy
 https://github.com/npm/cli|general
 https://github.com/panoptes/POCS|astronomy
 https://github.com/risingwavelabs/risingwave|general
+https://github.com/spacetelescope/jwst|astronomy
