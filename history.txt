@@ -162,3 +162,4 @@ https://github.com/jrenaud90/TidalPy
 https://github.com/microsoft/playwright-cli
 https://github.com/yuval-harpaz/astro
 https://github.com/Alamofire/Alamofire
+https://github.com/sefffal/Octofitter.jl
