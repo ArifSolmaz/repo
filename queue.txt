@@ -1,5 +1,5 @@
-https://github.com/npm/cli|general
 https://github.com/panoptes/POCS|astronomy
 https://github.com/risingwavelabs/risingwave|general
 https://github.com/spacetelescope/jwst|astronomy
 https://github.com/pingcap/tidb|general
+https://github.com/OnStepNinja/AiBridge|astronomy

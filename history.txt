@@ -169,3 +169,4 @@ https://github.com/LearningCircuit/local-deep-research
 https://github.com/qminor/qlens-beta
 https://github.com/cloudflare/pingora
 https://github.com/astropy/photutils
+https://github.com/npm/cli
