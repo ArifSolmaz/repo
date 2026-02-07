@@ -1,5 +1,5 @@
-https://github.com/pingcap/tidb|general
 https://github.com/OnStepNinja/AiBridge|astronomy
 https://github.com/AndyMik90/Auto-Claude|general
 https://github.com/castro-gzlz/TESS-cont|astronomy
 https://github.com/viarotel-org/escrcpy|general
+https://github.com/nichollsh/AGNI|astronomy
