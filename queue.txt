@@ -1,5 +1,5 @@
-https://github.com/mmomtchev/orbitron|astronomy
 https://github.com/LearningCircuit/local-deep-research|general
 https://github.com/qminor/qlens-beta|astronomy
 https://github.com/cloudflare/pingora|general
 https://github.com/astropy/photutils|astronomy
+https://github.com/npm/cli|general
