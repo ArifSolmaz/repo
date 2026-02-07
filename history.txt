@@ -166,3 +166,4 @@ https://github.com/sefffal/Octofitter.jl
 https://github.com/NevaMind-AI/memU
 https://github.com/mmomtchev/orbitron
 https://github.com/LearningCircuit/local-deep-research
+https://github.com/qminor/qlens-beta
