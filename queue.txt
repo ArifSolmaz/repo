@@ -1,5 +1,5 @@
-https://github.com/risingwavelabs/risingwave|general
 https://github.com/spacetelescope/jwst|astronomy
 https://github.com/pingcap/tidb|general
 https://github.com/OnStepNinja/AiBridge|astronomy
 https://github.com/AndyMik90/Auto-Claude|general
+https://github.com/castro-gzlz/TESS-cont|astronomy

@@ -171,3 +171,4 @@ https://github.com/cloudflare/pingora
 https://github.com/astropy/photutils
 https://github.com/npm/cli
 https://github.com/panoptes/POCS
+https://github.com/risingwavelabs/risingwave
