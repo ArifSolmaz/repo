@@ -1,4 +1,3 @@
-https://github.com/webpack/webpack|general
 https://github.com/Helioviewer-Project/JHelioviewer-SWHV|astronomy
 https://github.com/jingkaihe/matchlock|general
 https://github.com/Shamrock-code/Shamrock|astronomy
