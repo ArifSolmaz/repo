@@ -1,4 +1,3 @@
-https://github.com/dinoki-ai/osaurus|general
 https://github.com/pmaxted/pycheops|astronomy
 https://github.com/bytedance/UI-TARS-desktop|general
 https://github.com/MrXiaoXiao/Apollo_Disturbance_Detection|astronomy

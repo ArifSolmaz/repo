@@ -179,3 +179,4 @@ https://github.com/AndyMik90/Auto-Claude
 https://github.com/castro-gzlz/TESS-cont
 https://github.com/viarotel-org/escrcpy
 https://github.com/nichollsh/AGNI
+https://github.com/dinoki-ai/osaurus
