@@ -1,5 +1,5 @@
-https://github.com/castro-gzlz/TESS-cont|astronomy
 https://github.com/viarotel-org/escrcpy|general
 https://github.com/nichollsh/AGNI|astronomy
 https://github.com/dinoki-ai/osaurus|general
 https://github.com/pmaxted/pycheops|astronomy
+https://github.com/bytedance/UI-TARS-desktop|general
