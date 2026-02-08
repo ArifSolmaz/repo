@@ -182,3 +182,4 @@ https://github.com/nichollsh/AGNI
 https://github.com/dinoki-ai/osaurus
 https://github.com/pmaxted/pycheops
 https://github.com/bytedance/UI-TARS-desktop
+https://github.com/MrXiaoXiao/Apollo_Disturbance_Detection
