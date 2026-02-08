@@ -751,37 +751,50 @@ Respond with ONLY valid JSON, no markdown code blocks."""
         """
         Post to Bluesky with image.
         Bluesky has 300 grapheme limit - shorter format than Twitter.
+        Uses TextBuilder for clickable links and hashtags.
         Returns post URL or None.
         """
         if not BLUESKY_HANDLE or not BLUESKY_APP_PASSWORD:
             logger.warning("⚠️  Bluesky credentials not set, skipping")
             return None
         
-        # Format post text - Bluesky has strict 300 grapheme limit
-        hashtags_str = ' '.join(f"#{tag}" for tag in content['hashtags'])
-        
-        # Build short post: summary + link + hashtags (no first paragraph)
-        post_text = f"{content['summary']}\n\n🔗 {repo_url}\n\n{hashtags_str}"
-        
-        # Bluesky limit is 300 graphemes
-        max_length = 300
-        if len(post_text) > max_length:
-            # Shorten summary to fit
-            available = max_length - len(f"\n\n🔗 {repo_url}\n\n{hashtags_str}") - 3
-            if available > 50:
-                shortened_summary = content['summary'][:available] + "..."
-                post_text = f"{shortened_summary}\n\n🔗 {repo_url}\n\n{hashtags_str}"
-            else:
-                # Even shorter - just summary and link
-                available = max_length - len(f"\n\n🔗 {repo_url}") - 3
-                shortened_summary = content['summary'][:available] + "..."
-                post_text = f"{shortened_summary}\n\n🔗 {repo_url}"
-        
         try:
+            from atproto import client_utils, models
+            
             # Login to Bluesky
             client = BlueskyClient()
             client.login(BLUESKY_HANDLE, BLUESKY_APP_PASSWORD)
             logger.info("✅ Logged into Bluesky")
+            
+            # === Build rich text with clickable links and hashtags ===
+            hashtags_str = ' '.join(f"#{tag}" for tag in content['hashtags'])
+            
+            # Calculate available space for summary
+            # Fixed parts: "\n\n🔗 " + repo_url + "\n\n" + hashtags
+            fixed_len = len(f"\n\n🔗 {repo_url}\n\n{hashtags_str}")
+            max_summary_len = 300 - fixed_len
+            
+            summary_text = content['summary']
+            if len(summary_text) + fixed_len > 300:
+                if max_summary_len > 50:
+                    summary_text = summary_text[:max_summary_len - 3] + "..."
+                else:
+                    # Drop hashtags to fit
+                    max_summary_len = 300 - len(f"\n\n🔗 {repo_url}")
+                    summary_text = summary_text[:max_summary_len - 3] + "..."
+            
+            tb = client_utils.TextBuilder()
+            tb.text(summary_text)
+            tb.text("\n\n🔗 ")
+            tb.link(repo_url, repo_url)
+            
+            # Only add hashtags if we have room
+            if len(summary_text) + fixed_len <= 300:
+                tb.text("\n\n")
+                for i, tag in enumerate(content['hashtags']):
+                    if i > 0:
+                        tb.text(" ")
+                    tb.tag(f"#{tag}", tag)
             
             # Upload image if available
             embed = None
@@ -790,27 +803,21 @@ Respond with ONLY valid JSON, no markdown code blocks."""
                 with open(image_path, 'rb') as f:
                     image_data = f.read()
                 
-                # Upload blob
                 upload = client.upload_blob(image_data)
                 
-                # Create embed with image
-                embed = {
-                    "$type": "app.bsky.embed.images",
-                    "images": [
-                        {
-                            "alt": content['summary'][:100],
-                            "image": upload.blob
-                        }
+                embed = models.AppBskyEmbedImages.Main(
+                    images=[
+                        models.AppBskyEmbedImages.Image(
+                            alt=content['summary'][:100],
+                            image=upload.blob,
+                        )
                     ]
-                }
+                )
                 logger.info("✅ Image uploaded to Bluesky")
             
-            # Create post
+            # Create post with rich text (TextBuilder creates proper facets)
             logger.info("🦋 Posting to Bluesky...")
-            if embed:
-                response = client.send_post(text=post_text, embed=embed)
-            else:
-                response = client.send_post(text=post_text)
+            response = client.send_post(tb, embed=embed)
             
             # Construct post URL
             post_uri = response.uri
