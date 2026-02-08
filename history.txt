@@ -177,3 +177,4 @@ https://github.com/pingcap/tidb
 https://github.com/OnStepNinja/AiBridge
 https://github.com/AndyMik90/Auto-Claude
 https://github.com/castro-gzlz/TESS-cont
+https://github.com/viarotel-org/escrcpy
