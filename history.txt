@@ -175,3 +175,4 @@ https://github.com/risingwavelabs/risingwave
 https://github.com/spacetelescope/jwst
 https://github.com/pingcap/tidb
 https://github.com/OnStepNinja/AiBridge
+https://github.com/AndyMik90/Auto-Claude
