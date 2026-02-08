@@ -180,3 +180,4 @@ https://github.com/castro-gzlz/TESS-cont
 https://github.com/viarotel-org/escrcpy
 https://github.com/nichollsh/AGNI
 https://github.com/dinoki-ai/osaurus
+https://github.com/pmaxted/pycheops
