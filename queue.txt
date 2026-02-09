@@ -1,4 +1,3 @@
-https://github.com/tobi/qmd|general
 https://github.com/google/langextract|general
 https://github.com/JarronL/webbpsf_ext|astronomy
 https://github.com/mrantonSG/nova_DSO_tracker|astronomy
