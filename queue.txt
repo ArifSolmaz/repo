@@ -1,5 +1,5 @@
-https://github.com/mrantonSG/nova_DSO_tracker|astronomy
 https://github.com/OpenBMB/MiniCPM-o|general
 https://github.com/CheerfulUser/TESSreduce|astronomy
 https://github.com/XTLS/Xray-core|general
 https://github.com/miksrv/astronomy-portal|astronomy
+https://github.com/badlogic/pi-mono|general
