@@ -1,4 +1,5 @@
-https://github.com/pierfra-rocci/rpp|astronomy
 https://github.com/topjohnwu/Magisk|general
 https://github.com/spacetelescope/spacekit|astronomy
 https://github.com/jeffvli/feishin|general
+https://github.com/dsavransky/EXOSIMS|astronomy
+https://github.com/microsoft/edit|general
