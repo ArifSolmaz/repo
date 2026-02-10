@@ -1,4 +1,3 @@
-https://github.com/naver/lispe|general
 https://github.com/pierfra-rocci/rpp|astronomy
 https://github.com/topjohnwu/Magisk|general
 https://github.com/spacetelescope/spacekit|astronomy
