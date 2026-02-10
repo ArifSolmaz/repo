@@ -1,5 +1,5 @@
-https://github.com/EveryInc/compound-engineering-plugin|general
 https://github.com/kima-org/kima|astronomy
 https://github.com/tiann/KernelSU|general
 https://github.com/rabssm/MeteorRadio|astronomy
 https://github.com/virattt/dexter|general
+https://github.com/vsquicciarini/madys|astronomy
