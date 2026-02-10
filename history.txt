@@ -200,3 +200,4 @@ https://github.com/astrolabsoftware/fink-broker
 https://github.com/naver/lispe
 https://github.com/pierfra-rocci/rpp
 https://github.com/topjohnwu/Magisk
+https://github.com/spacetelescope/spacekit
