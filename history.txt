@@ -206,3 +206,4 @@ https://github.com/dsavransky/EXOSIMS
 https://github.com/microsoft/edit
 https://github.com/danielapai/bioverse
 https://github.com/siteboon/claudecodeui
+https://github.com/Urknall25/astrophysics-with-python
