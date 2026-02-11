@@ -212,3 +212,4 @@ https://github.com/kima-org/kima
 https://github.com/tiann/KernelSU
 https://github.com/rabssm/MeteorRadio
 https://github.com/virattt/dexter
+https://github.com/vsquicciarini/madys
