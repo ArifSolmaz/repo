@@ -1,5 +1,5 @@
-https://github.com/lapce/lapce|general
 https://github.com/Sigmyne/SuperNOVAS|astronomy
 https://github.com/carlvellotti/claude-code-pm-course|general
 https://github.com/yusukeaso-astron/plotastrodata|astronomy
 https://github.com/ChromeDevTools/chrome-devtools-mcp|general
+https://github.com/spacetelescope/jdat_notebooks|astronomy
