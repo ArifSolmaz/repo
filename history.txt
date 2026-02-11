@@ -216,3 +216,4 @@ https://github.com/vsquicciarini/madys
 https://github.com/MatsuriDayo/NekoBoxForAndroid
 https://github.com/jobovy/galpy
 https://github.com/lapce/lapce
+https://github.com/Sigmyne/SuperNOVAS
