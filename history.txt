@@ -213,3 +213,4 @@ https://github.com/tiann/KernelSU
 https://github.com/rabssm/MeteorRadio
 https://github.com/virattt/dexter
 https://github.com/vsquicciarini/madys
+https://github.com/MatsuriDayo/NekoBoxForAndroid
