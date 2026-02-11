@@ -210,3 +210,4 @@ https://github.com/Urknall25/astrophysics-with-python
 https://github.com/EveryInc/compound-engineering-plugin
 https://github.com/kima-org/kima
 https://github.com/tiann/KernelSU
+https://github.com/rabssm/MeteorRadio

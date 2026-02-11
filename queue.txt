@@ -1,5 +1,5 @@
-https://github.com/rabssm/MeteorRadio|astronomy
 https://github.com/virattt/dexter|general
 https://github.com/vsquicciarini/madys|astronomy
 https://github.com/MatsuriDayo/NekoBoxForAndroid|general
 https://github.com/jobovy/galpy|astronomy
+https://github.com/lapce/lapce|general
