@@ -219,3 +219,4 @@ https://github.com/lapce/lapce
 https://github.com/Sigmyne/SuperNOVAS
 https://github.com/carlvellotti/claude-code-pm-course
 https://github.com/yusukeaso-astron/plotastrodata
+https://github.com/ChromeDevTools/chrome-devtools-mcp
