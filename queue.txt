@@ -1,5 +1,5 @@
-https://github.com/infracost/infracost|general
 https://github.com/YihanWangAstro/VegasAfterglow|astronomy
 https://github.com/mailcow/mailcow-dockerized|general
 https://github.com/hpparvi/ExoIris|astronomy
 https://github.com/utmapp/UTM|general
+https://github.com/spacetelescope/mast_notebooks|astronomy
