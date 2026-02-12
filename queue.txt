@@ -1,5 +1,5 @@
-https://github.com/projectdiscovery/nuclei-templates|general
 https://github.com/spacetelescope/crds|astronomy
 https://github.com/JetBrains/kotlin|general
 https://github.com/henrysky/stellarium_star_catalogs|astronomy
 https://github.com/Canner/WrenAI|general
+https://github.com/danieljprice/phantom|astronomy
