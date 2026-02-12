@@ -222,3 +222,4 @@ https://github.com/yusukeaso-astron/plotastrodata
 https://github.com/ChromeDevTools/chrome-devtools-mcp
 https://github.com/spacetelescope/jdat_notebooks
 https://github.com/block/goose
+https://github.com/glass-dev/glass
