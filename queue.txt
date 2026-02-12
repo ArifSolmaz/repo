@@ -1,5 +1,5 @@
-https://github.com/Canner/WrenAI|general
 https://github.com/danieljprice/phantom|astronomy
 https://github.com/wg-easy/wg-easy|general
 https://github.com/mattyowl/astLib|astronomy
 https://github.com/infracost/infracost|general
+https://github.com/YihanWangAstro/VegasAfterglow|astronomy

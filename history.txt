@@ -227,3 +227,4 @@ https://github.com/projectdiscovery/nuclei-templates
 https://github.com/spacetelescope/crds
 https://github.com/JetBrains/kotlin
 https://github.com/henrysky/stellarium_star_catalogs
+https://github.com/Canner/WrenAI
