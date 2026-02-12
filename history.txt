@@ -220,3 +220,4 @@ https://github.com/Sigmyne/SuperNOVAS
 https://github.com/carlvellotti/claude-code-pm-course
 https://github.com/yusukeaso-astron/plotastrodata
 https://github.com/ChromeDevTools/chrome-devtools-mcp
+https://github.com/spacetelescope/jdat_notebooks
