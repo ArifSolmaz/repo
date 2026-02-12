@@ -1,5 +1,5 @@
-https://github.com/wg-easy/wg-easy|general
 https://github.com/mattyowl/astLib|astronomy
 https://github.com/infracost/infracost|general
 https://github.com/YihanWangAstro/VegasAfterglow|astronomy
 https://github.com/mailcow/mailcow-dockerized|general
+https://github.com/hpparvi/ExoIris|astronomy
