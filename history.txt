@@ -230,3 +230,4 @@ https://github.com/henrysky/stellarium_star_catalogs
 https://github.com/Canner/WrenAI
 https://github.com/danieljprice/phantom
 https://github.com/wg-easy/wg-easy
+https://github.com/mattyowl/astLib
