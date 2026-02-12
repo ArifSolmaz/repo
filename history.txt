@@ -224,3 +224,4 @@ https://github.com/spacetelescope/jdat_notebooks
 https://github.com/block/goose
 https://github.com/glass-dev/glass
 https://github.com/projectdiscovery/nuclei-templates
+https://github.com/spacetelescope/crds
