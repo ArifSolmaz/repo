@@ -1,4 +1,3 @@
-https://github.com/block/goose|general
 https://github.com/glass-dev/glass|astronomy
 https://github.com/projectdiscovery/nuclei-templates|general
 https://github.com/spacetelescope/crds|astronomy
