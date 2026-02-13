@@ -74,7 +74,7 @@ IMAGES_DIR.mkdir(parents=True, exist_ok=True)
 POSTS_DIR.mkdir(parents=True, exist_ok=True)
 
 # Image cleanup settings
-IMAGE_SIZE_THRESHOLD_MB = 1  # Delete images larger than this
+IMAGE_SIZE_THRESHOLD_MB = 1  # Delete images larger than 1MB
 IMAGE_AGE_THRESHOLD_DAYS = 30  # Delete after this many days
 
 
@@ -747,11 +747,63 @@ Respond with ONLY valid JSON, no markdown code blocks."""
             logger.error(f"❌ Twitter posting failed: {type(e).__name__}: {e}")
             return None
     
+    def _build_bluesky_facets(self, text: str, repo_url: str, hashtags: list) -> list:
+        """
+        Build Bluesky facets with correct UTF-8 byte offsets.
+        
+        Bluesky uses byte offsets (not character offsets) for rich text facets.
+        Emoji characters like 🔗 are 4 bytes in UTF-8 but 1 character in Python,
+        so we must calculate byte positions explicitly.
+        """
+        from atproto import models
+        
+        facets = []
+        text_bytes = text.encode('utf-8')
+        
+        # --- Link facet: find repo_url in text ---
+        # Search for the URL in the text
+        url_start_char = text.find(repo_url)
+        if url_start_char >= 0:
+            # Calculate byte offsets by encoding the substring before the URL
+            byte_start = len(text[:url_start_char].encode('utf-8'))
+            byte_end = byte_start + len(repo_url.encode('utf-8'))
+            
+            facets.append(
+                models.AppBskyRichtextFacet.Main(
+                    features=[models.AppBskyRichtextFacet.Link(uri=repo_url)],
+                    index=models.AppBskyRichtextFacet.ByteSlice(
+                        byte_start=byte_start,
+                        byte_end=byte_end
+                    )
+                )
+            )
+            logger.info(f"  🔗 Link facet: chars [{url_start_char}:{url_start_char+len(repo_url)}] → bytes [{byte_start}:{byte_end}]")
+        
+        # --- Hashtag facets ---
+        for tag in hashtags:
+            tag_text = f"#{tag}"
+            tag_start_char = text.find(tag_text)
+            if tag_start_char >= 0:
+                byte_start = len(text[:tag_start_char].encode('utf-8'))
+                byte_end = byte_start + len(tag_text.encode('utf-8'))
+                
+                facets.append(
+                    models.AppBskyRichtextFacet.Main(
+                        features=[models.AppBskyRichtextFacet.Tag(tag=tag)],
+                        index=models.AppBskyRichtextFacet.ByteSlice(
+                            byte_start=byte_start,
+                            byte_end=byte_end
+                        )
+                    )
+                )
+        
+        return facets
+    
     def post_to_bluesky(self, content: dict, repo_url: str, image_path: str | None, jekyll_url: str) -> str | None:
         """
         Post to Bluesky with image.
         Bluesky has 300 grapheme limit - shorter format than Twitter.
-        Uses TextBuilder for clickable links and hashtags.
+        Uses MANUAL facet construction for reliable clickable links.
         Returns post URL or None.
         """
         if not BLUESKY_HANDLE or not BLUESKY_APP_PASSWORD:
@@ -759,19 +811,20 @@ Respond with ONLY valid JSON, no markdown code blocks."""
             return None
         
         try:
-            from atproto import client_utils, models
+            from atproto import models
             
             # Login to Bluesky
             client = BlueskyClient()
             client.login(BLUESKY_HANDLE, BLUESKY_APP_PASSWORD)
             logger.info("✅ Logged into Bluesky")
             
-            # === Build rich text with clickable links and hashtags ===
+            # === Build post text manually (no TextBuilder) ===
             hashtags_str = ' '.join(f"#{tag}" for tag in content['hashtags'])
             
             # Calculate available space for summary
-            # Fixed parts: "\n\n🔗 " + repo_url + "\n\n" + hashtags
-            fixed_len = len(f"\n\n🔗 {repo_url}\n\n{hashtags_str}")
+            # Fixed parts: "\n\n" + repo_url + "\n\n" + hashtags
+            # NOTE: Removed 🔗 emoji to avoid byte offset complications
+            fixed_len = len(f"\n\n{repo_url}\n\n{hashtags_str}")
             max_summary_len = 300 - fixed_len
             
             summary_text = content['summary']
@@ -780,21 +833,22 @@ Respond with ONLY valid JSON, no markdown code blocks."""
                     summary_text = summary_text[:max_summary_len - 3] + "..."
                 else:
                     # Drop hashtags to fit
-                    max_summary_len = 300 - len(f"\n\n🔗 {repo_url}")
+                    max_summary_len = 300 - len(f"\n\n{repo_url}")
                     summary_text = summary_text[:max_summary_len - 3] + "..."
+                    hashtags_str = ""
             
-            tb = client_utils.TextBuilder()
-            tb.text(summary_text)
-            tb.text("\n\n🔗 ")
-            tb.link(repo_url, repo_url)
+            # Build the full post text
+            if hashtags_str:
+                post_text = f"{summary_text}\n\n{repo_url}\n\n{hashtags_str}"
+            else:
+                post_text = f"{summary_text}\n\n{repo_url}"
             
-            # Only add hashtags if we have room
-            if len(summary_text) + fixed_len <= 300:
-                tb.text("\n\n")
-                for i, tag in enumerate(content['hashtags']):
-                    if i > 0:
-                        tb.text(" ")
-                    tb.tag(f"#{tag}", tag)
+            logger.info(f"  📝 Post text length: {len(post_text)} graphemes")
+            logger.info(f"  📝 Post text bytes: {len(post_text.encode('utf-8'))}")
+            
+            # Build facets with correct byte offsets
+            facets = self._build_bluesky_facets(post_text, repo_url, content['hashtags'])
+            logger.info(f"  🏷️  Built {len(facets)} facets (1 link + {len(content['hashtags'])} hashtags)")
             
             # Upload image if available
             embed = None
@@ -815,9 +869,13 @@ Respond with ONLY valid JSON, no markdown code blocks."""
                 )
                 logger.info("✅ Image uploaded to Bluesky")
             
-            # Create post with rich text (TextBuilder creates proper facets)
+            # Create post with explicit text + facets (NOT TextBuilder)
             logger.info("🦋 Posting to Bluesky...")
-            response = client.send_post(tb, embed=embed)
+            response = client.send_post(
+                text=post_text,
+                facets=facets,
+                embed=embed
+            )
             
             # Construct post URL
             post_uri = response.uri
@@ -830,6 +888,8 @@ Respond with ONLY valid JSON, no markdown code blocks."""
             
         except Exception as e:
             logger.error(f"❌ Bluesky posting failed: {e}")
+            import traceback
+            traceback.print_exc()
             return None
     
     def create_jekyll_post(self, repo_data: dict, content: dict, image_path: str | None) -> tuple[str, str]:
