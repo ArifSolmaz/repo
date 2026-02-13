@@ -1,5 +1,5 @@
-https://github.com/kjkoeller/EclipsingBinaries|astronomy
 https://github.com/2dust/v2rayNG|general
 https://github.com/Julian-Held/owl|astronomy
 https://github.com/screenpipe/screenpipe|general
 https://github.com/Askaniy/TrueColorTools|astronomy
+https://github.com/karpathy/nanoGPT|general

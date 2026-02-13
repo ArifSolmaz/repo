@@ -240,3 +240,4 @@ https://github.com/spacetelescope/mast_notebooks
 https://github.com/j178/prek
 https://github.com/Higgins00/TESS-Localize
 https://github.com/github/gh-aw
+https://github.com/kjkoeller/EclipsingBinaries
