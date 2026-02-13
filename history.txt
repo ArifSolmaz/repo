@@ -232,3 +232,4 @@ https://github.com/danieljprice/phantom
 https://github.com/wg-easy/wg-easy
 https://github.com/mattyowl/astLib
 https://github.com/infracost/infracost
+https://github.com/YihanWangAstro/VegasAfterglow
