@@ -56,6 +56,11 @@ MIN_LIKES_HF = 100
 # Category targets - minimum stock per category
 MIN_STOCK_PER_CATEGORY = 3
 
+# AI Model Configuration
+# Haiku 4.5 for simple YES/NO filtering (3x cheaper than Sonnet)
+# Sonnet stays in autoposter.py for quality content generation
+FILTER_MODEL = "claude-haiku-4-5-20251001"
+
 # Languages to check for trending
 TRENDING_LANGUAGES = [
     "",  # All languages
@@ -357,7 +362,7 @@ Answer ONLY "YES" or "NO"."""
 
         try:
             response = self.anthropic_client.messages.create(
-                model="claude-sonnet-4-20250514",
+                model=FILTER_MODEL,
                 max_tokens=10,
                 messages=[{"role": "user", "content": prompt}]
             )
@@ -388,7 +393,7 @@ Answer ONLY "YES" or "NO"."""
 
         try:
             response = self.anthropic_client.messages.create(
-                model="claude-sonnet-4-20250514",
+                model=FILTER_MODEL,
                 max_tokens=10,
                 messages=[{"role": "user", "content": prompt}]
             )
@@ -419,7 +424,7 @@ Answer ONLY "YES" or "NO"."""
 
         try:
             response = self.anthropic_client.messages.create(
-                model="claude-sonnet-4-20250514",
+                model=FILTER_MODEL,
                 max_tokens=10,
                 messages=[{"role": "user", "content": prompt}]
             )
@@ -445,7 +450,7 @@ Answer ONLY "YES" or "NO"."""
 
         try:
             response = self.anthropic_client.messages.create(
-                model="claude-sonnet-4-20250514",
+                model=FILTER_MODEL,
                 max_tokens=10,
                 messages=[{"role": "user", "content": prompt}]
             )
