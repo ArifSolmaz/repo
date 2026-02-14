@@ -246,3 +246,4 @@ https://github.com/Julian-Held/owl
 https://github.com/screenpipe/screenpipe
 https://github.com/Askaniy/TrueColorTools
 https://github.com/karpathy/nanoGPT
+https://github.com/g-battaglia/libephemeris
