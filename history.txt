@@ -255,3 +255,4 @@ https://github.com/yonaskolb/XcodeGen
 https://github.com/lenstronomy/lenstronomy
 https://github.com/mui/material-ui
 https://github.com/explorerjs32/rho_data_reduction_pipeline
+https://github.com/meilisearch/meilisearch
