@@ -1,5 +1,5 @@
-https://github.com/explorerjs32/rho_data_reduction_pipeline|astronomy
 https://github.com/meilisearch/meilisearch|general
 https://github.com/miroslavbroz/xitau|astronomy
 https://github.com/gitbutlerapp/gitbutler|general
 https://github.com/tessgi/tesscube|astronomy
+https://github.com/letta-ai/letta-code|general
