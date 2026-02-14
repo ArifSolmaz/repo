@@ -245,3 +245,4 @@ https://github.com/2dust/v2rayNG
 https://github.com/Julian-Held/owl
 https://github.com/screenpipe/screenpipe
 https://github.com/Askaniy/TrueColorTools
+https://github.com/karpathy/nanoGPT
