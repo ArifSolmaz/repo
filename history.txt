@@ -263,3 +263,4 @@ https://github.com/letta-ai/letta-code
 https://github.com/hemantaph/ler
 https://github.com/MonitorControl/MonitorControl
 https://github.com/mbonav/Exo_DMC
+https://github.com/tambo-ai/tambo

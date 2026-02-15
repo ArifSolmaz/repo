@@ -1,4 +1,3 @@
-https://github.com/tambo-ai/tambo|general
 https://github.com/AstroJacobLi/Rosesim|astronomy
 https://github.com/Beingpax/VoiceInk|general
 https://github.com/OpenExoplanetCatalogue/oec_meta|astronomy
