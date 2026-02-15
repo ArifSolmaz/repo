@@ -267,3 +267,4 @@ https://github.com/tambo-ai/tambo
 https://github.com/AstroJacobLi/Rosesim
 https://github.com/Beingpax/VoiceInk
 https://github.com/OpenExoplanetCatalogue/oec_meta
+https://github.com/gitroomhq/postiz-app
