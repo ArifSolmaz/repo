@@ -1,5 +1,5 @@
-https://github.com/OpenExoplanetCatalogue/oec_meta|astronomy
 https://github.com/gitroomhq/postiz-app|general
 https://github.com/PhangsTeam/pjpipe|astronomy
 https://github.com/rowboatlabs/rowboat|general
 https://github.com/rges-pit/data-challenge-notebooks|astronomy
+https://github.com/ruvnet/ruvector|general
