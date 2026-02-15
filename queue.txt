@@ -1,5 +1,5 @@
-https://github.com/tessgi/tesscube|astronomy
 https://github.com/letta-ai/letta-code|general
 https://github.com/hemantaph/ler|astronomy
 https://github.com/MonitorControl/MonitorControl|general
 https://github.com/mbonav/Exo_DMC|astronomy
+https://github.com/tambo-ai/tambo|general
