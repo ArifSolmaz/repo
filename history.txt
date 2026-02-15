@@ -259,3 +259,4 @@ https://github.com/meilisearch/meilisearch
 https://github.com/miroslavbroz/xitau
 https://github.com/gitbutlerapp/gitbutler
 https://github.com/tessgi/tesscube
+https://github.com/letta-ai/letta-code
