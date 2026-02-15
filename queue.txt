@@ -1,4 +1,5 @@
-https://github.com/AstroJacobLi/Rosesim|astronomy
 https://github.com/Beingpax/VoiceInk|general
 https://github.com/OpenExoplanetCatalogue/oec_meta|astronomy
 https://github.com/gitroomhq/postiz-app|general
+https://github.com/PhangsTeam/pjpipe|astronomy
+https://github.com/rowboatlabs/rowboat|general
