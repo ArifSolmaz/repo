@@ -1,5 +1,5 @@
-https://github.com/MonitorControl/MonitorControl|general
 https://github.com/mbonav/Exo_DMC|astronomy
 https://github.com/tambo-ai/tambo|general
 https://github.com/AstroJacobLi/Rosesim|astronomy
 https://github.com/Beingpax/VoiceInk|general
+https://github.com/OpenExoplanetCatalogue/oec_meta|astronomy
