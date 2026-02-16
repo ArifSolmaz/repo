@@ -1,5 +1,5 @@
-https://github.com/jellyfin/jellyfin-web|general
 https://github.com/atuinsh/atuin|general
 https://github.com/gbrammer/grizli|astronomy
 https://github.com/nuclear-multimessenger-astronomy/jester|astronomy
 https://github.com/antirez/picol|general
+https://github.com/tomasplsek/CADET|astronomy
