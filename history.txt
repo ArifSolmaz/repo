@@ -277,3 +277,4 @@ https://github.com/tursodatabase/turso
 https://github.com/simuxakadiscgolfgod/Space-Weather
 https://github.com/jellyfin/jellyfin-web
 https://github.com/gbrammer/grizli
+https://github.com/atuinsh/atuin
