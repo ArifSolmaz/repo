@@ -1,4 +1,3 @@
-https://github.com/ruvnet/ruvector|general
 https://github.com/sfabbro/torchfits|astronomy
 https://github.com/tursodatabase/turso|general
 https://github.com/jellyfin/jellyfin-web|general
