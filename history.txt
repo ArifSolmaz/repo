@@ -274,3 +274,4 @@ https://github.com/rges-pit/data-challenge-notebooks
 https://github.com/ruvnet/ruvector
 https://github.com/sfabbro/torchfits
 https://github.com/tursodatabase/turso
+https://github.com/simuxakadiscgolfgod/Space-Weather
