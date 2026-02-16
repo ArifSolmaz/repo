@@ -273,3 +273,4 @@ https://github.com/rowboatlabs/rowboat
 https://github.com/rges-pit/data-challenge-notebooks
 https://github.com/ruvnet/ruvector
 https://github.com/sfabbro/torchfits
+https://github.com/tursodatabase/turso

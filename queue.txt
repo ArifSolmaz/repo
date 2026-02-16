@@ -1,4 +1,5 @@
-https://github.com/tursodatabase/turso|general
 https://github.com/jellyfin/jellyfin-web|general
 https://github.com/simuxakadiscgolfgod/Space-Weather|astronomy
 https://github.com/atuinsh/atuin|general
+https://github.com/gbrammer/grizli|astronomy
+https://github.com/nuclear-multimessenger-astronomy/jester|astronomy
