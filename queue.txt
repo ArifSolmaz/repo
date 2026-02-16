@@ -1,4 +1,3 @@
-https://github.com/rowboatlabs/rowboat|general
 https://github.com/rges-pit/data-challenge-notebooks|astronomy
 https://github.com/ruvnet/ruvector|general
 https://github.com/sfabbro/torchfits|astronomy
