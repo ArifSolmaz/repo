@@ -1,3 +1,4 @@
-https://github.com/sfabbro/torchfits|astronomy
 https://github.com/tursodatabase/turso|general
 https://github.com/jellyfin/jellyfin-web|general
+https://github.com/simuxakadiscgolfgod/Space-Weather|astronomy
+https://github.com/atuinsh/atuin|general
