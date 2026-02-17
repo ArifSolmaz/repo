@@ -1,5 +1,5 @@
-https://github.com/ComposioHQ/composio|general
 https://github.com/natashabatalha/virga|astronomy
 https://github.com/poloclub/transformer-explainer|general
 https://github.com/tardis-sn/tardis|astronomy
 https://github.com/KeygraphHQ/shannon|general
+https://github.com/cbyrohl/scida|astronomy
