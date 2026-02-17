@@ -1,5 +1,5 @@
-https://github.com/poloclub/transformer-explainer|general
 https://github.com/tardis-sn/tardis|astronomy
 https://github.com/KeygraphHQ/shannon|general
 https://github.com/cbyrohl/scida|astronomy
 https://github.com/TheBoredTeam/boring.notch|general
+https://github.com/nombac/optab|astronomy
