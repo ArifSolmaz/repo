@@ -1,5 +1,5 @@
-https://github.com/nautechsystems/nautilus_trader|general
 https://github.com/andizq/discminer|astronomy
 https://github.com/steipete/gogcli|general
 https://github.com/lucaborsato/trades|astronomy
 https://github.com/signalapp/libsignal|general
+https://github.com/KumawatCodes/Exoplanet-Analysis-Suite|astronomy

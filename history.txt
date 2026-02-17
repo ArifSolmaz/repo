@@ -289,3 +289,4 @@ https://github.com/KeygraphHQ/shannon
 https://github.com/cbyrohl/scida
 https://github.com/TheBoredTeam/boring.notch
 https://github.com/nombac/optab
+https://github.com/nautechsystems/nautilus_trader
