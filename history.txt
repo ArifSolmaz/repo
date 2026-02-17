@@ -286,3 +286,4 @@ https://github.com/natashabatalha/virga
 https://github.com/poloclub/transformer-explainer
 https://github.com/tardis-sn/tardis
 https://github.com/KeygraphHQ/shannon
+https://github.com/cbyrohl/scida
