@@ -1,5 +1,5 @@
-https://github.com/TheBoredTeam/boring.notch|general
 https://github.com/nombac/optab|astronomy
 https://github.com/nautechsystems/nautilus_trader|general
 https://github.com/andizq/discminer|astronomy
 https://github.com/steipete/gogcli|general
+https://github.com/lucaborsato/trades|astronomy
