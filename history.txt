@@ -298,3 +298,4 @@ https://github.com/KumawatCodes/Exoplanet-Analysis-Suite
 https://github.com/OpenCTI-Platform/opencti
 https://github.com/asalda/FiCUS
 https://github.com/HKUDS/RAG-Anything
+https://github.com/suarezgenaro/seda
