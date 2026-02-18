@@ -1,5 +1,5 @@
-https://github.com/asalda/FiCUS|astronomy
 https://github.com/HKUDS/RAG-Anything|general
 https://github.com/suarezgenaro/seda|astronomy
 https://github.com/steipete/summarize|general
 https://github.com/andreicuceu/vega|astronomy
+https://github.com/GH05TCREW/pentestagent|general

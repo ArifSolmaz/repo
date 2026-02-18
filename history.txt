@@ -296,3 +296,4 @@ https://github.com/lucaborsato/trades
 https://github.com/signalapp/libsignal
 https://github.com/KumawatCodes/Exoplanet-Analysis-Suite
 https://github.com/OpenCTI-Platform/opencti
+https://github.com/asalda/FiCUS
