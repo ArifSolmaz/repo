@@ -1,5 +1,5 @@
-https://github.com/signalapp/libsignal|general
 https://github.com/KumawatCodes/Exoplanet-Analysis-Suite|astronomy
 https://github.com/OpenCTI-Platform/opencti|general
 https://github.com/asalda/FiCUS|astronomy
 https://github.com/HKUDS/RAG-Anything|general
+https://github.com/suarezgenaro/seda|astronomy
