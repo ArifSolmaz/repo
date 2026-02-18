@@ -294,3 +294,4 @@ https://github.com/andizq/discminer
 https://github.com/steipete/gogcli
 https://github.com/lucaborsato/trades
 https://github.com/signalapp/libsignal
+https://github.com/KumawatCodes/Exoplanet-Analysis-Suite
