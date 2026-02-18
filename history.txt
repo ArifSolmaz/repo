@@ -302,3 +302,4 @@ https://github.com/suarezgenaro/seda
 https://github.com/steipete/summarize
 https://github.com/andreicuceu/vega
 https://github.com/GH05TCREW/pentestagent
+https://github.com/leo1200/astronomix
