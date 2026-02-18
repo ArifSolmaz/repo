@@ -292,3 +292,4 @@ https://github.com/nombac/optab
 https://github.com/nautechsystems/nautilus_trader
 https://github.com/andizq/discminer
 https://github.com/steipete/gogcli
+https://github.com/lucaborsato/trades
