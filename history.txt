@@ -301,3 +301,4 @@ https://github.com/HKUDS/RAG-Anything
 https://github.com/suarezgenaro/seda
 https://github.com/steipete/summarize
 https://github.com/andreicuceu/vega
+https://github.com/GH05TCREW/pentestagent
