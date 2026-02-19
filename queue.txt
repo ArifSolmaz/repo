@@ -1,4 +1,3 @@
-https://github.com/Zaneham/BarraCUDA|general
 https://github.com/editeodoro/Bbarolo|astronomy
 https://github.com/QwenLM/qwen-code|general
 https://github.com/nksaunders/giants|astronomy
