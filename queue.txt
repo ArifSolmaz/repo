@@ -1,5 +1,5 @@
-https://github.com/lorenzsp/EMRI-FoM|astronomy
 https://github.com/danielmiessler/Personal_AI_Infrastructure|general
 https://github.com/akleroy/phangs_imaging_scripts|astronomy
 https://github.com/helm/helm|general
 https://github.com/spacetelescope/jdaviz|astronomy
+https://github.com/eslint/eslint|general
