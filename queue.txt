@@ -1,4 +1,3 @@
-https://github.com/daytonaio/daytona|general
 https://github.com/BrownDwarf/gollum|astronomy
 https://github.com/HailToDodongo/pyrite64|general
 https://github.com/lorenzsp/EMRI-FoM|astronomy
