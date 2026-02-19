@@ -304,3 +304,4 @@ https://github.com/andreicuceu/vega
 https://github.com/GH05TCREW/pentestagent
 https://github.com/leo1200/astronomix
 https://github.com/golangci/golangci-lint
+https://github.com/gammapy/gammapy
