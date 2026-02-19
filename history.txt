@@ -307,3 +307,4 @@ https://github.com/golangci/golangci-lint
 https://github.com/gammapy/gammapy
 https://github.com/Zaneham/BarraCUDA
 https://github.com/editeodoro/Bbarolo
+https://github.com/QwenLM/qwen-code
