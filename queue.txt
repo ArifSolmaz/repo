@@ -1,5 +1,5 @@
-https://github.com/helm/helm|general
 https://github.com/spacetelescope/jdaviz|astronomy
 https://github.com/eslint/eslint|general
 https://github.com/pypeit/PypeIt|astronomy
 https://github.com/leptos-rs/leptos|general
+https://github.com/tomasstolker/species|astronomy
