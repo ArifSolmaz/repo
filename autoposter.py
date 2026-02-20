@@ -191,7 +191,7 @@ class AutoPoster:
         # Initialize Anthropic client
         self.anthropic_client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
         
-        # Initialize Twitter clients (hybrid approach: v2 for tweets, v1.1 for media)
+        # Initialize Twitter v2 client for posting tweets
         self.twitter_client = tweepy.Client(
             consumer_key=os.getenv("TWITTER_API_KEY"),
             consumer_secret=os.getenv("TWITTER_API_SECRET"),
@@ -199,14 +199,14 @@ class AutoPoster:
             access_token_secret=os.getenv("TWITTER_ACCESS_TOKEN_SECRET")
         )
         
-        # v1.1 API for media upload
-        auth = tweepy.OAuth1UserHandler(
+        # OAuth1 session for v2 media upload (Free tier compatible, replaces deprecated v1.1)
+        from requests_oauthlib import OAuth1
+        self.twitter_oauth1 = OAuth1(
             os.getenv("TWITTER_API_KEY"),
             os.getenv("TWITTER_API_SECRET"),
             os.getenv("TWITTER_ACCESS_TOKEN"),
             os.getenv("TWITTER_ACCESS_TOKEN_SECRET")
         )
-        self.twitter_api_v1 = tweepy.API(auth)
         
         # GitHub headers
         self.github_headers = {
@@ -694,10 +694,83 @@ Respond with ONLY valid JSON, no markdown code blocks."""
             logger.error(f"❌ Content generation failed: {e}")
             raise
     
+    def _upload_media_v2(self, image_path: str) -> str | None:
+        """
+        Upload image using X API v2 media endpoint (Free tier compatible).
+        Replaces the deprecated v1.1 media_upload endpoint.
+        Uses OAuth 1.0a signing via requests_oauthlib.
+        Flow: INIT → APPEND (base64 chunk) → FINALIZE
+        Returns media_id string or None on failure.
+        """
+        import base64
+        import requests as req
+
+        suffix = Path(image_path).suffix.lower()
+        mime_map = {
+            ".jpg": "image/jpeg",
+            ".jpeg": "image/jpeg",
+            ".png": "image/png",
+            ".gif": "image/gif",
+            ".webp": "image/jpeg",
+        }
+        mime_type = mime_map.get(suffix, "image/jpeg")
+        BASE = "https://api.twitter.com/2/media/upload"
+
+        with open(image_path, "rb") as f:
+            image_data = f.read()
+        total_bytes = len(image_data)
+
+        # ── INIT ──────────────────────────────────────────────────────────────
+        logger.info(f"  📤 Media INIT: {total_bytes} bytes, {mime_type}")
+        r = req.post(
+            BASE,
+            auth=self.twitter_oauth1,
+            json={
+                "media_category": "tweet_image",
+                "total_bytes": total_bytes,
+                "media_type": mime_type,
+            },
+            timeout=30,
+        )
+        if not r.ok:
+            logger.error(f"  ❌ Media INIT failed {r.status_code}: {r.text}")
+            return None
+        media_id = r.json()["data"]["id"]
+        logger.info(f"  ✅ Media INIT ok, media_id: {media_id}")
+
+        # ── APPEND ────────────────────────────────────────────────────────────
+        logger.info("  📤 Media APPEND chunk...")
+        r = req.post(
+            f"{BASE}/{media_id}/append",
+            auth=self.twitter_oauth1,
+            data={
+                "segment_index": 0,
+                "media_data": base64.b64encode(image_data).decode(),
+            },
+            timeout=60,
+        )
+        if not r.ok:
+            logger.error(f"  ❌ Media APPEND failed {r.status_code}: {r.text}")
+            return None
+        logger.info("  ✅ Media APPEND ok")
+
+        # ── FINALIZE ──────────────────────────────────────────────────────────
+        logger.info("  📤 Media FINALIZE...")
+        r = req.post(
+            f"{BASE}/{media_id}/finalize",
+            auth=self.twitter_oauth1,
+            timeout=30,
+        )
+        if not r.ok:
+            logger.error(f"  ❌ Media FINALIZE failed {r.status_code}: {r.text}")
+            return None
+        logger.info(f"  ✅ Media upload complete: {media_id}")
+        return media_id
+
     def post_to_twitter(self, content: dict, repo_url: str, image_path: str | None, jekyll_url: str) -> str | None:
         """
         Post to Twitter/X with image.
-        Uses hybrid approach: v1.1 for media upload, v2 for tweet.
+        Uses v2 API for both media upload and tweet creation (Free tier compatible).
         No character limit for this account.
         Returns tweet URL or None.
         """
@@ -711,12 +784,14 @@ Respond with ONLY valid JSON, no markdown code blocks."""
         try:
             media_id = None
             
-            # Upload image using v1.1 API
+            # Upload image using v2 API (replaces deprecated v1.1)
             if image_path and Path(image_path).exists():
-                logger.info(f"📤 Uploading image to Twitter...")
-                media = self.twitter_api_v1.media_upload(filename=image_path)
-                media_id = media.media_id
-                logger.info(f"✅ Image uploaded, media_id: {media_id}")
+                logger.info(f"📤 Uploading image to Twitter (v2)...")
+                media_id = self._upload_media_v2(image_path)
+                if media_id:
+                    logger.info(f"✅ Image uploaded, media_id: {media_id}")
+                else:
+                    logger.warning("⚠️ Image upload failed, posting without image")
             
             # Post tweet using v2 API
             logger.info(f"🐦 Posting tweet...")
