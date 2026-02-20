@@ -3,3 +3,4 @@ https://github.com/BurntSushi/ripgrep|general
 https://github.com/apace7/local_volume_database|astronomy
 https://github.com/zed-industries/zed|general
 https://github.com/GeorgeVassilakis/SMPy|astronomy
+https://github.com/JingMatrix/TEESimulator|general
