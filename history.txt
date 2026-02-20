@@ -320,3 +320,4 @@ https://github.com/spacetelescope/jdaviz
 https://github.com/eslint/eslint
 https://github.com/pypeit/PypeIt
 https://github.com/leptos-rs/leptos
+https://github.com/tomasstolker/species
