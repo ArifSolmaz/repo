@@ -318,3 +318,4 @@ https://github.com/akleroy/phangs_imaging_scripts
 https://github.com/helm/helm
 https://github.com/spacetelescope/jdaviz
 https://github.com/eslint/eslint
+https://github.com/pypeit/PypeIt
