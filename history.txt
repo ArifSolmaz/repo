@@ -332,3 +332,4 @@ https://github.com/GeorgeVassilakis/SMPy
 https://github.com/JingMatrix/TEESimulator
 https://github.com/yreclab/yrec
 https://github.com/alibaba/zvec
+https://github.com/hpparvi/MuSCAT2_transit_pipeline
