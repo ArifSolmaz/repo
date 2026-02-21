@@ -334,3 +334,4 @@ https://github.com/yreclab/yrec
 https://github.com/alibaba/zvec
 https://github.com/hpparvi/MuSCAT2_transit_pipeline
 https://github.com/SynkraAI/aios-core
+https://github.com/gbrammer/msaexp
