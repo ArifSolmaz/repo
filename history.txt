@@ -328,3 +328,4 @@ https://github.com/jaredmales/mxlib
 https://github.com/BurntSushi/ripgrep
 https://github.com/apace7/local_volume_database
 https://github.com/zed-industries/zed
+https://github.com/GeorgeVassilakis/SMPy
