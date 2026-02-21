@@ -1,5 +1,5 @@
-https://github.com/roman-corgi/corgidrp|astronomy
 https://github.com/PowerShell/PowerShell|general
 https://github.com/jwuphysics/sparse-feature-networks|astronomy
 https://github.com/ggml-org/llama.cpp|general
 https://github.com/jruffio/breads|astronomy
+https://github.com/alienator88/Pearcleaner|general

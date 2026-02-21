@@ -336,3 +336,4 @@ https://github.com/hpparvi/MuSCAT2_transit_pipeline
 https://github.com/SynkraAI/aios-core
 https://github.com/gbrammer/msaexp
 https://github.com/Jeffallan/claude-skills
+https://github.com/roman-corgi/corgidrp
