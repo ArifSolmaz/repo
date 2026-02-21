@@ -1,5 +1,5 @@
-https://github.com/yreclab/yrec|astronomy
 https://github.com/alibaba/zvec|general
 https://github.com/hpparvi/MuSCAT2_transit_pipeline|astronomy
 https://github.com/SynkraAI/aios-core|general
 https://github.com/gbrammer/msaexp|astronomy
+https://github.com/Jeffallan/claude-skills|general
