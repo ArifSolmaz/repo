@@ -1,5 +1,5 @@
-https://github.com/zed-industries/zed|general
 https://github.com/GeorgeVassilakis/SMPy|astronomy
 https://github.com/JingMatrix/TEESimulator|general
 https://github.com/yreclab/yrec|astronomy
 https://github.com/alibaba/zvec|general
+https://github.com/hpparvi/MuSCAT2_transit_pipeline|astronomy
