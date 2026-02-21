@@ -337,3 +337,4 @@ https://github.com/SynkraAI/aios-core
 https://github.com/gbrammer/msaexp
 https://github.com/Jeffallan/claude-skills
 https://github.com/roman-corgi/corgidrp
+https://github.com/PowerShell/PowerShell
