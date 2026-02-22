@@ -1,5 +1,5 @@
-https://github.com/suncasa/suncasa-src|astronomy
 https://github.com/TecharoHQ/anubis|general
 https://github.com/rhoxu/TESSELLATE|astronomy
 https://github.com/anthropics/claude-code|general
 https://github.com/WorldWideTelescope/wwt-webgl-engine|astronomy
+https://github.com/google/go-containerregistry|general
