@@ -339,3 +339,4 @@ https://github.com/Jeffallan/claude-skills
 https://github.com/roman-corgi/corgidrp
 https://github.com/PowerShell/PowerShell
 https://github.com/jwuphysics/sparse-feature-networks
+https://github.com/ggml-org/llama.cpp

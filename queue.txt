@@ -1,4 +1,3 @@
-https://github.com/ggml-org/llama.cpp|general
 https://github.com/jruffio/breads|astronomy
 https://github.com/alienator88/Pearcleaner|general
 https://github.com/suncasa/suncasa-src|astronomy
