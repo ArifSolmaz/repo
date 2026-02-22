@@ -1,4 +1,3 @@
-https://github.com/WorldWideTelescope/wwt-webgl-engine|astronomy
 https://github.com/google/go-containerregistry|general
 https://github.com/llr-cta/calin|astronomy
 https://github.com/google-research/timesfm|general

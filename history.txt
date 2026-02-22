@@ -346,3 +346,4 @@ https://github.com/suncasa/suncasa-src
 https://github.com/TecharoHQ/anubis
 https://github.com/rhoxu/TESSELLATE
 https://github.com/anthropics/claude-code
+https://github.com/WorldWideTelescope/wwt-webgl-engine
