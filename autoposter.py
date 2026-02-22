@@ -5,10 +5,9 @@ autoposter.py - The Creator
 Processes repositories from the queue:
 1. Extracts hero image from README
 2. Generates English content using Claude AI (witty, engaging)
-3. Posts to Twitter/X with image
-4. Posts to Bluesky with image
-5. Archives to Jekyll site
-6. Sends Telegram notification
+3. Posts to Bluesky with image
+4. Archives to Jekyll site
+5. Sends Telegram notification
 """
 
 import os
@@ -23,7 +22,6 @@ from urllib.parse import urlparse, urljoin
 import requests
 from bs4 import BeautifulSoup
 from anthropic import Anthropic
-import tweepy
 from atproto import Client as BlueskyClient
 from dotenv import load_dotenv
 from PIL import Image
@@ -127,7 +125,7 @@ def cleanup_old_large_images():
     return deleted_count
 
 
-def send_telegram_notification(repo_name: str, summary: str, repo_url: str, tweet_url: str = None, bluesky_url: str = None, category: str = "general", jekyll_url: str = None):
+def send_telegram_notification(repo_name: str, summary: str, repo_url: str, bluesky_url: str = None, category: str = "general", jekyll_url: str = None):
     """Send a Telegram notification when a new repo is posted."""
     if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
         logger.warning("⚠️  Telegram credentials not set, skipping notification")
@@ -158,9 +156,7 @@ def send_telegram_notification(repo_name: str, summary: str, repo_url: str, twee
     if jekyll_url:
         message += f"\n📄 [Read Full Article]({jekyll_url})"
     
-    if tweet_url:
-        message += f"\n🐦 [View Tweet]({tweet_url})"
-    
+
     if bluesky_url:
         message += f"\n🦋 [View on Bluesky]({bluesky_url})"
     
@@ -185,28 +181,11 @@ def send_telegram_notification(repo_name: str, summary: str, repo_url: str, twee
 
 
 class AutoPoster:
-    """Processes repos from queue and posts to Twitter + Jekyll."""
+    """Processes repos from queue and posts to Bluesky + Jekyll."""
     
     def __init__(self):
         # Initialize Anthropic client
         self.anthropic_client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-        
-        # Initialize Twitter v2 client for posting tweets
-        self.twitter_client = tweepy.Client(
-            consumer_key=os.getenv("TWITTER_API_KEY"),
-            consumer_secret=os.getenv("TWITTER_API_SECRET"),
-            access_token=os.getenv("TWITTER_ACCESS_TOKEN"),
-            access_token_secret=os.getenv("TWITTER_ACCESS_TOKEN_SECRET")
-        )
-        
-        # OAuth1 session for v2 media upload (Free tier compatible, replaces deprecated v1.1)
-        from requests_oauthlib import OAuth1
-        self.twitter_oauth1 = OAuth1(
-            os.getenv("TWITTER_API_KEY"),
-            os.getenv("TWITTER_API_SECRET"),
-            os.getenv("TWITTER_ACCESS_TOKEN"),
-            os.getenv("TWITTER_ACCESS_TOKEN_SECRET")
-        )
         
         # GitHub headers
         self.github_headers = {
@@ -425,7 +404,7 @@ class AutoPoster:
                 # Return both paths
                 return {
                     "original": str(original_path),  # For Jekyll
-                    "social": social_path  # For Twitter/Bluesky (may be None if processing fails)
+                    "social": social_path  # For Bluesky (may be None if processing fails)
                 }
                 
             except Exception as e:
@@ -458,7 +437,7 @@ class AutoPoster:
     def _process_image_for_social(self, content: bytes, repo_name: str) -> str | None:
         """
         Process image for social media compatibility:
-        - Convert webp/gif/bmp to jpg (Twitter doesn't support webp)
+        - Convert webp/gif/bmp to jpg for compatibility
         - Compress to under 900KB (Bluesky limit ~1MB)
         - Handle animated GIFs (use first frame)
         """
@@ -694,134 +673,6 @@ Respond with ONLY valid JSON, no markdown code blocks."""
             logger.error(f"❌ Content generation failed: {e}")
             raise
     
-    def _upload_media_v2(self, image_path: str) -> str | None:
-        """
-        Upload image using X API v2 media endpoint (Free tier compatible).
-        Replaces the deprecated v1.1 media_upload endpoint.
-        Uses OAuth 1.0a signing via requests_oauthlib.
-        Flow: INIT → APPEND (base64 chunk) → FINALIZE
-        Returns media_id string or None on failure.
-        """
-        import base64
-        import requests as req
-
-        suffix = Path(image_path).suffix.lower()
-        mime_map = {
-            ".jpg": "image/jpeg",
-            ".jpeg": "image/jpeg",
-            ".png": "image/png",
-            ".gif": "image/gif",
-            ".webp": "image/jpeg",
-        }
-        mime_type = mime_map.get(suffix, "image/jpeg")
-        BASE = "https://api.twitter.com/2/media/upload"
-
-        with open(image_path, "rb") as f:
-            image_data = f.read()
-        total_bytes = len(image_data)
-
-        # ── INIT ──────────────────────────────────────────────────────────────
-        logger.info(f"  📤 Media INIT: {total_bytes} bytes, {mime_type}")
-        r = req.post(
-            BASE,
-            auth=self.twitter_oauth1,
-            json={
-                "media_category": "tweet_image",
-                "total_bytes": total_bytes,
-                "media_type": mime_type,
-            },
-            timeout=30,
-        )
-        if not r.ok:
-            logger.error(f"  ❌ Media INIT failed {r.status_code}: {r.text}")
-            return None
-        media_id = r.json()["data"]["id"]
-        logger.info(f"  ✅ Media INIT ok, media_id: {media_id}")
-
-        # ── APPEND ────────────────────────────────────────────────────────────
-        logger.info("  📤 Media APPEND chunk...")
-        r = req.post(
-            f"{BASE}/{media_id}/append",
-            auth=self.twitter_oauth1,
-            data={
-                "segment_index": 0,
-                "media_data": base64.b64encode(image_data).decode(),
-            },
-            timeout=60,
-        )
-        if not r.ok:
-            logger.error(f"  ❌ Media APPEND failed {r.status_code}: {r.text}")
-            return None
-        logger.info("  ✅ Media APPEND ok")
-
-        # ── FINALIZE ──────────────────────────────────────────────────────────
-        logger.info("  📤 Media FINALIZE...")
-        r = req.post(
-            f"{BASE}/{media_id}/finalize",
-            auth=self.twitter_oauth1,
-            timeout=30,
-        )
-        if not r.ok:
-            logger.error(f"  ❌ Media FINALIZE failed {r.status_code}: {r.text}")
-            return None
-        logger.info(f"  ✅ Media upload complete: {media_id}")
-        return media_id
-
-    def post_to_twitter(self, content: dict, repo_url: str, image_path: str | None, jekyll_url: str) -> str | None:
-        """
-        Post to Twitter/X with image.
-        Uses v2 API for both media upload and tweet creation (Free tier compatible).
-        No character limit for this account.
-        Returns tweet URL or None.
-        """
-        # Format tweet text - full content since no char limit
-        hashtags_str = ' '.join(f"#{tag}" for tag in content['hashtags'])
-        first_para = content.get('first_paragraph', '')
-        
-        # Build tweet: summary + first paragraph + repo link + hashtags
-        tweet_text = f"{content['summary']}\n\n{first_para}\n\n🔗 {repo_url}\n\n{hashtags_str}"
-        
-        try:
-            media_id = None
-            
-            # Upload image using v2 API (replaces deprecated v1.1)
-            if image_path and Path(image_path).exists():
-                logger.info(f"📤 Uploading image to Twitter (v2)...")
-                media_id = self._upload_media_v2(image_path)
-                if media_id:
-                    logger.info(f"✅ Image uploaded, media_id: {media_id}")
-                else:
-                    logger.warning("⚠️ Image upload failed, posting without image")
-            
-            # Post tweet using v2 API
-            logger.info(f"🐦 Posting tweet...")
-            if media_id:
-                response = self.twitter_client.create_tweet(
-                    text=tweet_text,
-                    media_ids=[media_id]
-                )
-            else:
-                response = self.twitter_client.create_tweet(text=tweet_text)
-            
-            tweet_id = response.data['id']
-            tweet_url = f"https://twitter.com/i/web/status/{tweet_id}"
-            
-            logger.info(f"✅ Tweet posted: {tweet_url}")
-            return tweet_url
-            
-        except tweepy.errors.Forbidden as e:
-            logger.error(f"❌ Twitter 403 Forbidden Error!")
-            logger.error(f"   Error message: {e}")
-            if hasattr(e, 'response') and e.response is not None:
-                logger.error(f"   Response: {e.response.text}")
-            return None
-        except tweepy.errors.TweepyException as e:
-            logger.error(f"❌ Twitter API error: {type(e).__name__}: {e}")
-            return None
-        except Exception as e:
-            logger.error(f"❌ Twitter posting failed: {type(e).__name__}: {e}")
-            return None
-    
     def _build_bluesky_facets(self, text: str, repo_url: str, hashtags: list) -> list:
         """
         Build Bluesky facets with correct UTF-8 byte offsets.
@@ -877,7 +728,7 @@ Respond with ONLY valid JSON, no markdown code blocks."""
     def post_to_bluesky(self, content: dict, repo_url: str, image_path: str | None, jekyll_url: str) -> str | None:
         """
         Post to Bluesky with image.
-        Bluesky has 300 grapheme limit - shorter format than Twitter.
+        Bluesky has 300 grapheme limit.
         Uses MANUAL facet construction for reliable clickable links.
         Returns post URL or None.
         """
@@ -1180,14 +1031,6 @@ date: {now_istanbul.strftime("%Y-%m-%d %H:%M:%S")} +0300
             logger.info("📝 Creating Jekyll post...")
             post_path, jekyll_url = self.create_jekyll_post(repo_data, content, original_image)
             
-            # Post to Twitter (continue even if fails)
-            logger.info("🐦 Posting to Twitter...")
-            tweet_url = self.post_to_twitter(content, repo_url, social_image, jekyll_url)
-            if tweet_url:
-                logger.info(f"✅ Twitter success: {tweet_url}")
-            else:
-                logger.warning("⚠️ Twitter posting failed - continuing anyway")
-            
             # Post to Bluesky (continue even if fails)
             logger.info("🦋 Posting to Bluesky...")
             bluesky_url = self.post_to_bluesky(content, repo_url, social_image, jekyll_url)
@@ -1207,7 +1050,6 @@ date: {now_istanbul.strftime("%Y-%m-%d %H:%M:%S")} +0300
             
             logger.info(f"✅ Successfully processed: {repo_data['full_name']}")
             logger.info(f"   📝 Post: {post_path}")
-            logger.info(f"   🐦 Twitter: {'✅' if tweet_url else '❌'}")
             logger.info(f"   🦋 Bluesky: {'✅' if bluesky_url else '❌'}")
             
             # Send Telegram notification
@@ -1216,7 +1058,6 @@ date: {now_istanbul.strftime("%Y-%m-%d %H:%M:%S")} +0300
                 repo_name=repo_data['full_name'],
                 summary=content['summary'],
                 repo_url=repo_url,
-                tweet_url=tweet_url,
                 bluesky_url=bluesky_url,
                 category=category,
                 jekyll_url=jekyll_url
