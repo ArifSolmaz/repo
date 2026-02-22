@@ -343,3 +343,4 @@ https://github.com/ggml-org/llama.cpp
 https://github.com/jruffio/breads
 https://github.com/alienator88/Pearcleaner
 https://github.com/suncasa/suncasa-src
+https://github.com/TecharoHQ/anubis
