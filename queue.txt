@@ -3,3 +3,4 @@ https://github.com/google/go-containerregistry|general
 https://github.com/llr-cta/calin|astronomy
 https://github.com/google-research/timesfm|general
 https://github.com/olivares-j/Kalkayotl|astronomy
+https://github.com/p-e-w/heretic|general
