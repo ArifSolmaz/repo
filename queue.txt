@@ -1,5 +1,5 @@
-https://github.com/seerr-team/seerr|general
 https://github.com/qdrant/qdrant|general
 https://github.com/dirac-institute/sorcha|astronomy
 https://github.com/Siderust/siderust|astronomy
 https://github.com/xororz/local-dream|general
+https://github.com/USRA-STI/gdt-core|astronomy
