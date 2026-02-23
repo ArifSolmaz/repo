@@ -352,3 +352,4 @@ https://github.com/llr-cta/calin
 https://github.com/google-research/timesfm
 https://github.com/olivares-j/Kalkayotl
 https://github.com/p-e-w/heretic
+https://github.com/orionlee/planet_hunters_tess_userscripts

@@ -1,4 +1,4 @@
-https://github.com/orionlee/planet_hunters_tess_userscripts|astronomy
 https://github.com/videolan/vlc-android|general
 https://github.com/oliverkwebb/pracstro|astronomy
 https://github.com/seerr-team/seerr|general
+https://github.com/qdrant/qdrant|general
