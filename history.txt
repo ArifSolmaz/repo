@@ -358,3 +358,4 @@ https://github.com/oliverkwebb/pracstro
 https://github.com/seerr-team/seerr
 https://github.com/dirac-institute/sorcha
 https://github.com/qdrant/qdrant
+https://github.com/Siderust/siderust
