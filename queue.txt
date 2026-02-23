@@ -1,5 +1,5 @@
-https://github.com/google-research/timesfm|general
 https://github.com/olivares-j/Kalkayotl|astronomy
 https://github.com/p-e-w/heretic|general
 https://github.com/orionlee/planet_hunters_tess_userscripts|astronomy
 https://github.com/videolan/vlc-android|general
+https://github.com/oliverkwebb/pracstro|astronomy
