@@ -351,3 +351,4 @@ https://github.com/google/go-containerregistry
 https://github.com/llr-cta/calin
 https://github.com/google-research/timesfm
 https://github.com/olivares-j/Kalkayotl
+https://github.com/p-e-w/heretic
