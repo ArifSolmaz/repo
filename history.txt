@@ -366,3 +366,4 @@ https://github.com/JamesMunday98/WD-BASS
 https://github.com/jackc/pgx
 https://github.com/appy2806/Nbody_streams
 https://github.com/jgraph/drawio
+https://github.com/isbeorn/nina
