@@ -362,3 +362,4 @@ https://github.com/Siderust/siderust
 https://github.com/xororz/local-dream
 https://github.com/USRA-STI/gdt-core
 https://github.com/asheshgoplani/agent-deck
+https://github.com/JamesMunday98/WD-BASS
