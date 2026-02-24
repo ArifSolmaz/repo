@@ -1,5 +1,5 @@
-https://github.com/jgraph/drawio|general
 https://github.com/isbeorn/nina|astronomy
 https://github.com/icereed/paperless-gpt|general
 https://github.com/zoglauer/megalib|astronomy
 https://github.com/Roblox/studio-rust-mcp-server|general
+https://github.com/tarxiv/tarxiv|astronomy
