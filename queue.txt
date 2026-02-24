@@ -1,5 +1,5 @@
-https://github.com/jackc/pgx|general
 https://github.com/appy2806/Nbody_streams|astronomy
 https://github.com/jgraph/drawio|general
 https://github.com/isbeorn/nina|astronomy
 https://github.com/icereed/paperless-gpt|general
+https://github.com/zoglauer/megalib|astronomy
