@@ -1,5 +1,5 @@
-https://github.com/x1xhlol/system-prompts-and-models-of-ai-tools|general
 https://github.com/njcuk9999/lbl|astronomy
 https://github.com/vitessio/vitess|general
 https://github.com/mates14/pyrt|astronomy
 https://github.com/HunxByts/GhostTrack|general
+https://github.com/jnibauer/streamsculptor|astronomy

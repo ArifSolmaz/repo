@@ -371,3 +371,4 @@ https://github.com/icereed/paperless-gpt
 https://github.com/zoglauer/megalib
 https://github.com/Roblox/studio-rust-mcp-server
 https://github.com/tarxiv/tarxiv
+https://github.com/x1xhlol/system-prompts-and-models-of-ai-tools
