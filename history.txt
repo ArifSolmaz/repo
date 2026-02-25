@@ -378,3 +378,4 @@ https://github.com/mates14/pyrt
 https://github.com/HunxByts/GhostTrack
 https://github.com/jnibauer/streamsculptor
 https://github.com/harvard-edge/cs249r_book
+https://github.com/SWIFTSIM/SWIFT
