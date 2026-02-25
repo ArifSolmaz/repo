@@ -1,4 +1,3 @@
-https://github.com/HunxByts/GhostTrack|general
 https://github.com/jnibauer/streamsculptor|astronomy
 https://github.com/harvard-edge/cs249r_book|general
 https://github.com/SWIFTSIM/SWIFT|astronomy
