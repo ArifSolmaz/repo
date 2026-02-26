@@ -389,3 +389,4 @@ https://github.com/seaweedfs/seaweedfs
 https://github.com/mkunimoto/LEO-vetter
 https://github.com/badlogic/pi-skills
 https://github.com/threeML/astromodels
+https://github.com/bytedance/deer-flow
