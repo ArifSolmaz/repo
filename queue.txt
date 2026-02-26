@@ -1,5 +1,5 @@
-https://github.com/clockworklabs/SpacetimeDB|general
 https://github.com/natashabatalha/picaso|astronomy
 https://github.com/seaweedfs/seaweedfs|general
 https://github.com/mkunimoto/LEO-vetter|astronomy
 https://github.com/badlogic/pi-skills|general
+https://github.com/threeML/astromodels|astronomy
