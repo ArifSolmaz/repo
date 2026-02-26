@@ -1,5 +1,5 @@
-https://github.com/seaweedfs/seaweedfs|general
 https://github.com/mkunimoto/LEO-vetter|astronomy
 https://github.com/badlogic/pi-skills|general
 https://github.com/threeML/astromodels|astronomy
 https://github.com/bytedance/deer-flow|general
+https://github.com/jpdeleon/quicklook|astronomy
