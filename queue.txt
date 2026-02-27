@@ -1,4 +1,3 @@
-https://github.com/beclab/Olares|general
 https://github.com/argus-hdps/rico|astronomy
 https://github.com/farion1231/cc-switch|general
 https://github.com/astro-xao/sofars|astronomy
