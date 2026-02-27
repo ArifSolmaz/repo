@@ -1,4 +1,5 @@
-https://github.com/KiDS-WL/onepower|astronomy
 https://github.com/cloudflare/agents|general
 https://github.com/zvanderbosch/phot2lc|astronomy
 https://github.com/KrishKrosh/TrackWeight|general
+https://github.com/FRBs/pygedm|astronomy
+https://github.com/mozilla-firefox/firefox|general
