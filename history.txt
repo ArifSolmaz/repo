@@ -403,3 +403,4 @@ https://github.com/Ebullioscopic/Atoll
 https://github.com/KiDS-WL/onepower
 https://github.com/cloudflare/agents
 https://github.com/zvanderbosch/phot2lc
+https://github.com/KrishKrosh/TrackWeight
