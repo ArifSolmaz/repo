@@ -1,4 +1,5 @@
-https://github.com/SIMPLE-AstroDB/SIMPLE-db|astronomy
 https://github.com/Mintplex-Labs/anything-llm|general
 https://github.com/kyleaoman/martini|astronomy
 https://github.com/beclab/Olares|general
+https://github.com/argus-hdps/rico|astronomy
+https://github.com/farion1231/cc-switch|general
