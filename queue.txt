@@ -1,5 +1,5 @@
-https://github.com/zvanderbosch/phot2lc|astronomy
 https://github.com/KrishKrosh/TrackWeight|general
 https://github.com/FRBs/pygedm|astronomy
 https://github.com/mozilla-firefox/firefox|general
 https://github.com/karpov-sv/stdpipe|astronomy
+https://github.com/farouqaldori/claude-island|general
