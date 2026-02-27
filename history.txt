@@ -396,3 +396,4 @@ https://github.com/SIMPLE-AstroDB/SIMPLE-db
 https://github.com/Mintplex-Labs/anything-llm
 https://github.com/kyleaoman/martini
 https://github.com/beclab/Olares
+https://github.com/argus-hdps/rico

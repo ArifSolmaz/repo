@@ -1,4 +1,5 @@
-https://github.com/argus-hdps/rico|astronomy
 https://github.com/farion1231/cc-switch|general
 https://github.com/astro-xao/sofars|astronomy
 https://github.com/Ebullioscopic/Atoll|general
+https://github.com/KiDS-WL/onepower|astronomy
+https://github.com/cloudflare/agents|general
