@@ -401,3 +401,4 @@ https://github.com/farion1231/cc-switch
 https://github.com/astro-xao/sofars
 https://github.com/Ebullioscopic/Atoll
 https://github.com/KiDS-WL/onepower
+https://github.com/cloudflare/agents
