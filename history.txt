@@ -398,3 +398,4 @@ https://github.com/kyleaoman/martini
 https://github.com/beclab/Olares
 https://github.com/argus-hdps/rico
 https://github.com/farion1231/cc-switch
+https://github.com/astro-xao/sofars
