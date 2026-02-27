@@ -1,4 +1,3 @@
-https://github.com/Ebullioscopic/Atoll|general
 https://github.com/KiDS-WL/onepower|astronomy
 https://github.com/cloudflare/agents|general
 https://github.com/zvanderbosch/phot2lc|astronomy
