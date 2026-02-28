@@ -1,4 +1,3 @@
-https://github.com/wkoszek/emuko|general
 https://github.com/mibroome/wind-ae|astronomy
 https://github.com/maloyan/manim-web|general
 https://github.com/gjgilbert/alderaan|astronomy

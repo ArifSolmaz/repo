@@ -411,3 +411,4 @@ https://github.com/farouqaldori/claude-island
 https://github.com/StingraySoftware/stingray
 https://github.com/anadim/AdderBoard
 https://github.com/owenmatthewsa/ebossdap
+https://github.com/wkoszek/emuko
