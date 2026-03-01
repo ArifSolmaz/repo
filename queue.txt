@@ -1,5 +1,5 @@
-https://github.com/parse-community/parse-server|general
 https://github.com/DioxusLabs/dioxus|general
 https://github.com/cphyc/astrophysics_toolset|astronomy
 https://github.com/jonelay/stillspin|astronomy
 https://github.com/thunderbird/thunderbird-android|general
+https://github.com/flatironinstitute/nifty-ls|astronomy
