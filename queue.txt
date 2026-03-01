@@ -1,3 +1,2 @@
-https://github.com/github/awesome-copilot|general
 https://github.com/ad-si/Woxi|general
 https://github.com/parse-community/parse-server|general
