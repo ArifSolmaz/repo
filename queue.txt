@@ -1,3 +1,2 @@
-https://github.com/cloudflare/quiche|general
 https://github.com/p0deje/Maccy|general
 https://github.com/github/awesome-copilot|general
