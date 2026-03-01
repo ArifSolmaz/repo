@@ -425,3 +425,4 @@ https://github.com/astropy/astropy-iers-data
 https://github.com/github/awesome-copilot
 https://github.com/ucc23/ucc
 https://github.com/ad-si/Woxi
+https://github.com/samuelkriegerbonini-dev/AstroBurst
