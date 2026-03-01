@@ -1,2 +1,2 @@
-https://github.com/p0deje/Maccy|general
 https://github.com/github/awesome-copilot|general
+https://github.com/ad-si/Woxi|general

@@ -420,3 +420,4 @@ https://github.com/DaveStrickland/AstroPhotography
 https://github.com/juice-shop/juice-shop
 https://github.com/vortex-exoplanet/VIP
 https://github.com/cloudflare/quiche
+https://github.com/p0deje/Maccy
