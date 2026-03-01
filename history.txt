@@ -421,3 +421,4 @@ https://github.com/juice-shop/juice-shop
 https://github.com/vortex-exoplanet/VIP
 https://github.com/cloudflare/quiche
 https://github.com/p0deje/Maccy
+https://github.com/astropy/astropy-iers-data
