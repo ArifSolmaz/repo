@@ -416,3 +416,4 @@ https://github.com/mibroome/wind-ae
 https://github.com/maloyan/manim-web
 https://github.com/gjgilbert/alderaan
 https://github.com/kavishdevar/librepods
+https://github.com/DaveStrickland/AstroPhotography

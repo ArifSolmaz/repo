@@ -1,4 +1,4 @@
-https://github.com/DaveStrickland/AstroPhotography|astronomy
 https://github.com/juice-shop/juice-shop|general
 https://github.com/vortex-exoplanet/VIP|astronomy
 https://github.com/cloudflare/quiche|general
+https://github.com/p0deje/Maccy|general
