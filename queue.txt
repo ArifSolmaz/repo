@@ -1,4 +1,5 @@
-https://github.com/ad-si/Woxi|general
 https://github.com/parse-community/parse-server|general
 https://github.com/samuelkriegerbonini-dev/AstroBurst|astronomy
 https://github.com/DioxusLabs/dioxus|general
+https://github.com/cphyc/astrophysics_toolset|astronomy
+https://github.com/jonelay/stillspin|astronomy
