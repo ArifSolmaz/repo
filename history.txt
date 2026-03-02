@@ -431,3 +431,4 @@ https://github.com/cphyc/astrophysics_toolset
 https://github.com/DioxusLabs/dioxus
 https://github.com/jonelay/stillspin
 https://github.com/thunderbird/thunderbird-android
+https://github.com/flatironinstitute/nifty-ls
