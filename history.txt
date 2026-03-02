@@ -436,3 +436,4 @@ https://github.com/ruvnet/ruflo
 https://github.com/California-Planet-Search/radvel
 https://github.com/steipete/CodexBar
 https://github.com/CIERA-Transients/POTPyRI
+https://github.com/Stremio/stremio-web
