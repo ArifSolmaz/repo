@@ -1,4 +1,3 @@
-https://github.com/thunderbird/thunderbird-android|general
 https://github.com/flatironinstitute/nifty-ls|astronomy
 https://github.com/ruvnet/ruflo|general
 https://github.com/California-Planet-Search/radvel|astronomy
