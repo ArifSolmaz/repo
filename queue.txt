@@ -1,5 +1,5 @@
-https://github.com/ruvnet/ruflo|general
 https://github.com/California-Planet-Search/radvel|astronomy
 https://github.com/steipete/CodexBar|general
 https://github.com/CIERA-Transients/POTPyRI|astronomy
 https://github.com/Stremio/stremio-web|general
+https://github.com/hypergravity/laspec|astronomy
