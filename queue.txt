@@ -1,5 +1,5 @@
-https://github.com/hypergravity/laspec|astronomy
 https://github.com/superset-sh/superset|general
 https://github.com/lincc-frameworks/lightcurvelynx|astronomy
 https://github.com/mnfst/manifest|general
 https://github.com/astropy/regions|astronomy
+https://github.com/alibaba/OpenSandbox|general
