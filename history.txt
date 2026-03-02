@@ -438,3 +438,4 @@ https://github.com/steipete/CodexBar
 https://github.com/CIERA-Transients/POTPyRI
 https://github.com/Stremio/stremio-web
 https://github.com/hypergravity/laspec
+https://github.com/superset-sh/superset
