@@ -434,3 +434,4 @@ https://github.com/thunderbird/thunderbird-android
 https://github.com/flatironinstitute/nifty-ls
 https://github.com/ruvnet/ruflo
 https://github.com/California-Planet-Search/radvel
+https://github.com/steipete/CodexBar
