@@ -1,5 +1,5 @@
-https://github.com/mnfst/manifest|general
 https://github.com/astropy/regions|astronomy
 https://github.com/alibaba/OpenSandbox|general
 https://github.com/ich-heisse-eugene/PyYAP|astronomy
 https://github.com/pgdogdev/pgdog|general
+https://github.com/cositools/cosi-data-challenges|astronomy
