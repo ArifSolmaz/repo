@@ -1,4 +1,4 @@
-https://github.com/ich-heisse-eugene/PyYAP|astronomy
 https://github.com/pgdogdev/pgdog|general
 https://github.com/cositools/cosi-data-challenges|astronomy
 https://github.com/tiagozip/cap|general
+https://github.com/scrapy/scrapy|general
