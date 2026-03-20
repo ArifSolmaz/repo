@@ -1,5 +1,5 @@
-https://github.com/tiagozip/cap|general
 https://github.com/scrapy/scrapy|general
 https://github.com/pw31/GGchem|astronomy
 https://github.com/Schwarzam/splusdata|astronomy
 https://github.com/MM2-0/Kvaesitso|general
+https://github.com/conda-forge/lightkurve-feedstock|astronomy
