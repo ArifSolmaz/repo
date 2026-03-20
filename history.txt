@@ -449,3 +449,4 @@ https://github.com/cositools/cosi-data-challenges
 https://github.com/tiagozip/cap
 https://github.com/pw31/GGchem
 https://github.com/scrapy/scrapy
+https://github.com/Schwarzam/splusdata
