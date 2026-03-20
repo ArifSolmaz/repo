@@ -1,5 +1,5 @@
-https://github.com/MM2-0/Kvaesitso|general
 https://github.com/conda-forge/lightkurve-feedstock|astronomy
 https://github.com/Stirling-Tools/Stirling-PDF|general
 https://github.com/aymenhmaidiwastaken/cosmicwatch|astronomy
 https://github.com/huggingface/skills|general
+https://github.com/spacetelescope/jwst-pipeline-notebooks|astronomy
