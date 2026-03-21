@@ -457,3 +457,4 @@ https://github.com/aymenhmaidiwastaken/cosmicwatch
 https://github.com/huggingface/skills
 https://github.com/spacetelescope/jwst-pipeline-notebooks
 https://github.com/louis-e/arnis
+https://github.com/iaa-so-training/sherlock-tutorial
