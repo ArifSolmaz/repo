@@ -1,5 +1,5 @@
-https://github.com/Stirling-Tools/Stirling-PDF|general
 https://github.com/aymenhmaidiwastaken/cosmicwatch|astronomy
 https://github.com/huggingface/skills|general
 https://github.com/spacetelescope/jwst-pipeline-notebooks|astronomy
 https://github.com/louis-e/arnis|general
+https://github.com/iaa-so-training/sherlock-tutorial|astronomy
