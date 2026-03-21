@@ -461,3 +461,4 @@ https://github.com/iaa-so-training/sherlock-tutorial
 https://github.com/torlando-tech/columba
 https://github.com/fabienbaron/OITOOLS.jl
 https://github.com/openai/codex
+https://github.com/Mendiak/drake.equation
