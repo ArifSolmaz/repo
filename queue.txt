@@ -1,5 +1,5 @@
-https://github.com/openai/codex|general
 https://github.com/Mendiak/drake.equation|astronomy
 https://github.com/anthropics/claude-plugins-official|general
 https://github.com/aritrachakrabarty/pyapphot|astronomy
 https://github.com/InsForge/InsForge|general
+https://github.com/InsanityCore/Astrophysics-Simulations|astronomy
