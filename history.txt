@@ -459,3 +459,4 @@ https://github.com/spacetelescope/jwst-pipeline-notebooks
 https://github.com/louis-e/arnis
 https://github.com/iaa-so-training/sherlock-tutorial
 https://github.com/torlando-tech/columba
+https://github.com/fabienbaron/OITOOLS.jl
