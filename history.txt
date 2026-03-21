@@ -455,3 +455,4 @@ https://github.com/conda-forge/lightkurve-feedstock
 https://github.com/Stirling-Tools/Stirling-PDF
 https://github.com/aymenhmaidiwastaken/cosmicwatch
 https://github.com/huggingface/skills
+https://github.com/spacetelescope/jwst-pipeline-notebooks
