@@ -1,4 +1,5 @@
-https://github.com/jarrodwatts/claude-hud|general
 https://github.com/systemd/systemd|general
 https://github.com/dgerosa/astrostatistics_bicocca_2026|astronomy
 https://github.com/FujiwaraChoki/MoneyPrinterV2|general
+https://github.com/mpi-astronomy/snowblind|astronomy
+https://github.com/edjuh/seevar|astronomy

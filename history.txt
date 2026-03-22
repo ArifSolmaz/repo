@@ -470,3 +470,4 @@ https://github.com/aquasecurity/trivy
 https://github.com/nasa-gcn/gcn.nasa.gov
 https://github.com/langchain-ai/deepagents
 https://github.com/TheSkyentist/unite
+https://github.com/jarrodwatts/claude-hud
