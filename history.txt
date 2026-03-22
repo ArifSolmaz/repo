@@ -464,3 +464,4 @@ https://github.com/openai/codex
 https://github.com/Mendiak/drake.equation
 https://github.com/anthropics/claude-plugins-official
 https://github.com/aritrachakrabarty/pyapphot
+https://github.com/InsForge/InsForge
