@@ -466,3 +466,4 @@ https://github.com/anthropics/claude-plugins-official
 https://github.com/aritrachakrabarty/pyapphot
 https://github.com/InsForge/InsForge
 https://github.com/InsanityCore/Astrophysics-Simulations
+https://github.com/aquasecurity/trivy

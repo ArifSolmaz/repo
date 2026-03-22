@@ -1,4 +1,3 @@
-https://github.com/aquasecurity/trivy|general
 https://github.com/nasa-gcn/gcn.nasa.gov|astronomy
 https://github.com/langchain-ai/deepagents|general
 https://github.com/jarrodwatts/claude-hud|general
