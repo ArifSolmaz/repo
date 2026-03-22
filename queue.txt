@@ -1,3 +1,4 @@
-https://github.com/langchain-ai/deepagents|general
 https://github.com/jarrodwatts/claude-hud|general
 https://github.com/systemd/systemd|general
+https://github.com/TheSkyentist/unite|astronomy
+https://github.com/dgerosa/astrostatistics_bicocca_2026|astronomy
