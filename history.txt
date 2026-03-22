@@ -474,3 +474,4 @@ https://github.com/jarrodwatts/claude-hud
 https://github.com/dgerosa/astrostatistics_bicocca_2026
 https://github.com/systemd/systemd
 https://github.com/mpi-astronomy/snowblind
+https://github.com/FujiwaraChoki/MoneyPrinterV2

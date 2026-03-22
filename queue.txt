@@ -1,5 +1,5 @@
-https://github.com/FujiwaraChoki/MoneyPrinterV2|general
 https://github.com/edjuh/seevar|astronomy
 https://github.com/ItzCrazyKns/Vane|general
 https://github.com/caoxiaoyue/TinyLensGpu|astronomy
 https://github.com/jordanbaird/Ice|general
+https://github.com/liberfa/pyerfa|astronomy
