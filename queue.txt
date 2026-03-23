@@ -1,4 +1,5 @@
-https://github.com/caoxiaoyue/TinyLensGpu|astronomy
 https://github.com/jordanbaird/Ice|general
 https://github.com/liberfa/pyerfa|astronomy
 https://github.com/sxyazi/yazi|general
+https://github.com/chihchunhsu/smart|astronomy
+https://github.com/danveloper/flash-moe|general
