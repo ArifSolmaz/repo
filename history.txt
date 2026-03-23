@@ -478,3 +478,4 @@ https://github.com/FujiwaraChoki/MoneyPrinterV2
 https://github.com/edjuh/seevar
 https://github.com/ItzCrazyKns/Vane
 https://github.com/caoxiaoyue/TinyLensGpu
+https://github.com/jordanbaird/Ice
