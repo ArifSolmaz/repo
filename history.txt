@@ -479,3 +479,4 @@ https://github.com/edjuh/seevar
 https://github.com/ItzCrazyKns/Vane
 https://github.com/caoxiaoyue/TinyLensGpu
 https://github.com/jordanbaird/Ice
+https://github.com/liberfa/pyerfa
