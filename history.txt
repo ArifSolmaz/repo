@@ -483,3 +483,4 @@ https://github.com/liberfa/pyerfa
 https://github.com/sxyazi/yazi
 https://github.com/chihchunhsu/smart
 https://github.com/danveloper/flash-moe
+https://github.com/burke86/jaxqsofit
