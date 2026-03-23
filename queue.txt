@@ -1,5 +1,5 @@
-https://github.com/chihchunhsu/smart|astronomy
 https://github.com/danveloper/flash-moe|general
 https://github.com/burke86/jaxqsofit|astronomy
 https://github.com/Crosstalk-Solutions/project-nomad|general
 https://github.com/uclchem/UCLCHEM|astronomy
+https://github.com/gofr-dev/gofr|general
