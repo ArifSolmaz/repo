@@ -1,5 +1,5 @@
-https://github.com/Crosstalk-Solutions/project-nomad|general
 https://github.com/uclchem/UCLCHEM|astronomy
 https://github.com/gofr-dev/gofr|general
 https://github.com/Astro-Sean/autophot|astronomy
 https://github.com/supabase/cli|general
+https://github.com/jorgemarpa/tess-3iatlas|astronomy
