@@ -485,3 +485,4 @@ https://github.com/chihchunhsu/smart
 https://github.com/danveloper/flash-moe
 https://github.com/burke86/jaxqsofit
 https://github.com/Crosstalk-Solutions/project-nomad
+https://github.com/uclchem/UCLCHEM
