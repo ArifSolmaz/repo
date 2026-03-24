@@ -490,3 +490,4 @@ https://github.com/gofr-dev/gofr
 https://github.com/Astro-Sean/autophot
 https://github.com/supabase/cli
 https://github.com/jorgemarpa/tess-3iatlas
+https://github.com/wavetermdev/waveterm
