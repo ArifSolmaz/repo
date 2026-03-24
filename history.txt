@@ -488,3 +488,4 @@ https://github.com/Crosstalk-Solutions/project-nomad
 https://github.com/uclchem/UCLCHEM
 https://github.com/gofr-dev/gofr
 https://github.com/Astro-Sean/autophot
+https://github.com/supabase/cli

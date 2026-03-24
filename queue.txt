@@ -1,4 +1,3 @@
-https://github.com/supabase/cli|general
 https://github.com/jorgemarpa/tess-3iatlas|astronomy
 https://github.com/wavetermdev/waveterm|general
 https://github.com/ajshajib/squirrel|astronomy
