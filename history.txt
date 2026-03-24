@@ -493,3 +493,4 @@ https://github.com/jorgemarpa/tess-3iatlas
 https://github.com/wavetermdev/waveterm
 https://github.com/ajshajib/squirrel
 https://github.com/heroui-inc/heroui
+https://github.com/deepfieldlabs/astroLens
