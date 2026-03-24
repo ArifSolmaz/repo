@@ -487,3 +487,4 @@ https://github.com/burke86/jaxqsofit
 https://github.com/Crosstalk-Solutions/project-nomad
 https://github.com/uclchem/UCLCHEM
 https://github.com/gofr-dev/gofr
+https://github.com/Astro-Sean/autophot

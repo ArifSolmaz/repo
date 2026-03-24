@@ -1,5 +1,5 @@
-https://github.com/Astro-Sean/autophot|astronomy
 https://github.com/supabase/cli|general
 https://github.com/jorgemarpa/tess-3iatlas|astronomy
 https://github.com/wavetermdev/waveterm|general
 https://github.com/ajshajib/squirrel|astronomy
+https://github.com/heroui-inc/heroui|general
