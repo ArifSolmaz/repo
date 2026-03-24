@@ -496,3 +496,4 @@ https://github.com/heroui-inc/heroui
 https://github.com/deepfieldlabs/astroLens
 https://github.com/TelegramMessenger/Telegram-iOS
 https://github.com/kemasuda/jnkepler
+https://github.com/vxcontrol/pentagi
