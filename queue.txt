@@ -1,4 +1,5 @@
-https://github.com/ajshajib/squirrel|astronomy
 https://github.com/heroui-inc/heroui|general
 https://github.com/deepfieldlabs/astroLens|astronomy
 https://github.com/TelegramMessenger/Telegram-iOS|general
+https://github.com/kemasuda/jnkepler|astronomy
+https://github.com/vxcontrol/pentagi|general
