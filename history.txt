@@ -500,3 +500,4 @@ https://github.com/vxcontrol/pentagi
 https://github.com/mzechmeister/serval
 https://github.com/bjarneo/cliamp
 https://github.com/JAXtronomy/awesome-JAXtronomy
+https://github.com/ssrajadh/sentrysearch
