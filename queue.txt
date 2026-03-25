@@ -1,5 +1,5 @@
-https://github.com/danielk333/pyorb|astronomy
 https://github.com/BerriAI/litellm|general
 https://github.com/jvines/astroARIADNE|astronomy
 https://github.com/ReactiveX/RxSwift|general
 https://github.com/pmvreeswijk/BlackBOX|astronomy
+https://github.com/TauricResearch/TradingAgents|general
