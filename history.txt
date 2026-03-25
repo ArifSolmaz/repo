@@ -503,3 +503,4 @@ https://github.com/JAXtronomy/awesome-JAXtronomy
 https://github.com/ssrajadh/sentrysearch
 https://github.com/danielk333/pyorb
 https://github.com/BerriAI/litellm
+https://github.com/jvines/astroARIADNE
