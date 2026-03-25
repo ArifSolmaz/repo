@@ -1,4 +1,3 @@
-https://github.com/TauricResearch/TradingAgents|general
 https://github.com/black-hole-group/gpumonty|astronomy
 https://github.com/pascalorg/editor|general
 https://github.com/danieljprice/splash|astronomy
