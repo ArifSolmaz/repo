@@ -508,3 +508,4 @@ https://github.com/ReactiveX/RxSwift
 https://github.com/pmvreeswijk/BlackBOX
 https://github.com/TauricResearch/TradingAgents
 https://github.com/black-hole-group/gpumonty
+https://github.com/pascalorg/editor
