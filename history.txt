@@ -509,3 +509,4 @@ https://github.com/pmvreeswijk/BlackBOX
 https://github.com/TauricResearch/TradingAgents
 https://github.com/black-hole-group/gpumonty
 https://github.com/pascalorg/editor
+https://github.com/danieljprice/splash

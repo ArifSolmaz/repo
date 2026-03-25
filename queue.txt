@@ -1,5 +1,5 @@
-https://github.com/danieljprice/splash|astronomy
 https://github.com/alibaba/page-agent|general
 https://github.com/antonpannekoek/sunbather|astronomy
 https://github.com/mvanhorn/last30days-skill|general
 https://github.com/KeckObservatoryArchive/PyKOA|astronomy
+https://github.com/mudler/LocalAI|general
