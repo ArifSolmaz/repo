@@ -1,4 +1,4 @@
-https://github.com/antonpannekoek/sunbather|astronomy
 https://github.com/mvanhorn/last30days-skill|general
 https://github.com/KeckObservatoryArchive/PyKOA|astronomy
 https://github.com/mudler/LocalAI|general
+https://github.com/sudheerj/javascript-interview-questions|general
