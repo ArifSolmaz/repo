@@ -1,3 +1,5 @@
-https://github.com/KeckObservatoryArchive/PyKOA|astronomy
 https://github.com/mudler/LocalAI|general
 https://github.com/sudheerj/javascript-interview-questions|general
+https://github.com/emk255/pykurucz|astronomy
+https://github.com/BinZhang109/FRTSearch|astronomy
+https://github.com/pointfreeco/sqlite-data|general
