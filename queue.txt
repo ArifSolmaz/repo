@@ -5,3 +5,4 @@ https://github.com/BinZhang109/FRTSearch|astronomy
 https://github.com/pointfreeco/sqlite-data|general
 https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro|huggingface
 https://huggingface.co/moonshotai/Kimi-K3|huggingface
+https://huggingface.co/zai-org/GLM-5.2|huggingface
